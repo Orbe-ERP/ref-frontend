@@ -1,0 +1,200 @@
+import { api } from "./api";
+
+export interface Kitchen {
+  MEAT: "MEAT";
+  OTHERS: "OTHERS";
+  UNCOOKABLE: "UNCOOKABLE";
+}
+
+export interface Product {
+  id: string;
+  name: string;
+  price: number;
+  active: boolean;
+  kitchen: string;
+  categoryId: string;
+  restaurantId: string | undefined;
+}
+export interface ProductInput {
+  name: string;
+  price: number;
+  active: boolean;
+  kitchen: string;
+  categoryId: string;
+  restaurantId: string | undefined;
+}
+
+
+export interface AddObservationInput {
+  productId: string;
+  description: string;
+}
+
+export interface UpdateProductInput {
+  id: string;
+  name?: string;
+  price?: number;
+  active?: boolean;
+  kitchen?: string;
+  observation?: any
+  restaurantId: string | undefined;
+}
+export interface UpdateObservationInput {
+  id: string;
+  observation?: any
+  restaurantId: string | undefined;
+}
+
+
+export async function createProduct(product: ProductInput) {
+  if (!product) {
+    throw new Error("Need's a data to create");
+  }
+
+  try {
+    const response = await api.post("products", product);
+    return response.data;
+  } catch (error) {
+    throw new Error(`Error: ${error}`);
+  }
+}
+
+
+export async function addObservation(i: AddObservationInput) {
+  if (!i) {
+    throw new Error("Need's a data to create");
+  }
+
+  try {
+    const response = await api.post("products/addObservation", i);
+    return response.data;
+  } catch (error) {
+    throw new Error(`Error: ${error}`);
+  }
+}
+
+
+
+
+export async function updateProduct(productData: UpdateProductInput) {
+  if (!productData.restaurantId) {
+    throw new Error("Need's a restaurant ID to edit");
+  }
+  try {
+    const response = await api.patch(`/products/${productData.id}`, {
+      name: productData.name,
+      price: productData.price,
+      active: productData.active,
+      restaurantId: productData.restaurantId,
+      kitchen: productData.kitchen,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    throw new Error(`Erro ao atualizar produto: ${error}`);
+  }
+}
+
+
+export async function updateObservations(productData: UpdateObservationInput) {
+
+  try {
+    const response = await api.patch(`/products/${productData.id}`, {
+      observation: productData.observation,
+      restaurantId: productData.restaurantId
+    });
+
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    throw new Error(`Erro ao atualizar produto: ${error}`);
+  }
+}
+
+export async function deleteProduct(
+  restaurantId: string | undefined,
+  productId: string
+) {
+  try {
+    await api.delete(`/products/${restaurantId}/${productId}`);
+    return;
+  } catch (error) {
+    throw new Error(`Error to delete category: ${error}`);
+  }
+}
+
+export async function deleteObservation(
+  observationId: string
+) {
+  try {
+    await api.delete(`/products/observations/${observationId}`);
+    return;
+  } catch (error) {
+    console.log(error)
+    throw new Error(`Error to delete observation: ${error}`);
+  }
+}
+
+export async function getById(
+  restaurantId: string,
+  productId: string | undefined
+) {
+  if (!restaurantId) {
+    throw new Error("No products selected");
+  }
+
+  try {
+    const response = await api.get<Product[]>(
+      `/products/${restaurantId}/${productId}`
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(`Error: ${error}`);
+  }
+}
+
+
+
+export async function getAllByRestaurant(restaurantId: string | undefined) {
+  if (!restaurantId) {
+    throw new Error("Restaurant ID is required");
+  }
+
+  try {
+    const response = await api.get<Product[]>(`/products/${restaurantId}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(`Error: ${error}`);
+  }
+}
+
+
+export async function getObservationsByProduct(productId: string | undefined) {
+  if (!productId) {
+    throw new Error("Product ID is required");
+  }
+
+  try {
+    const response = await api.get<Product[]>(`products/observations/${productId}`);
+
+    console.log(response.data)
+    return response.data;
+  } catch (error) {
+    throw new Error(`Error: ${error}`);
+  }
+}
+
+
+export async function getAllByCategory(categoryId: string) {
+  if (!categoryId) {
+    throw new Error("Category ID is required");
+  }
+
+  try {
+    const response = await api.get(`/products/category/${categoryId}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(`Error fetching products for category: ${error}`);
+  }
+}

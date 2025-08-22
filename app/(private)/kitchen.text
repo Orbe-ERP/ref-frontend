@@ -1,0 +1,122 @@
+// import React, { useEffect, useState } from "react";
+// import { FlatList, ActivityIndicator, View, Alert } from "react-native";
+// import io from "socket.io-client";
+// import useRestaurant from "@/hooks/useRestaurant";
+// import { getOrdersByRestaurant, updateStatus, Order } from "@/services/order";
+
+// import KitchenOrderCard, { ProductItem } from "@/components/molecules/KitchenOrderCard";
+
+// type KitchenType = "MEAT" | "OTHERS" | "UNCOOKABLE" | "default";
+
+// const KitchenScreen: React.FC = () => {
+//   const [orders, setOrders] = useState<Order[]>([]);
+//   const [loading, setLoading] = useState(true);
+//   const { selectedRestaurant } = useRestaurant();
+
+//   const kitchenColors: Record<KitchenType, string> = {
+//     MEAT: "#FF5733",
+//     OTHERS: "#33A1FF",
+//     UNCOOKABLE: "#FF33F1",
+//     default: "#A0AEC0"
+//   };
+
+//   const getMainKitchen = (order: Order): KitchenType => {
+//     if (!order.products.length) return "default";
+    
+//     const kitchenCount = order.products.reduce((acc, product) => {
+//       const kitchenKey = product.product.kitchen.toUpperCase();
+//       if (Object.keys(kitchenColors).includes(kitchenKey)) {
+//         const validKey = kitchenKey as KitchenType;
+//         acc[validKey] = (acc[validKey] || 0) + 1;
+//       }
+//       return acc;
+//     }, {} as Record<KitchenType, number>);
+
+//     if (Object.keys(kitchenCount).length === 0) return "default";
+
+//     const mainKitchen = Object.entries(kitchenCount)
+//       .sort((a, b) => b[1] - a[1])[0][0];
+    
+//     return mainKitchen as KitchenType;
+//   };
+
+//   const getKitchenColor = (kitchenName: string) => {
+//     const upperKitchen = kitchenName.toUpperCase();
+//     return kitchenColors[upperKitchen as KitchenType] || kitchenColors.default;
+//   };
+
+//   useEffect(() => {
+//     const socket = io("http://localhost:3001");
+
+//     const fetchOrders = async () => {
+//       if (!selectedRestaurant) return;
+//       setLoading(true);
+//       try {
+//         const fetchedOrders = await getOrdersByRestaurant(selectedRestaurant.id);
+//         setOrders(fetchedOrders);
+//       } catch (err) {
+//         Alert.alert("Erro", "Não foi possível buscar pedidos");
+//       }
+//       setLoading(false);
+//     };
+
+//     fetchOrders();
+
+//     socket.on("newOrder", (newOrder: Order) => {
+//       setOrders(prev => [...prev, newOrder]);
+//     });
+
+//     return () => {
+//       socket.off("newOrder");
+//     };
+//   }, [selectedRestaurant]);
+
+//   const handleUpdateStatus = async (orderId: string, status: string) => {
+//     try {
+//       const updatedOrder = await updateStatus({ id: orderId, status });
+//       setOrders(prev =>
+//         prev
+//           .map(order => order.id === orderId ? { ...order, status: updatedOrder.status } : order)
+//           .filter(order => order.status !== "CANCELED" && order.status !== "WAITING_DELIVERY")
+//       );
+//     } catch {
+//       Alert.alert("Erro", "Não foi possível atualizar o status do pedido.");
+//     }
+//   };
+
+//   if (loading) return <ActivityIndicator size="large" color="#029269" />;
+
+//   return (
+//     <FlatList
+//       data={orders}
+//       keyExtractor={item => item.id}
+//       contentContainerStyle={{ padding: 16 }}
+//       renderItem={({ item }) => {
+//         const mainKitchen = getMainKitchen(item);
+//         const kitchenColor = getKitchenColor(mainKitchen);
+//         const products: ProductItem[] = item.products.map(p => ({
+//           name: p.product.name,
+//           kitchen: p.product.kitchen,
+//           observation: p.observation,
+//         }));
+
+//         return (
+//           <KitchenOrderCard
+//             tableName={item.table.name}
+//             products={products}
+//             toTake={item.toTake}
+//             mainKitchen={mainKitchen}
+//             kitchenColor={kitchenColor}
+//             onPrepare={() => handleUpdateStatus(item.id, "WORK_IN_PROGRESS")}
+//             onWaiting={() => handleUpdateStatus(item.id, "WAITING_DELIVERY")}
+//             onCancel={() => handleUpdateStatus(item.id, "CANCELED")}
+//           />
+//         );
+//       }}
+//       numColumns={2}
+//       columnWrapperStyle={{ justifyContent: "space-between", marginBottom: 16 }}
+//     />
+//   );
+// };
+
+// export default KitchenScreen;
