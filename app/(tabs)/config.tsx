@@ -52,7 +52,7 @@ export default function ConfigScreen() {
           <ConfigCard icon="person" title="Gerenciar conta">
             <ConfigLink
               href={{
-                pathname: "/AccountEditScreen",
+                pathname: "/account-edit",
                 params: { field: "name" },
               }}
               label="Editar nome, alterar senha..."
@@ -61,18 +61,18 @@ export default function ConfigScreen() {
 
           <ConfigCard icon="book" title="Gerenciar Categorias e Produtos">
             <ConfigLink
-              href={{ pathname: "/CategoryScreen" }}
+              href={{ pathname: "/category" }}
               label="Criar categorias, criar produtos..."
             />
           </ConfigCard>
 
           <ConfigCard icon="people" title="Gerenciar usuários">
             <ConfigLink
-              href={{ pathname: "/CreateUserScreen" }}
+              href={{ pathname: "/create-user" }}
               label="Criar usuários"
             />
             <ConfigLink
-              href={{ pathname: "/UserListScreen" }}
+              href={{ pathname: "/users-list" }}
               label="Listar usuários"
             />
           </ConfigCard>
