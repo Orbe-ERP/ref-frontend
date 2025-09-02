@@ -1,10 +1,10 @@
+import { RestaurantForm } from "@/components/organisms/RestaurantForm";
+import { createRestaurant } from "@/services/restaurant";
+import { Stack, useRouter } from "expo-router";
 import React, { useState } from "react";
 import { View } from "react-native";
-import * as Yup from "yup";
-import { createRestaurant } from "@/services/restaurant";
-import { RestaurantForm } from "@/components/organisms/RestaurantForm";
-import { useRouter } from "expo-router";
 import Toast from "react-native-toast-message";
+import * as Yup from "yup";
 
 const validationSchema = Yup.object().shape({
   name: Yup.string().required("Nome é obrigatório"),
@@ -60,13 +60,16 @@ export default function RestaurantScreen() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#041224" }}>
-      <RestaurantForm
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        onSubmit={handleSubmit}
-        loading={loading}
-      />
-    </View>
+    <>
+      <Stack.Screen options={{title: "Criar restaurante", }} />
+      <View style={{ flex: 1, backgroundColor: "#041224" }}>
+        <RestaurantForm
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={handleSubmit}
+          loading={loading}
+        />
+      </View>
+    </>
   );
 }

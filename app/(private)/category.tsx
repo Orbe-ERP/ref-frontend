@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from "react";
-import { View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import useRestaurant from "@/hooks/useRestaurant";
-import { Category, createCategory, deleteCategory, getCategories, updateCategory } from "@/services/category";
+import Label from "@/components/atoms/Label";
 import CategoryGrid from "@/components/organisms/CategoryGrid";
 import CategoryModal from "@/components/organisms/CategoryModal";
-import Label from "@/components/atoms/Label";
-import { useRouter } from "expo-router";
+import useRestaurant from "@/hooks/useRestaurant";
+import { Category, createCategory, getCategories } from "@/services/category";
+import { Ionicons } from "@expo/vector-icons";
+import { Stack, useRouter } from "expo-router";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components/native";
 
 export const Container = styled.View`
@@ -48,27 +47,33 @@ export default function CategoryScreen() {
   };
 
   return !selectedRestaurant ? (
-    <Container>
-      <Ionicons name="warning-outline" size={48} color="#FBBF24" />
-      <Label>Por favor, selecione um restaurante antes de criar categorias.</Label>
-    </Container>
+    <>
+      <Stack.Screen options={{title: "Criar categorias", }} />
+      <Container>
+        <Ionicons name="warning-outline" size={48} color="#FBBF24" />
+        <Label>Por favor, selecione um restaurante antes de criar categorias.</Label>
+      </Container>
+    </>
   ) : (
-    <Container>
-      <CategoryGrid
-        categories={categories}
-        onPress={(id) => handleCategoryPress(categories.find((c) => c.id === id)!)}
-        onEdit={() => {}}
-        onAdd={() => setIsModalVisible(true)}
-      />
-      <CategoryModal
-        visible={isModalVisible}
-        title="Nova Categoria"
-        value={newCategoryName}
-        onChangeText={setNewCategoryName}
-        onClose={() => setIsModalVisible(false)}
-        onConfirm={handleCreateCategory}
-        confirmText="Criar Categoria"
-      />
-    </Container>
+    <>
+      <Stack.Screen options={{title: "Criar categorias", }} />
+      <Container>
+        <CategoryGrid
+          categories={categories}
+          onPress={(id) => handleCategoryPress(categories.find((c) => c.id === id)!)}
+          onEdit={() => {}}
+          onAdd={() => setIsModalVisible(true)}
+        />
+        <CategoryModal
+          visible={isModalVisible}
+          title="Nova Categoria"
+          value={newCategoryName}
+          onChangeText={setNewCategoryName}
+          onClose={() => setIsModalVisible(false)}
+          onConfirm={handleCreateCategory}
+          confirmText="Criar Categoria"
+        />
+      </Container>
+    </>
   );
 }

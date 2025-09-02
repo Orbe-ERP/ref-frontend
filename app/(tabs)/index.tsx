@@ -1,10 +1,9 @@
-import React from "react";
-import { ScrollView, Dimensions } from "react-native";
-import { LineChart } from "react-native-chart-kit";
-import Header from "@/components/organisms/Header";
 import Button from "@/components/atoms/Button";
-import DashboardBox from "@/components/molecules/DashboardBox";
+import Header from "@/components/organisms/Header";
 import { useRouter } from "expo-router";
+import React from "react";
+import { Dimensions, ScrollView } from "react-native";
+import { LineChart } from "react-native-chart-kit";
 
 export default function HomeScreen() {
 
@@ -45,15 +44,16 @@ export default function HomeScreen() {
 
       <Button label="Cozinha" onPress={() => {router.push('/(private)/kitchen')}} />
       <Button label="Selecionar Restaurante" onPress={() =>{router.push('/(private)/select-restaurant')}} />
+      <Button label="Relatórios" onPress={() =>{router.push('/(private)/report')}} />
 
-      <DashboardBox
+      {/* <DashboardBox
         title="Mais"
         options={[
           { label: "Relatórios", onPress: () => {return null} },
           { label: "Controle de Estoque", onPress: () => {return null}},
           { label: "Controle Financeiro", onPress: () =>{return null} },
         ]}
-      />
+      /> */}
     </ScrollView>
   );
 }

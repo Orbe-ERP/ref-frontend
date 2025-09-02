@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { KeyboardAvoidingView, Platform, ScrollView, View, ActivityIndicator } from "react-native";
-import { User, UpdateUser, getUserById, updateUser } from "@/services/user";
-import styled from "styled-components/native";
 import AccountForm from "@/components/organisms/AccountForm";
-import { useRouter } from "expo-router";
+import { UpdateUser, User, getUserById, updateUser } from "@/services/user";
+import { Stack, useRouter } from "expo-router";
+import React, { useEffect, useState } from "react";
+import { ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
+import styled from "styled-components/native";
 
 interface AccountEditScreenProps {
   userId: string;
@@ -68,24 +68,27 @@ export default function AccountEditScreen({ userId }: AccountEditScreenProps) {
   }
 
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
-        <AccountForm
-          name={name}
-          setName={setName}
-          email={email}
-          setEmail={setEmail}
-          currentPassword={currentPassword}
-          setCurrentPassword={setCurrentPassword}
-          newPassword={newPassword}
-          setNewPassword={setNewPassword}
-          confirmPassword={confirmPassword}
-          setConfirmPassword={setConfirmPassword}
-          onSave={handleSave}
-          loading={loading}
-        />
-      </ScrollView>
-    </KeyboardAvoidingView>
+    <>
+      <Stack.Screen options={{title: "Editar conta", }} />
+      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
+          <AccountForm
+            name={name}
+            setName={setName}
+            email={email}
+            setEmail={setEmail}
+            currentPassword={currentPassword}
+            setCurrentPassword={setCurrentPassword}
+            newPassword={newPassword}
+            setNewPassword={setNewPassword}
+            confirmPassword={confirmPassword}
+            setConfirmPassword={setConfirmPassword}
+            onSave={handleSave}
+            loading={loading}
+          />
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </>
   );
 }
 

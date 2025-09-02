@@ -1,11 +1,11 @@
+import { useRoute } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components/native";
-import { useRoute } from "@react-navigation/native";
 
-import { Product, getAllByCategory } from "@/services/product";
-import useRestaurant from "@/hooks/useRestaurant";
 import ProductGrid from "@/components/organisms/ProductGrid";
-import { useRouter } from "expo-router";
+import useRestaurant from "@/hooks/useRestaurant";
+import { Product, getAllByCategory } from "@/services/product";
+import { Stack, useRouter } from "expo-router";
 
 export default function ProductScreen() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -25,14 +25,17 @@ export default function ProductScreen() {
   }, [selectedRestaurant]);
 
   return (
-    <Container>
-      <ProductGrid
-        products={products}
-        onAdd={() => console.log("Novo produto")}
-        onEdit={(p) => console.log("Editar", p)}
-        onObservations={(p) => router.navigate("/observation", { productId: p.id })}
-      />
-    </Container>
+    <>
+      <Stack.Screen options={{title: "Criar produtos", }} />
+      <Container>
+        <ProductGrid
+          products={products}
+          onAdd={() => console.log("Novo produto")}
+          onEdit={(p) => console.log("Editar", p)}
+          onObservations={(p) => router.navigate("/observation", { productId: p.id })}
+        />
+      </Container>
+    </>
   );
 }
 
