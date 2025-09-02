@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { View } from "react-native";
-import { useRouter } from "expo-router";
-import useRestaurant from "@/hooks/useRestaurant";
-import { getRestaurants, deleteRestaurant } from "@/services/restaurant";
 import { RestaurantList } from "@/components/organisms/RestaurantList";
+import useRestaurant from "@/hooks/useRestaurant";
+import { deleteRestaurant, getRestaurants } from "@/services/restaurant";
+import { useRouter } from "expo-router";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components/native";
 
  const Container = styled.View`
