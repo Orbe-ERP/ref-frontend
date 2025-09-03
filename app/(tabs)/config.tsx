@@ -1,11 +1,11 @@
-import React from "react";
-import { ScrollView, View } from "react-native";
-import { useRouter } from "expo-router";
-import styled from "styled-components/native";
 import { Text } from "@/components/atoms/Text";
 import Title from "@/components/atoms/Title";
-import { ConfigCard } from "@/components/organisms/ConfigCard";
 import { ConfigLink } from "@/components/molecules/ConfigLink";
+import { ConfigCard } from "@/components/organisms/ConfigCard";
+import { useRouter } from "expo-router";
+import React from "react";
+import { ScrollView, View } from "react-native";
+import styled from "styled-components/native";
 
 export const ScreenContainer = styled.View`
   flex: 1;
@@ -27,6 +27,7 @@ export default function ConfigScreen() {
 
   return (
     <ScrollView
+      style={{ flex: 1, backgroundColor: "#041224" }}
       contentContainerStyle={{
         flexGrow: 1,
         padding: 20,

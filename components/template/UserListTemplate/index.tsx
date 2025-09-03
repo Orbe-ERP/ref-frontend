@@ -1,7 +1,6 @@
+import { UserList } from "@/components/organisms/UserList";
 import React from "react";
 import styled from "styled-components/native";
-import Title from "@/components/atoms/Title";
-import { UserList } from "@/components/organisms/UserList";
 
 interface Props {
   users: { id: string; name: string; role?: string }[];
@@ -37,7 +36,7 @@ const ButtonText = styled.Text`
 
 export const UserListTemplate: React.FC<Props> = ({ users, onDelete, onCreateUser }) => (
   <Container>
-    <Title>Lista de Usuários</Title>
+    {/* <Title>Lista de Usuários</Title> */}
     <UserList users={users} onDelete={onDelete} />
     <Button onPress={onCreateUser}>
       <ButtonText>Adicionar Usuário</ButtonText>

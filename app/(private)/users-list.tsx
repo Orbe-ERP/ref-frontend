@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { getAll, deleteUser, User } from "@/services/user";
 import { UserListTemplate } from "@/components/template/UserListTemplate";
-import { useRouter } from "expo-router";
+import { deleteUser, getAll, User } from "@/services/user";
+import { Stack, useRouter } from "expo-router";
+import React, { useEffect, useState } from "react";
 
 const UserListScreen = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -30,11 +30,14 @@ const UserListScreen = () => {
   }, []);
 
   return (
-    <UserListTemplate
-      users={users}
-      onDelete={handleDeleteUser}
-      onCreateUser={() => router.navigate("/create-user")}
-    />
+    <>
+      <Stack.Screen options={{title: "Lista de usuários", }} />
+      <UserListTemplate
+        users={users}
+        onDelete={handleDeleteUser}
+        onCreateUser={() => router.navigate("/create-user")}
+      />
+    </>
   );
 };
 

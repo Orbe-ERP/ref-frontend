@@ -1,7 +1,7 @@
-import React from "react";
-import { addUserOnAccount } from "@/services/user";
 import UserForm from "@/components/molecules/UserForm";
-import { useRouter } from "expo-router";
+import { addUserOnAccount } from "@/services/user";
+import { Stack, useRouter } from "expo-router";
+import React from "react";
 
 const CreateUserScreen = () => {
 
@@ -16,7 +16,12 @@ const CreateUserScreen = () => {
     }
   };
 
-  return <UserForm onSubmit={handleCreateUser} />;
+  return (
+    <>
+      <Stack.Screen options={{title: "Criar usuário", }} />
+      <UserForm onSubmit={handleCreateUser} />
+    </>
+  );
 };
 
 export default CreateUserScreen;
