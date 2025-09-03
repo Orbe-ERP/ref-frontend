@@ -20,18 +20,86 @@ import styled from "styled-components/native";
   margin-bottom: 20px;
 `;
 
+// export default function SelectRestaurantScreen() {
+//   const [restaurants, setRestaurants] = useState<any[]>([]);
+//   const { selectRestaurant, selectedRestaurant } = useRestaurant();
+//   const router = useRouter();
+
+//   useEffect(() => {
+//     const fetchRestaurants = async () => {
+//       try {
+//         const data = await getRestaurants();
+//         setRestaurants(data);
+//       } catch (error) {
+//         console.error(error);
+//       }
+//     };
+//     fetchRestaurants();
+//   }, []);
+
+//   const handleSelectRestaurant = (restaurant: any) => {
+//     selectRestaurant(restaurant);
+//     router.back();
+//   };
+
+//   const handleEditRestaurant = (restaurant: any) => {
+//     return
+//   };
+
+//   const handleDeleteRestaurant = (restaurantId: string) => {
+//     try {
+//       deleteRestaurant(restaurantId);
+//       setRestaurants(prev => prev.filter(r => r.id !== restaurantId));
+//     } catch (error) {
+//       console.error(error);
+//     }
+//   };
+
+//   const handleCreateRestaurant = () => {
+//     router.push("/(private)/create-restaurant");
+//   };
+
+//   return (
+//     <>
+//       <Stack.Screen options={{title: "Selecionar Restaurante", }} />
+//       <Container>
+//         <Subtitle>Restaurantes Disponíveis</Subtitle>
+//         <RestaurantList
+//           restaurants={restaurants}
+//           selectedRestaurant={selectedRestaurant}
+//           onSelectRestaurant={handleSelectRestaurant}
+//           onEditRestaurant={handleEditRestaurant}
+//           onDeleteRestaurant={handleDeleteRestaurant}
+//           onCreateRestaurant={handleCreateRestaurant}
+//         />
+//       </Container>
+//     </>
+//   );
+// }
+
 export default function SelectRestaurantScreen() {
   const [restaurants, setRestaurants] = useState<any[]>([]);
   const { selectRestaurant, selectedRestaurant } = useRestaurant();
   const router = useRouter();
 
+  const USE_MOCK = true;
+
+  // Mock de restaurantes
+  const mockRestaurants = [
+    { id: "123", name: "Restaurante Central" },
+  ];
+
   useEffect(() => {
     const fetchRestaurants = async () => {
-      try {
-        const data = await getRestaurants();
-        setRestaurants(data);
-      } catch (error) {
-        console.error(error);
+      if (USE_MOCK) {
+        setRestaurants(mockRestaurants);
+      } else {
+        try {
+          const data = await getRestaurants();
+          setRestaurants(data);
+        } catch (error) {
+          console.error(error);
+        }
       }
     };
     fetchRestaurants();
@@ -43,25 +111,37 @@ export default function SelectRestaurantScreen() {
   };
 
   const handleEditRestaurant = (restaurant: any) => {
-    return
+    return;
   };
 
   const handleDeleteRestaurant = (restaurantId: string) => {
-    try {
-      deleteRestaurant(restaurantId);
-      setRestaurants(prev => prev.filter(r => r.id !== restaurantId));
-    } catch (error) {
-      console.error(error);
+    if (USE_MOCK) {
+      setRestaurants((prev) => prev.filter((r) => r.id !== restaurantId));
+    } else {
+      try {
+        deleteRestaurant(restaurantId);
+        setRestaurants((prev) => prev.filter((r) => r.id !== restaurantId));
+      } catch (error) {
+        console.error(error);
+      }
     }
   };
 
   const handleCreateRestaurant = () => {
-    router.push("/(private)/create-restaurant");
+    if (USE_MOCK) {
+      const newRestaurant = {
+        id: String(Date.now()),
+        name: `Restaurante ${restaurants.length + 1}`,
+      };
+      setRestaurants((prev) => [...prev, newRestaurant]);
+    } else {
+      router.push("/(private)/create-restaurant");
+    }
   };
 
   return (
     <>
-      <Stack.Screen options={{title: "Selecionar Restaurante", }} />
+      <Stack.Screen options={{ title: "Selecionar Restaurante" }} />
       <Container>
         <Subtitle>Restaurantes Disponíveis</Subtitle>
         <RestaurantList
