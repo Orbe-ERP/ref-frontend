@@ -2,15 +2,16 @@ import React from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { AddButton, AddLabel } from "./styles";
 
-interface AddTableCardProps {
+interface AddExpertCardProps {
   onPress: () => void;
+  label: string
 }
 
-const AddTableCard: React.FC<AddTableCardProps> = ({ onPress }) => (
+const AddExpertCard: React.FC<AddExpertCardProps> = ({ onPress, label}) => (
   <AddButton onPress={onPress}>
     <Ionicons name="add" size={24} color="white" />
-    <AddLabel>Mesa</AddLabel>
+    <AddLabel>{label}</AddLabel>
   </AddButton>
 );
 
-export default AddTableCard;
+export default AddExpertCard;

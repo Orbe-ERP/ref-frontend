@@ -9,10 +9,10 @@ export const AddButton = styled.TouchableOpacity`
   justify-content: center;
   align-items: center;
   border-radius: 12px;
-  margin-vertical: 10px;
 `;
 
 export const AddLabel = styled.Text`
+  text-transform: capitalize;
   color: white;
   margin-top: 8px;
   font-size: 16px;

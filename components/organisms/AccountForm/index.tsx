@@ -50,7 +50,7 @@ export default function AccountForm({
 }
 
 const Form = styled.View`
-  padding: 20px;
+  width: 100%;
 `;
 
 const Section = styled.View`

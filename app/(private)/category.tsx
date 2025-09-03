@@ -1,74 +1,132 @@
 import React, { useState, useEffect } from "react";
 import { View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 import useRestaurant from "@/hooks/useRestaurant";
-import { Category, createCategory, deleteCategory, getCategories, updateCategory } from "@/services/category";
-import CategoryGrid from "@/components/organisms/CategoryGrid";
-import CategoryModal from "@/components/organisms/CategoryModal";
-import Label from "@/components/atoms/Label";
+import Title from "@/components/atoms/Title";
 import { useRouter } from "expo-router";
-import styled from "styled-components/native";
-
-export const Container = styled.View`
-  flex: 1;
-  background-color: #041224;
-  justify-content: center;
-  align-items: center;
-  padding: 24px;
-`;
+import ExpertModal from "@/components/organisms/ExpertModal";
+import { Category, createCategory, deleteCategory, getCategories, updateCategory } from "@/services/category";
+import ExpertCard from "@/components/molecules/ExpertCard";
+import AddExpertCard from "@/components/molecules/AddTableCard";
 
 export default function CategoryScreen() {
   const [categories, setCategories] = useState<Category[]>([]);
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isCreateVisible, setIsCreateVisible] = useState(false);
+  const [isEditVisible, setIsEditVisible] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const { selectedRestaurant } = useRestaurant();
-  const router = useRouter()
+  const router = useRouter();
 
   useEffect(() => {
-    if (selectedRestaurant) {
-      getCategories(selectedRestaurant.id).then(setCategories);
-    }
+    const fetchCategories = async () => {
+      if (selectedRestaurant) {
+        const data = await getCategories(selectedRestaurant.id);
+        setCategories(data);
+      }
+    };
+    fetchCategories();
   }, [selectedRestaurant]);
 
   const handleCreateCategory = async () => {
-    if (!newCategoryName.trim()) return;
     const newCategory = await createCategory({
       name: newCategoryName,
       restaurantId: selectedRestaurant?.id,
       active: true,
-      products: null,
     });
-    setCategories([...categories, newCategory]);
-    setIsModalVisible(false);
+    setCategories((prev: any) => [...prev, newCategory]);
     setNewCategoryName("");
+    setIsCreateVisible(false);
   };
 
-  const handleCategoryPress = (category: Category) => {
-    router.navigate("/product", { categoryId: category.id, restaurantId: selectedRestaurant?.id });
+  const handleUpdateCategory = async () => {
+    if (!selectedCategory) return;
+    const updated = await updateCategory({
+      categoryId: selectedCategory.id,
+      name: newCategoryName,
+      restaurantId: selectedRestaurant?.id,
+    });
+    setCategories((prev: any) =>
+      prev.map((t: any) => (t.id === updated.id ? updated : t))
+    );
+    console.log("updated", updated);
+    setNewCategoryName("");
+    setSelectedCategory(null);
+    setIsEditVisible(false);
   };
 
-  return !selectedRestaurant ? (
-    <Container>
-      <Ionicons name="warning-outline" size={48} color="#FBBF24" />
-      <Label>Por favor, selecione um restaurante antes de criar categorias.</Label>
-    </Container>
-  ) : (
-    <Container>
-      <CategoryGrid
-        categories={categories}
-        onPress={(id) => handleCategoryPress(categories.find((c) => c.id === id)!)}
-        onEdit={() => {}}
-        onAdd={() => setIsModalVisible(true)}
-      />
-      <CategoryModal
-        visible={isModalVisible}
+  const handleDeleteCategory = async () => {
+    if (!selectedCategory) return;
+    setCategories((prev) => prev.filter((t) => t.id !== selectedCategory.id));
+    await deleteCategory(selectedCategory.id, selectedRestaurant?.id || null);
+    setSelectedCategory(null);
+    setIsEditVisible(false);
+  };
+
+  return (
+    <View style={{ flex: 1, backgroundColor: "#041224", padding: 24 }}>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          backgroundColor: "#041224",
+          paddingVertical: 20,
+          paddingHorizontal: 15,
+          borderBottomWidth: 1,
+          borderBottomColor: "#038082",
+        }}
+      >
+        <Title>Categorias</Title>
+      </View>
+
+      <View
+        style={{
+          flexDirection: "row",
+          flexWrap: "wrap",
+          justifyContent: "space-between",
+        }}
+      >
+        {categories.map((category) => (
+          <ExpertCard
+            icon=""
+            key={category.id}
+            cardType={category}
+            onPress={() => router.push(`/create-product?categoryId=${category.id}`)}
+            onEdit={() => {
+              setSelectedCategory(category);
+              setNewCategoryName(category.name);
+              setIsEditVisible(true);
+            }}
+          />
+        ))}
+
+        <AddExpertCard onPress={() => setIsCreateVisible(true)} label="Criar Categoria" />
+      </View>
+
+      {/* Criar */}
+      <ExpertModal
+        visible={isCreateVisible}
         title="Nova Categoria"
+        inputPlaceholder="Nome da Categoria"
         value={newCategoryName}
         onChangeText={setNewCategoryName}
-        onClose={() => setIsModalVisible(false)}
+        onClose={() => setIsCreateVisible(false)}
         onConfirm={handleCreateCategory}
-        confirmText="Criar Categoria"
+        confirmLabel="Criar Categoria"
       />
-    </Container>
+
+      {/* Editar */}
+      <ExpertModal
+        visible={isEditVisible}
+        title="Editar Categoria"
+        inputPlaceholder="Nome da Categoria"
+        value={newCategoryName}
+        onChangeText={setNewCategoryName}
+        onClose={() => setIsEditVisible(false)}
+        onConfirm={handleUpdateCategory}
+        confirmLabel="Atualizar"
+        showDelete
+        onDelete={handleDeleteCategory}
+      />
+    </View>
   );
 }

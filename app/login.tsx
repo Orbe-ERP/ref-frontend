@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import Toast from "react-native-toast-message";
@@ -7,42 +7,76 @@ import useAuth from "@/hooks/useAuth";
 import styled from "styled-components/native";
 import { ActivityIndicator } from "react-native";
 
-import { useRouter } from 'expo-router';
-
+// 🎨 Paleta principal
+const COLORS = {
+  primary: "#038082",
+  secondary: "#00B894",
+  background: "#041224",
+  text: "#FFFFFF",
+  error: "#FF4C4C",
+  border: "#2D3748",
+};
 
 const Container = styled.View`
   flex: 1;
   justify-content: center;
-  padding: 20px;
+  padding: 24px;
+  background-color: ${COLORS.background};
 `;
 
 const Title = styled.Text`
-  font-size: 24px;
+  font-size: 28px;
   font-weight: bold;
-  margin-bottom: 20px;
+  margin-bottom: 12px;
   text-align: center;
+  color: ${COLORS.text};
 `;
+
+const Subtitle = styled.Text`
+  font-size: 14px;
+  text-align: center;
+  color: #a0aec0;
+  margin-bottom: 24px;
+`;
+
 const Input = styled.TextInput`
   border-width: 1px;
-  border-color: #ccc;
-  padding: 10px;
-  border-radius: 8px;
+  border-color: ${COLORS.border};
+  padding: 14px;
+  border-radius: 10px;
   margin-bottom: 10px;
+  color: ${COLORS.text};
+  background-color: #0a1b2a;
 `;
+
 const ErrorText = styled.Text`
-  color: red;
-  margin-bottom: 10px;
+  color: ${COLORS.error};
+  font-size: 12px;
+  margin-bottom: 8px;
 `;
-const Button = styled.TouchableOpacity<{ disabled?: boolean }>`
-  background-color: ${(props:any) => (props.disabled ? "#8fbfff" : "#007AFF")};
-  padding: 15px;
-  border-radius: 8px;
+
+type ButtonProps = {
+  variant?: "primary" | "secondary";
+  disabled?: boolean;
+};
+
+const Button = styled.TouchableOpacity<ButtonProps>`
+  background-color: ${({ variant, disabled }: ButtonProps) =>
+    disabled
+      ? "#4B5563"
+      : variant === "secondary"
+      ? COLORS.secondary
+      : COLORS.primary};
+  padding: 16px;
+  border-radius: 10px;
   align-items: center;
-  margin-top: 10px;
+  margin-top: 12px;
 `;
+
 const ButtonText = styled.Text`
   color: #fff;
   font-weight: bold;
+  font-size: 16px;
 `;
 
 const LoginSchema = Yup.object().shape({
@@ -53,14 +87,11 @@ const LoginSchema = Yup.object().shape({
 export default function Login() {
   const { authenticate } = useAuth();
   const [loading, setLoading] = useState(false);
-const router = useRouter();
-
-
+  const router = useRouter();
 
   const handleRegister = () => {
-   router.push('/register'); 
-return
-  }
+    router.push("/register");
+  };
 
   const handleLogin = async (values: { email: string; password: string }) => {
     setLoading(true);
@@ -82,6 +113,7 @@ return
         position: "top",
         visibilityTime: 2000,
       });
+      router.replace("/"); // 🚀 já leva pra home
     }
 
     setLoading(false);
@@ -90,7 +122,9 @@ return
   return (
     <Container>
       <Stack.Screen options={{ title: "Login" }} />
-      <Title>Bem-vindo!</Title>
+
+      <Title>Bem-vindo 👋</Title>
+      <Subtitle>Entre com sua conta para continuar</Subtitle>
 
       <Formik
         initialValues={{ email: "", password: "" }}
@@ -101,6 +135,7 @@ return
           <>
             <Input
               placeholder="E-mail"
+              placeholderTextColor="#718096"
               keyboardType="email-address"
               autoCapitalize="none"
               onChangeText={handleChange("email")}
@@ -111,6 +146,7 @@ return
 
             <Input
               placeholder="Senha"
+              placeholderTextColor="#718096"
               secureTextEntry
               onChangeText={handleChange("password")}
               onBlur={handleBlur("password")}
@@ -121,8 +157,9 @@ return
             <Button onPress={handleSubmit as any} disabled={loading}>
               {loading ? <ActivityIndicator color="#fff" /> : <ButtonText>Entrar</ButtonText>}
             </Button>
-              <Button onPress={handleRegister} disabled={loading}>
-              {loading ? <ActivityIndicator color="#fff" /> : <ButtonText>Registrar</ButtonText>}
+
+            <Button onPress={handleRegister} variant="secondary" disabled={loading}>
+              <ButtonText>Registrar</ButtonText>
             </Button>
           </>
         )}

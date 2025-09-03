@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { ActivityIndicator, Alert } from "react-native";
 import Toast from "react-native-toast-message";
 import useAuth from "@/hooks/useAuth";
-import { Button, ButtonLabel } from "./styles"; 
+import { Button, ButtonLabel } from "./styles";
+import { useRouter } from "expo-router";
 
 interface LogoutButtonProps {
   label?: string;
@@ -15,6 +16,7 @@ const LogoutButton: React.FC<LogoutButtonProps> = ({
 }) => {
   const { logout } = useAuth();
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const doLogout = async () => {
     setLoading(true);
@@ -29,6 +31,7 @@ const LogoutButton: React.FC<LogoutButtonProps> = ({
       });
     } finally {
       setLoading(false);
+      router.replace("/login");
     }
   };
 
@@ -50,7 +53,11 @@ const LogoutButton: React.FC<LogoutButtonProps> = ({
 
   return (
     <Button onPress={handlePress} disabled={loading} accessibilityLabel="Sair">
-      {loading ? <ActivityIndicator color="#fff" /> : <ButtonLabel>{label}</ButtonLabel>}
+      {loading ? (
+        <ActivityIndicator color="#fff" />
+      ) : (
+        <ButtonLabel>{label}</ButtonLabel>
+      )}
     </Button>
   );
 };

@@ -43,16 +43,31 @@ export async function createCategory(category: Category) {
 }
 
 export async function getProductsByCategoryId(categoryId: string) {
+  if (!categoryId) {
+    throw new Error("Category ID is required");
+  }
+
   try {
-    const response = await api.get(`/categories/${categoryId}/products`);
+    const response = await api.get(`/products/category/${categoryId}`);
+    console.log(response.data.products);
+
     return response.data;
   } catch (error) {
     throw new Error(`Error fetching products for category: ${error}`);
   }
 }
 
-export async function deleteCategory(categoryId: string, restaurantId: string) {
+export async function deleteCategory(
+  categoryId: string,
+  restaurantId: string | null
+) {
   try {
+    if (!restaurantId) {
+      throw new Error("No restaurant selected");
+    }
+    if (!categoryId) {
+      throw new Error("Category ID is required");
+    }
     await api.delete(`/categories/${restaurantId}/${categoryId}`);
     return;
   } catch (error) {

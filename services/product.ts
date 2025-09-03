@@ -47,12 +47,14 @@ export interface UpdateObservationInput {
 
 
 export async function createProduct(product: ProductInput) {
+
   if (!product) {
     throw new Error("Need's a data to create");
   }
 
   try {
     const response = await api.post("products", product);
+    console.log(response.data)
     return response.data;
   } catch (error) {
     throw new Error(`Error: ${error}`);
@@ -72,9 +74,6 @@ export async function addObservation(i: AddObservationInput) {
     throw new Error(`Error: ${error}`);
   }
 }
-
-
-
 
 export async function updateProduct(productData: UpdateProductInput) {
   if (!productData.restaurantId) {
@@ -113,8 +112,8 @@ export async function updateObservations(productData: UpdateObservationInput) {
 }
 
 export async function deleteProduct(
-  restaurantId: string | undefined,
-  productId: string
+  restaurantId: string | null,
+  productId: string | null
 ) {
   try {
     await api.delete(`/products/${restaurantId}/${productId}`);
