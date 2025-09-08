@@ -1,6 +1,8 @@
+import { CategoryItem } from "@/components/molecules/CategoryItem";
+import { Stack, useRouter } from "expo-router";
 import React, { useState } from "react";
-import { ScrollView, Text, View } from "react-native";
-import { CategoryItem } from "@/components/molecules/CategoryItem"; // ajuste o path se mudar
+import { ScrollView, Text, View, TouchableOpacity } from "react-native";
+import { Ionicons } from "@expo/vector-icons"; // ícones bonitos do expo
 
 // Mock de dados
 const categories = [
@@ -23,6 +25,7 @@ const categories = [
 ];
 
 export default function OrderScreen() {
+  const router = useRouter();
   const [selectedProducts, setSelectedProducts] = useState<{
     [categoryId: string]: { productId: string; quantity: number };
   }>({});
@@ -53,39 +56,57 @@ export default function OrderScreen() {
   };
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: "#0a192f", padding: 16 }}>
-      {categories.map((category) => (
-        <View key={category.id} style={{ marginBottom: 20 }}>
-          <Text style={{ color: "white", fontSize: 18, marginBottom: 8 }}>
-            {category.name}
-          </Text>
-          {category.products.map((product) => (
-            <CategoryItem
-              key={product.id}
-              categoryId={category.id}
-              product={product}
-              selectedProductId={selectedProducts[category.id]?.productId}
-              quantity={selectedProducts[category.id]?.quantity}
-              onSelectProduct={handleSelectProduct}
-              onQuantityChange={handleQuantityChange}
-              onAddProduct={handleAddProduct}
-            />
-          ))}
-        </View>
-      ))}
+    <>
+      <Stack.Screen
+        options={{
+          title: "Comanda",
+          headerStyle: { backgroundColor: "#041224" },
+          headerTintColor: "#fff",
+          headerRight: () => (
+            <TouchableOpacity
+              onPress={() => router.push("/cart")}
+              style={{ marginRight: 12 }}
+            >
+              <Ionicons name="cart-outline" size={24} color="white" />
+              {cart.length > 0 && (
+                <View style={{
+                  position: "absolute",
+                  right: -6,
+                  top: -3,
+                  backgroundColor: "red",
+                  borderRadius: 10,
+                  paddingHorizontal: 5,
+                }}>
+                  <Text style={{ color: "white", fontSize: 12 }}>{cart.length}</Text>
+                </View>
+              )} 
+             
+            </TouchableOpacity>
+          ),
+        }}
+      />
 
-      <View style={{ marginTop: 20, backgroundColor: "#1b263b", padding: 12, borderRadius: 8 }}>
-        <Text style={{ color: "white", fontSize: 16, marginBottom: 6 }}>🛒 Carrinho:</Text>
-        {cart.length === 0 ? (
-          <Text style={{ color: "gray" }}>Nenhum item adicionado</Text>
-        ) : (
-          cart.map((item, index) => (
-            <Text key={index} style={{ color: "white" }}>
-              {item.quantity}x {item.name}
+      <ScrollView style={{ flex: 1, backgroundColor: "#0a192f", padding: 16 }}>
+        {categories.map((category) => (
+          <View key={category.id} style={{ marginBottom: 20 }}>
+            <Text style={{ color: "white", fontSize: 18, marginBottom: 8 }}>
+              {category.name}
             </Text>
-          ))
-        )}
-      </View>
-    </ScrollView>
+            {category.products.map((product) => (
+              <CategoryItem
+                key={product.id}
+                categoryId={category.id}
+                product={product}
+                selectedProductId={selectedProducts[category.id]?.productId}
+                quantity={selectedProducts[category.id]?.quantity}
+                onSelectProduct={handleSelectProduct}
+                onQuantityChange={handleQuantityChange}
+                onAddProduct={handleAddProduct}
+              />
+            ))}
+          </View>
+        ))}
+      </ScrollView>
+    </>
   );
 }
