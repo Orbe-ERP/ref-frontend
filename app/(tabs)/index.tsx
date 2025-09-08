@@ -44,6 +44,7 @@ export default function HomeScreen() {
 
       {/* <Button label="Cozinha" onPress={() => {router.push('/(private)/kitchen')}} /> */}
       <Button label="Selecionar Restaurante" onPress={() =>{router.push('/(private)/select-restaurant')}} />
+      <Button label="Cozinha" onPress={() =>{router.push('/(private)/kitchen')}} />
       <Button label="Relatórios" onPress={() =>{router.push('/(private)/report')}} />
 
     </ScrollView>
