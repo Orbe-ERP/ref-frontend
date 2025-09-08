@@ -5,7 +5,7 @@ import * as Yup from "yup";
 import Toast from "react-native-toast-message";
 import useAuth from "@/hooks/useAuth";
 import styled from "styled-components/native";
-import { ActivityIndicator } from "react-native";
+import { ActivityIndicator, Image } from "react-native";
 
 // 🎨 Paleta principal
 const COLORS = {
@@ -79,6 +79,13 @@ const ButtonText = styled.Text`
   font-size: 16px;
 `;
 
+const Logo = styled.Image`
+    width: 120;
+    height: 120;
+    marginBottom: 20;
+    borderWidth: 2;
+`;
+
 const LoginSchema = Yup.object().shape({
   email: Yup.string().email("E-mail inválido").required("E-mail obrigatório"),
   password: Yup.string().min(6, "Mínimo 6 caracteres").required("Senha obrigatória"),
@@ -88,10 +95,6 @@ export default function Login() {
   const { authenticate } = useAuth();
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-
-  const handleRegister = () => {
-    router.push("/register");
-  };
 
   const handleLogin = async (values: { email: string; password: string }) => {
     setLoading(true);
@@ -113,7 +116,7 @@ export default function Login() {
         position: "top",
         visibilityTime: 2000,
       });
-      router.replace("/"); // 🚀 já leva pra home
+      router.replace("/");
     }
 
     setLoading(false);
@@ -122,6 +125,9 @@ export default function Login() {
   return (
     <Container>
       <Stack.Screen options={{ title: "Login" }} />
+
+
+    <Logo source={require("../assets/images/logo-comandante.png")}/>
 
       <Title>Bem-vindo 👋</Title>
       <Subtitle>Entre com sua conta para continuar</Subtitle>
@@ -156,10 +162,6 @@ export default function Login() {
 
             <Button onPress={handleSubmit as any} disabled={loading}>
               {loading ? <ActivityIndicator color="#fff" /> : <ButtonText>Entrar</ButtonText>}
-            </Button>
-
-            <Button onPress={handleRegister} variant="secondary" disabled={loading}>
-              <ButtonText>Registrar</ButtonText>
             </Button>
           </>
         )}

@@ -7,15 +7,15 @@ import { LineChart } from "react-native-chart-kit";
 
 export default function HomeScreen() {
 
-  const salesData = {
-    labels: ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"],
-    datasets: [
-      {
-        data: [100, 200, 150, 170, 220, 180, 250],
-        strokeWidth: 2,
-      },
-    ],
-  };
+  // const salesData = {
+  //   labels: ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"],
+  //   datasets: [
+  //     {
+  //       data: [100, 200, 150, 170, 220, 180, 250],
+  //       strokeWidth: 2,
+  //     },
+  //   ],
+  // };
 
   const router = useRouter();
   
@@ -24,7 +24,7 @@ export default function HomeScreen() {
     <ScrollView contentContainerStyle={{ flexGrow: 1, padding: 20, backgroundColor: "#041224" }}>
       <Header title={"Restaurante"}/>
 
-      <LineChart
+      {/* <LineChart
         data={salesData}
         width={Dimensions.get("window").width - 40}
         height={220}
@@ -40,7 +40,7 @@ export default function HomeScreen() {
         }}
         bezier
         style={{ marginBottom: 30 }}
-      />
+      /> */}
 
       {/* <Button label="Cozinha" onPress={() => {router.push('/(private)/kitchen')}} /> */}
       <Button label="Selecionar Restaurante" onPress={() =>{router.push('/(private)/select-restaurant')}} />

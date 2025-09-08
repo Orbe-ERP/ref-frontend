@@ -78,13 +78,6 @@ export default function ConfigScreen() {
             />
           </ConfigCard>
 
-          <ConfigCard icon="attach-money" title="Gerenciar taxas">
-            <ConfigLink
-              href={{ pathname: "/PaymentMethodScreen" }}
-              label="Cadastrar taxas de cartão"
-            />
-          </ConfigCard>
-
           <Footer>
             <Text>Orbe v1.0</Text>
           </Footer>

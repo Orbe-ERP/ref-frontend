@@ -79,7 +79,7 @@ export default function ProductScreen() {
               icon="cube-outline"
               key={product.id}
               cardType={product}
-              onPress={() => router.push(`/order?productId=${product.id}`)}
+              onPress={() => router.push(`/observation?productId=${product.id}`)}
               onEdit={() => {
                 setSelectedProduct(product);
                 setIsModalVisible(true);

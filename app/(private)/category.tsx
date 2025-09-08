@@ -63,7 +63,7 @@ export default function CategoryScreen() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#041224", padding: 24 }}>
+    <View style={{ flex: 1, backgroundColor: "#041224", padding: 24 }} >
       <View
         style={{
           flexDirection: "row",
