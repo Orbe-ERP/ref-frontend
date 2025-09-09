@@ -34,6 +34,20 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
         }}
       />
+      <Tabs.Screen
+        name="table"
+        options={{
+          title: 'Mesas',
+          tabBarIcon: ({ color }) => <Ionicons name="grid-outline" size={28} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="config"
+        options={{
+          title: 'Config',
+          tabBarIcon: ({ color }) => <Ionicons name="settings-outline" size={28} color={color} />,
+        }}
+      />
     </Tabs>
   );
 }

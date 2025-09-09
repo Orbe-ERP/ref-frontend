@@ -10,8 +10,8 @@ import {
   deleteObservation,
   getObservationsByProduct,
 } from "@/services/product";
-import { useLocalSearchParams } from "expo-router";
 import Input from "@/components/atoms/Input";
+import { useLocalSearchParams } from "expo-router";
 
 /** 🔹 Atoms */
 const ScreenContainer = styled.View`

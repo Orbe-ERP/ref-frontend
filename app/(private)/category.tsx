@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View } from "react-native";
 import useRestaurant from "@/hooks/useRestaurant";
 import Title from "@/components/atoms/Title";
-import { useRouter } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import ExpertModal from "@/components/organisms/ExpertModal";
 import { Category, createCategory, deleteCategory, getCategories, updateCategory } from "@/services/category";
 import ExpertCard from "@/components/molecules/ExpertCard";
@@ -63,70 +63,59 @@ export default function CategoryScreen() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#041224", padding: 24 }} >
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          backgroundColor: "#041224",
-          paddingVertical: 20,
-          paddingHorizontal: 15,
-          borderBottomWidth: 1,
-          borderBottomColor: "#038082",
-        }}
-      >
-        <Title>Categorias</Title>
+    <>
+      <Stack.Screen options={{title: "Categorias", }} />
+      <View style={{ flex: 1, backgroundColor: "#041224", padding: 24 }} >
+        <View
+          style={{
+            flexDirection: "row",
+            flexWrap: "wrap",
+            justifyContent: "space-between",
+          }}
+        >
+          {categories.map((category) => (
+            <ExpertCard
+              icon=""
+              key={category.id}
+              cardType={category}
+              onPress={() => router.push(`/create-product?categoryId=${category.id}`)}
+              onEdit={() => {
+                setSelectedCategory(category);
+                setNewCategoryName(category.name);
+                setIsEditVisible(true);
+              }}
+            />
+          ))}
+
+          <AddExpertCard onPress={() => setIsCreateVisible(true)} label="Criar Categoria" />
+        </View>
+
+        {/* Criar */}
+        <ExpertModal
+          visible={isCreateVisible}
+          title="Nova Categoria"
+          inputPlaceholder="Nome da Categoria"
+          value={newCategoryName}
+          onChangeText={setNewCategoryName}
+          onClose={() => setIsCreateVisible(false)}
+          onConfirm={handleCreateCategory}
+          confirmLabel="Criar Categoria"
+        />
+
+        {/* Editar */}
+        <ExpertModal
+          visible={isEditVisible}
+          title="Editar Categoria"
+          inputPlaceholder="Nome da Categoria"
+          value={newCategoryName}
+          onChangeText={setNewCategoryName}
+          onClose={() => setIsEditVisible(false)}
+          onConfirm={handleUpdateCategory}
+          confirmLabel="Atualizar"
+          showDelete
+          onDelete={handleDeleteCategory}
+        />
       </View>
-
-      <View
-        style={{
-          flexDirection: "row",
-          flexWrap: "wrap",
-          justifyContent: "space-between",
-        }}
-      >
-        {categories.map((category) => (
-          <ExpertCard
-            icon=""
-            key={category.id}
-            cardType={category}
-            onPress={() => router.push(`/create-product?categoryId=${category.id}`)}
-            onEdit={() => {
-              setSelectedCategory(category);
-              setNewCategoryName(category.name);
-              setIsEditVisible(true);
-            }}
-          />
-        ))}
-
-        <AddExpertCard onPress={() => setIsCreateVisible(true)} label="Criar Categoria" />
-      </View>
-
-      {/* Criar */}
-      <ExpertModal
-        visible={isCreateVisible}
-        title="Nova Categoria"
-        inputPlaceholder="Nome da Categoria"
-        value={newCategoryName}
-        onChangeText={setNewCategoryName}
-        onClose={() => setIsCreateVisible(false)}
-        onConfirm={handleCreateCategory}
-        confirmLabel="Criar Categoria"
-      />
-
-      {/* Editar */}
-      <ExpertModal
-        visible={isEditVisible}
-        title="Editar Categoria"
-        inputPlaceholder="Nome da Categoria"
-        value={newCategoryName}
-        onChangeText={setNewCategoryName}
-        onClose={() => setIsEditVisible(false)}
-        onConfirm={handleUpdateCategory}
-        confirmLabel="Atualizar"
-        showDelete
-        onDelete={handleDeleteCategory}
-      />
-    </View>
+    </>
   );
 }

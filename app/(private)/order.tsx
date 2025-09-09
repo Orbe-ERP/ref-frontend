@@ -4,13 +4,23 @@ import { Ionicons } from "@expo/vector-icons";
 import { Stack, useRouter } from "expo-router";
 import React, { useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { getObservationsByProduct } from "@/services/product";
+
 
 export default function OrderScreen() {
   const router = useRouter();
+
   const [selectedProducts, setSelectedProducts] = useState<{
     [categoryId: string]: { productId: string; quantity: number };
   }>({});
-  const [cart, setCart] = useState<{ id: string; name: string; quantity: number }[]>([]);
+
+  const [cart, setCart] = useState<
+    { id: string; name: string; quantity: number }[]
+  >([]);
+
+  const [productObservations, setProductObservations] = useState<{
+    [productId: string]: { id: string; description: string }[];
+  }>({});
 
   const categories = [
     {
@@ -31,14 +41,33 @@ export default function OrderScreen() {
     },
   ];
 
-  const handleSelectProduct = (categoryId: string, productId: string, quantity: number) => {
+  const handleSelectProduct = async (
+    categoryId: string,
+    productId: string,
+    quantity: number
+  ) => {
     setSelectedProducts((prev) => ({
       ...prev,
       [categoryId]: { productId, quantity },
     }));
+
+    // 🔹 Buscar observações pré-cadastradas no backend
+    try {
+      const obs = await getObservationsByProduct(productId);
+      setProductObservations((prev) => ({
+        ...prev,
+        [productId]: obs,
+      }));
+    } catch (err) {
+      console.log("Erro ao buscar observações", err);
+    }
   };
 
-  const handleQuantityChange = (categoryId: string, productId: string, delta: number) => {
+  const handleQuantityChange = (
+    categoryId: string,
+    productId: string,
+    delta: number
+  ) => {
     setSelectedProducts((prev) => {
       const current = prev[categoryId];
       if (!current || current.productId !== productId) return prev;
@@ -51,8 +80,15 @@ export default function OrderScreen() {
     });
   };
 
-  const handleAddProduct = (productId: string, productName: string, quantity: number) => {
-    setCart((prev) => [...prev, { id: productId, name: productName, quantity }]);
+  const handleAddProduct = (
+    productId: string,
+    productName: string,
+    quantity: number
+  ) => {
+    setCart((prev) => [
+      ...prev,
+      { id: productId, name: productName, quantity },
+    ]);
   };
 
   return (
@@ -79,7 +115,9 @@ export default function OrderScreen() {
                     paddingHorizontal: 5,
                   }}
                 >
-                  <Text style={{ color: "white", fontSize: 12 }}>{cart.length}</Text>
+                  <Text style={{ color: "white", fontSize: 12 }}>
+                    {cart.length}
+                  </Text>
                 </View>
               )}
             </TouchableOpacity>
@@ -93,22 +131,56 @@ export default function OrderScreen() {
             <Text style={{ color: "white", fontSize: 18, marginBottom: 8 }}>
               {category.name}
             </Text>
+
             {category.products.map((product) => (
-              <CategoryItem
+              <View
                 key={product.id}
-                categoryId={category.id}
-                product={product}
-                selectedProductId={selectedProducts[category.id]?.productId}
-                quantity={selectedProducts[category.id]?.quantity}
-                onSelectProduct={handleSelectProduct}
-                onQuantityChange={handleQuantityChange}
-                onAddProduct={handleAddProduct}
-              />
+                style={{
+                  backgroundColor: "#1e293b",
+                  borderRadius: 12,
+                  padding: 12,
+                  marginBottom: 10,
+                }}
+              >
+                <CategoryItem
+                  categoryId={category.id}
+                  product={product}
+                  selectedProductId={selectedProducts[category.id]?.productId}
+                  quantity={selectedProducts[category.id]?.quantity}
+                  onSelectProduct={handleSelectProduct}
+                  onQuantityChange={handleQuantityChange}
+                  onAddProduct={handleAddProduct}
+                />
+
+                {/* 🔹 Exibir observações pré-cadastradas */}
+                {productObservations[product.id]?.length > 0 && (
+                  <View style={{ marginTop: 8 }}>
+                    <Text
+                      style={{ color: "#94a3b8", fontSize: 14, marginBottom: 4 }}
+                    >
+                      Observações:
+                    </Text>
+                    {productObservations[product.id].map((obs) => (
+                      <Text
+                        key={obs.id}
+                        style={{ color: "#f8fafc", fontSize: 13, marginLeft: 8 }}
+                      >
+                        • {obs.description}
+                      </Text>
+                    ))}
+                  </View>
+                )}
+              </View>
             ))}
           </View>
         ))}
 
-        <Button label="Ver comandas" onPress={() =>{router.push('/(private)/oppened-order')}} />
+        <Button
+          label="Ver comandas"
+          onPress={() => {
+            router.push("/(private)/oppened-order");
+          }}
+        />
       </ScrollView>
     </>
   );

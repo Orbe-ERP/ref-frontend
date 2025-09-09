@@ -1,4 +1,3 @@
-// app/(private)/cart.tsx
 import Button from "@/components/atoms/Button";
 import Input from "@/components/atoms/Input";
 import Label from "@/components/atoms/Label";
@@ -93,63 +92,63 @@ export default function CartScreen() {
 
   return (
     <>
-        <Stack.Screen options={{title: "Carrinho", }} />
-        <Container>
+      <Stack.Screen options={{ title: "Carrinho" }} />
+      <Container>
         <ScrollView>
-            {products.length > 0 ? (
-            products.map((product, index) => (
+          {products.length > 0 ? (
+            <>
+              {products.map((product, index) => (
                 <CartProductCard
-                key={index}
-                product={product}
-                availableObservations={availableObservations[product.productId] || []}
-                onChangeQuantity={(delta) =>
+                  key={index}
+                  product={product}
+                  availableObservations={availableObservations[product.productId] || []}
+                  onChangeQuantity={(delta) =>
                     setProducts((prev) =>
-                    prev.map((p) =>
+                      prev.map((p) =>
                         p.productId === product.productId
-                        ? { ...p, quantity: Math.max(1, p.quantity + delta) }
-                        : p
+                          ? { ...p, quantity: Math.max(1, p.quantity + delta) }
+                          : p
+                      )
                     )
-                    )
-                }
-                onRemove={() =>
+                  }
+                  onRemove={() =>
                     setProducts((prev) => prev.filter((p) => p.productId !== product.productId))
-                }
-                onToggleObservation={(obs) =>
+                  }
+                  onToggleObservation={(obs) =>
                     setProducts((prev) =>
-                    prev.map((p) =>
+                      prev.map((p) =>
                         p.productId === product.productId
-                        ? {
-                            ...p,
-                            observations: p.observations?.includes(obs)
+                          ? {
+                              ...p,
+                              observations: p.observations?.includes(obs)
                                 ? p.observations.filter((o) => o !== obs)
                                 : [...(p.observations || []), obs],
                             }
-                        : p
+                          : p
+                      )
                     )
-                    )
-                }
+                  }
                 />
-            ))
-            ) : (
+              ))}
+              <Input
+                placeholder="Responsável"
+                value={responsible}
+                onChangeText={setResponsible}
+              />
+              <Row>
+                <Label>Para viagem?</Label>
+                <Switch value={toTake} onValueChange={setToTake} />
+              </Row>
+            </>
+          ) : (
             <EmptyText>O carrinho está vazio.</EmptyText>
-            )}
-
-            <Input
-            placeholder="Responsável"
-            value={responsible}
-            onChangeText={setResponsible}
-            />
-
-            <Row>
-            <Label>Para viagem?</Label>
-            <Switch value={toTake} onValueChange={setToTake} />
-            </Row>
+          )}
         </ScrollView>
 
         {products.length > 0 && (
-            <Button label="Enviar para Cozinha" onPress={handleOrderSubmit} />
+          <Button label="Enviar para Cozinha" onPress={handleOrderSubmit} />
         )}
-        </Container>
+      </Container>
     </>
   );
 }
