@@ -36,6 +36,17 @@ export default function OrderScreen() {
       ...prev,
       [catId]: { productId: prodId, quantity: q },
     }));
+
+    // 🔹 Buscar observações pré-cadastradas no backend
+    try {
+      const obs = await getObservationsByProduct(productId);
+      setProductObservations((prev) => ({
+        ...prev,
+        [productId]: obs,
+      }));
+    } catch (err) {
+      console.log("Erro ao buscar observações", err);
+    }
   };
 
   const handleQuantityChange = (
