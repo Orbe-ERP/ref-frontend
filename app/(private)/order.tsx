@@ -1,115 +1,120 @@
-import Button from "@/components/atoms/Button";
-import { CategoryItem } from "@/components/molecules/CategoryItem";
+import React, { useState, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
-import { Stack, useRouter } from "expo-router";
-import React, { useState } from "react";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { getCategories } from "@/services/category";
+import useRestaurant from "@/hooks/useRestaurant";
+import CategoryList from "@/components/organisms/CategoryList";
+import Button from "@/components/atoms/Button";
+import { useLocalSearchParams, useRouter, Stack } from "expo-router";
+import styled from "styled-components/native";
 
 export default function OrderScreen() {
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+  const [selectedProducts, setSelectedProducts] = useState<any>({});
+  const [categories, setCategories] = useState<any[]>([]);
+  const [addedProducts, setAddedProducts] = useState<any[]>([]);
+
   const router = useRouter();
-  const [selectedProducts, setSelectedProducts] = useState<{
-    [categoryId: string]: { productId: string; quantity: number };
-  }>({});
-  const [cart, setCart] = useState<{ id: string; name: string; quantity: number }[]>([]);
+  const { tableId } = useLocalSearchParams();
+  const { selectedRestaurant } = useRestaurant();
 
-  const categories = [
-    {
-      id: "c1",
-      name: "Bebidas",
-      products: [
-        { id: "p1", name: "Coca-Cola" },
-        { id: "p2", name: "Suco de Laranja" },
-      ],
-    },
-    {
-      id: "c2",
-      name: "Lanches",
-      products: [
-        { id: "p3", name: "Hambúrguer" },
-        { id: "p4", name: "Batata Frita" },
-      ],
-    },
-  ];
+  useEffect(() => {
+    const fetchCategories = async () => {
+      if (selectedRestaurant) {
+        const categoriesData = await getCategories(selectedRestaurant.id);
+        setCategories(categoriesData);
+      }
+    };
+    fetchCategories();
+  }, [selectedRestaurant]);
 
-  const handleSelectProduct = (categoryId: string, productId: string, quantity: number) => {
-    setSelectedProducts((prev) => ({
+  const toggleCategory = (id: string) => {
+    setExpandedCategory((prev) => (prev === id ? null : id));
+  };
+
+  const handleProductChange = (catId: string, prodId: string, q: number) => {
+    setSelectedProducts((prev: any) => ({
       ...prev,
-      [categoryId]: { productId, quantity },
+      [catId]: { productId: prodId, quantity: q },
     }));
   };
 
-  const handleQuantityChange = (categoryId: string, productId: string, delta: number) => {
-    setSelectedProducts((prev) => {
-      const current = prev[categoryId];
-      if (!current || current.productId !== productId) return prev;
+  const handleQuantityChange = (
+    catId: string,
+    prodId: string,
+    delta: number
+  ) => {
+    const current =
+      selectedProducts[catId]?.productId === prodId
+        ? selectedProducts[catId].quantity
+        : 0;
+    const newQ = Math.max(1, current + delta);
+    handleProductChange(catId, prodId, newQ);
+  };
 
-      const newQuantity = Math.max(1, current.quantity + delta);
-      return {
-        ...prev,
-        [categoryId]: { productId, quantity: newQuantity },
-      };
+  const handleAddProduct = (id: string, name: string, q: number) => {
+    setAddedProducts((prev) => [
+      ...prev,
+      { productId: id, productName: name, quantity: q },
+    ]);
+  };
+
+  const goToCart = () => {
+    router.push({
+      pathname: "/cart",
+      params: { tableId, addedProducts: JSON.stringify(addedProducts) },
     });
   };
 
-  const handleAddProduct = (productId: string, productName: string, quantity: number) => {
-    setCart((prev) => [...prev, { id: productId, name: productName, quantity }]);
+  const handleTablePress = () => {
+    router.push({
+      pathname: "/oppened-order",
+      params: { tableId },
+    });
   };
 
   return (
-    <>
+    <Container>
       <Stack.Screen
         options={{
-          title: "Comanda",
-          headerStyle: { backgroundColor: "#041224" },
-          headerTintColor: "#fff",
+          headerTitle: "Comanda",
           headerRight: () => (
-            <TouchableOpacity
-              onPress={() => router.push("/cart")}
-              style={{ marginRight: 12 }}
-            >
-              <Ionicons name="cart-outline" size={24} color="white" />
-              {cart.length > 0 && (
-                <View
-                  style={{
-                    position: "absolute",
-                    right: -6,
-                    top: -3,
-                    backgroundColor: "red",
-                    borderRadius: 10,
-                    paddingHorizontal: 5,
-                  }}
-                >
-                  <Text style={{ color: "white", fontSize: 12 }}>{cart.length}</Text>
-                </View>
-              )}
-            </TouchableOpacity>
+            <Ionicons
+              name="cart-outline"
+              size={24}
+              color="white"
+              style={{ marginRight: 15 }}
+              onPress={goToCart}
+            />
           ),
         }}
       />
 
-      <ScrollView style={{ flex: 1, backgroundColor: "#0a192f", padding: 16 }}>
-        {categories.map((category) => (
-          <View key={category.id} style={{ marginBottom: 20 }}>
-            <Text style={{ color: "white", fontSize: 18, marginBottom: 8 }}>
-              {category.name}
-            </Text>
-            {category.products.map((product) => (
-              <CategoryItem
-                key={product.id}
-                categoryId={category.id}
-                product={product}
-                selectedProductId={selectedProducts[category.id]?.productId}
-                quantity={selectedProducts[category.id]?.quantity}
-                onSelectProduct={handleSelectProduct}
-                onQuantityChange={handleQuantityChange}
-                onAddProduct={handleAddProduct}
-              />
-            ))}
-          </View>
-        ))}
+      <CategoryList
+        categories={categories}
+        expandedCategory={expandedCategory}
+        toggleCategory={toggleCategory}
+        selectedProducts={selectedProducts}
+        handleProductChange={handleProductChange}
+        handleQuantityChange={handleQuantityChange}
+        handleAddProduct={handleAddProduct}
+      />
 
-        <Button label="Ver comandas" onPress={() =>{router.push('/(private)/oppened-order')}} />
-      </ScrollView>
-    </>
+      <Footer>
+        <Button
+          label="Ver Comandas"
+          variant="primary"
+          onPress={handleTablePress}
+        />
+      </Footer>
+    </Container>
   );
 }
+
+const Container = styled.View`
+  flex: 1;
+  background-color: #041224;
+  padding: 16px;
+`;
+const Footer = styled.View`
+  padding: 20px;
+`;

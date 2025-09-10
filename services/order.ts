@@ -54,7 +54,9 @@ export interface UpdatePaymentMethod {
 }
 
 export async function createOrder(order: NewOrder) {
-  console.log(order + ' order service front');
+
+  console.log(order)
+
   if (!order) {
     throw new Error("Dados faltantes");
   }
