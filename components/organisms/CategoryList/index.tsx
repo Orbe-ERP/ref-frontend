@@ -2,6 +2,7 @@ import React from "react";
 import { Ionicons } from "@expo/vector-icons";
 import ProductOption from "@/components/molecules/ProductOption";
 import { Header, Products, Category, CategoryText } from "./styles";
+import { Product } from "@/services/product";
 
 interface Props {
   categories: any[];
@@ -37,11 +38,12 @@ export default function CategoryList({
 
           {expandedCategory === category.id && (
             <Products>
-              {category.products.map((product: any) => (
+              {category.products.map((product: Product) => (
                 <ProductOption
                   key={product.id}
                   name={product.name}
                   selected={selectedProducts[category.id]?.productId === product.id}
+                  price={product.price}
                   quantity={selectedProducts[category.id]?.quantity || 1}
                   onSelect={() => handleProductChange(category.id, product.id, 1)}
                   onIncrease={() => handleQuantityChange(category.id, product.id, 1)}

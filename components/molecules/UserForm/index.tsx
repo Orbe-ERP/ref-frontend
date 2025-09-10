@@ -48,7 +48,6 @@ const UserForm: React.FC<Props> = ({ onSubmit }) => {
               <Input
                 placeholder="Senha"
                 placeholderTextColor="#999999"
-                secureTextEntry
                 onChangeText={handleChange("password")}
                 onBlur={handleBlur("password")}
                 value={values.password}

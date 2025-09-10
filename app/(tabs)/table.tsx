@@ -1,24 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { View } from "react-native";
+import { View, ScrollView } from "react-native";
 import TableCard from "@/components/molecules/TableCard";
 import {
-  // createTable,
-  // getTables,
+  createTable,
+  getTables,
   Table,
-  // patchTable,
-  // deleteTable,
+  patchTable,
+  deleteTable,
 } from "@/services/table";
 import useRestaurant from "@/hooks/useRestaurant";
 import Title from "@/components/atoms/Title";
 import { useRouter } from "expo-router";
 import ExpertModal from "@/components/organisms/ExpertModal";
 import AddExpertCard from "@/components/molecules/AddTableCard";
-
-const mockTables: Table[] = [
-  { id: "1", name: "Mesa 1", restaurantId: "123" },
-  { id: "2", name: "Mesa 2", restaurantId: "123" },
-  { id: "3", name: "Mesa 3", restaurantId: "123" },
-];
 
 export default function TableScreen() {
   const [tables, setTables] = useState<Table[]>([]);
@@ -29,79 +23,43 @@ export default function TableScreen() {
   const { selectedRestaurant } = useRestaurant();
   const router = useRouter();
 
-  // useEffect(() => {
-  //   const fetchTables = async () => {
-  //     if (selectedRestaurant) {
-  //       const data = await getTables(selectedRestaurant.id);
-  //       setTables(data);
-  //     }
-  //   };
-  //   fetchTables();
-  // }, [selectedRestaurant]);
-
-  // const handleCreateTable = async () => {
-  //   const newTable = await createTable({
-  //     name: newTableName,
-  //     restaurantId: selectedRestaurant?.id,
-  //   });
-  //   setTables((prev: any) => [...prev, newTable]);
-  //   setNewTableName("");
-  //   setIsCreateVisible(false);
-  // };
-
-  // const handleUpdateTable = async () => {
-  //   if (!selectedTable) return;
-  //   const updated = await patchTable({
-  //     id: selectedTable.id,
-  //     name: newTableName,
-  //   });
-  //   setTables((prev: any) =>
-  //     prev.map((t: any) => (t.id === updated.id ? updated : t))
-  //   );
-  //   setNewTableName("");
-  //   setSelectedTable(null);
-  //   setIsEditVisible(false);
-  // };
-
-  // const handleDeleteTable = async () => {
-  //   if (!selectedTable) return;
-  //   await deleteTable(selectedTable.id);
-  //   setTables((prev) => prev.filter((t) => t.id !== selectedTable.id));
-  //   setSelectedTable(null);
-  //   setIsEditVisible(false);
-  // };
-
   useEffect(() => {
-    if (selectedRestaurant) {
-      setTables(mockTables);
-    }
+    const fetchTables = async () => {
+      if (selectedRestaurant) {
+        const data = await getTables(selectedRestaurant.id);
+        setTables(data);
+      }
+    };
+    fetchTables();
   }, [selectedRestaurant]);
 
-  const handleCreateTable = () => {
-    const newTable = {
-      id: String(Date.now()),
+  const handleCreateTable = async () => {
+    const newTable = await createTable({
       name: newTableName,
-      restaurantId: selectedRestaurant?.id || "mock",
-    };
-    setTables((prev) => [...prev, newTable]);
+      restaurantId: selectedRestaurant?.id,
+    });
+    setTables((prev: any) => [...prev, newTable]);
     setNewTableName("");
     setIsCreateVisible(false);
   };
 
-  const handleUpdateTable = () => {
+  const handleUpdateTable = async () => {
     if (!selectedTable) return;
-    setTables((prev) =>
-      prev.map((t) =>
-        t.id === selectedTable.id ? { ...t, name: newTableName } : t
-      )
+    const updated = await patchTable({
+      id: selectedTable.id,
+      name: newTableName,
+    });
+    setTables((prev: any) =>
+      prev.map((t: any) => (t.id === updated.id ? updated : t))
     );
     setNewTableName("");
     setSelectedTable(null);
     setIsEditVisible(false);
   };
 
-  const handleDeleteTable = () => {
+  const handleDeleteTable = async () => {
     if (!selectedTable) return;
+    await deleteTable(selectedTable.id);
     setTables((prev) => prev.filter((t) => t.id !== selectedTable.id));
     setSelectedTable(null);
     setIsEditVisible(false);
@@ -123,11 +81,14 @@ export default function TableScreen() {
         <Title>Mesas</Title>
       </View>
 
-      <View
-        style={{
+      <ScrollView
+        contentContainerStyle={{
           flexDirection: "row",
           flexWrap: "wrap",
           justifyContent: "space-between",
+          paddingTop: 20,  
+          paddingBottom: 40,
+
         }}
       >
         {tables.map((table) => (
@@ -143,8 +104,11 @@ export default function TableScreen() {
           />
         ))}
 
-        <AddExpertCard onPress={() => setIsCreateVisible(true)} label="Criar Mesa" />
-      </View>
+        <AddExpertCard
+          onPress={() => setIsCreateVisible(true)}
+          label="Criar Mesa"
+        />
+      </ScrollView>
 
       {/* Criar */}
       <ExpertModal

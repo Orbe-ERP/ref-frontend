@@ -9,9 +9,9 @@ import {
   concludeOrders,
 } from "@/services/order";
 import useRestaurant from "@/hooks/useRestaurant";
-
 import styled from "styled-components/native";
 import Button from "@/components/atoms/Button";
+import Toast from "react-native-toast-message";
 
 export default function OpenedOrderScreen() {
   const { tableId } = useLocalSearchParams();
@@ -41,6 +41,23 @@ export default function OpenedOrderScreen() {
     if (tableId) fetchOrders();
   }, [tableId]);
 
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case "WAITING_DELIVERY":
+        return "Esperando Entrega";
+      case "PREPARING":
+        return "Preparando Pedido";
+      case "PENDING":
+        return "Pendente";
+      case "COMPLETED":
+        return "Concluído";
+      case "CANCELED":
+        return "Cancelado";
+      default:
+        return status;
+    }
+  };
+
   const handlePaymentMethodSelect = async (orderId: string, method: string) => {
     try {
       await updatePaymentMethod({ id: orderId, paymentMethod: method });
@@ -65,11 +82,15 @@ export default function OpenedOrderScreen() {
       );
       await fetchOrders();
       router.push({
-        pathname: "/",
+        pathname: "/(tabs)/table",
         params: { orderDetails: JSON.stringify(completedOrderDetails) },
       });
     } catch (error) {
-      console.log(error);
+      Toast.show({
+        type: "error",
+        text1: "Erro ao concluir pedidos",
+        text2: "Não foi possível concluir os pedidos. Tente novamente.",
+      });
     }
   };
 
@@ -99,7 +120,7 @@ export default function OpenedOrderScreen() {
           return (
             <OrderItem key={order.id}>
               <OrderText>Responsável: {order.responsible}</OrderText>
-              <OrderText>Status: {order.status}</OrderText>
+              <OrderText>Status: {getStatusLabel(order.status)}</OrderText>
               <OrderText>Produtos:</OrderText>
 
               {order.products.map((item) => (
@@ -116,41 +137,43 @@ export default function OpenedOrderScreen() {
               <PaymentMethodsContainer>
                 <PaymentMethodsText>Método de pagamento:</PaymentMethodsText>
                 <PaymentOptions style={{ width: screenWidth * 0.9 }}>
-                  {["PIX", "CASH", "CREDIT_CARD", "DEBIT_CARD"].map((method) => {
-                    const isSelected = order.paymentMethod === method;
-                    return (
-                      <PaymentButton
-                        key={method}
-                        style={isSelected ? SelectedPaymentButton : {}}
-                        onPress={() => handlePaymentMethodSelect(order.id, method)}
-                      >
-                        <Ionicons
-                          name={
-                            method === "PIX"
-                              ? "cash-outline"
-                              : method === "CASH"
-                              ? "wallet-outline"
-                              : method === "CREDIT_CARD"
-                              ? "card-outline"
-                              : "card-sharp"
+                  {["PIX", "CASH", "CREDIT_CARD", "DEBIT_CARD"].map(
+                    (method) => {
+                      const isSelected = order.paymentMethod === method;
+                      return (
+                        <PaymentButton
+                          key={method}
+                          selected={isSelected}
+                          onPress={() =>
+                            handlePaymentMethodSelect(order.id, method)
                           }
-                          size={24}
-                          color={isSelected ? "#fff" : "#aaa"}
-                        />
-                        <PaymentButtonText
-                          style={isSelected ? SelectedPaymentButtonText : {}}
                         >
-                          {method === "PIX"
-                            ? "PIX"
-                            : method === "CASH"
-                            ? "Dinheiro"
-                            : method === "CREDIT_CARD"
-                            ? "Crédito"
-                            : "Débito"}
-                        </PaymentButtonText>
-                      </PaymentButton>
-                    );
-                  })}
+                          <Ionicons
+                            name={
+                              method === "PIX"
+                                ? "cash-outline"
+                                : method === "CASH"
+                                ? "wallet-outline"
+                                : method === "CREDIT_CARD"
+                                ? "card-outline"
+                                : "card-sharp"
+                            }
+                            size={24}
+                            color={isSelected ? "#fff" : "#aaa"}
+                          />
+                          <PaymentButtonText selected={isSelected}>
+                            {method === "PIX"
+                              ? "PIX"
+                              : method === "CASH"
+                              ? "Dinheiro"
+                              : method === "CREDIT_CARD"
+                              ? "Crédito"
+                              : "Débito"}
+                          </PaymentButtonText>
+                        </PaymentButton>
+                      );
+                    }
+                  )}
                 </PaymentOptions>
               </PaymentMethodsContainer>
 
@@ -172,7 +195,10 @@ export default function OpenedOrderScreen() {
                 }}
               />
 
-              <Button label="Concluir Comanda" onPress={() => setIsModalVisible(true)}/>
+              <Button
+                label="Concluir Comanda"
+                onPress={() => setIsModalVisible(true)}
+              />
             </OrderItem>
           );
         })}
@@ -190,10 +216,10 @@ export default function OpenedOrderScreen() {
           <ModalContent>
             <ModalTitle>Deseja fechar essa comanda?</ModalTitle>
             <ModalButtonsContainer>
-              <ModalButton  onPress={() => setIsModalVisible(false)}>
+              <ModalButton onPress={() => setIsModalVisible(false)}>
                 <ModalButtonText>Cancelar</ModalButtonText>
               </ModalButton>
-              <ModalButton  onPress={() => handleConcludeOrders(false)}>
+              <ModalButton onPress={() => handleConcludeOrders(false)}>
                 <ModalButtonText>Fechar Comanda</ModalButtonText>
               </ModalButton>
             </ModalButtonsContainer>
@@ -203,8 +229,6 @@ export default function OpenedOrderScreen() {
     </Container>
   );
 }
-
-
 
 export const ModalOverlay = styled.View`
   flex: 1;
@@ -235,7 +259,9 @@ export const ModalButtonsContainer = styled.View`
   width: 100%;
 `;
 
-export const ModalButton = styled.TouchableOpacity<{ variant?: "cancel" | "confirm" }>`
+export const ModalButton = styled.TouchableOpacity<{
+  variant?: "cancel" | "confirm";
+}>`
   flex: 1;
   padding: 12px;
   border-radius: 5px;
@@ -251,9 +277,6 @@ export const ModalButtonText = styled.Text`
   font-size: 16px;
   font-weight: bold;
 `;
-
-
-
 
 export const Container = styled.View`
   flex: 1;
@@ -371,5 +394,4 @@ export const PaymentButtonText = styled.Text<{ selected?: boolean }>`
   margin-left: 5px;
   font-size: 14px;
   font-weight: bold;
-`
-
+`;

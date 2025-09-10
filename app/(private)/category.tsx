@@ -1,10 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { View } from "react-native";
+import { ScrollView, View } from "react-native";
 import useRestaurant from "@/hooks/useRestaurant";
 import Title from "@/components/atoms/Title";
-import { useRouter } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import ExpertModal from "@/components/organisms/ExpertModal";
-import { Category, createCategory, deleteCategory, getCategories, updateCategory } from "@/services/category";
+import {
+  Category,
+  createCategory,
+  deleteCategory,
+  getCategories,
+  updateCategory,
+} from "@/services/category";
 import ExpertCard from "@/components/molecules/ExpertCard";
 import AddExpertCard from "@/components/molecules/AddTableCard";
 
@@ -13,7 +19,9 @@ export default function CategoryScreen() {
   const [isCreateVisible, setIsCreateVisible] = useState(false);
   const [isEditVisible, setIsEditVisible] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(
+    null
+  );
   const { selectedRestaurant } = useRestaurant();
   const router = useRouter();
 
@@ -48,7 +56,6 @@ export default function CategoryScreen() {
     setCategories((prev: any) =>
       prev.map((t: any) => (t.id === updated.id ? updated : t))
     );
-    console.log("updated", updated);
     setNewCategoryName("");
     setSelectedCategory(null);
     setIsEditVisible(false);
@@ -63,23 +70,11 @@ export default function CategoryScreen() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#041224", padding: 24 }} >
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          backgroundColor: "#041224",
-          paddingVertical: 20,
-          paddingHorizontal: 15,
-          borderBottomWidth: 1,
-          borderBottomColor: "#038082",
-        }}
-      >
-        <Title>Categorias</Title>
-      </View>
+    <View style={{ flex: 1, backgroundColor: "#041224", padding: 24 }}>
+      <Stack.Screen options={{ title: "Categorias" }} />
 
-      <View
-        style={{
+      <ScrollView
+        contentContainerStyle={{
           flexDirection: "row",
           flexWrap: "wrap",
           justifyContent: "space-between",
@@ -90,7 +85,9 @@ export default function CategoryScreen() {
             icon=""
             key={category.id}
             cardType={category}
-            onPress={() => router.push(`/create-product?categoryId=${category.id}`)}
+            onPress={() =>
+              router.push(`/create-product?categoryId=${category.id}`)
+            }
             onEdit={() => {
               setSelectedCategory(category);
               setNewCategoryName(category.name);
@@ -99,8 +96,11 @@ export default function CategoryScreen() {
           />
         ))}
 
-        <AddExpertCard onPress={() => setIsCreateVisible(true)} label="Criar Categoria" />
-      </View>
+        <AddExpertCard
+          onPress={() => setIsCreateVisible(true)}
+          label="Criar Categoria"
+        />
+      </ScrollView>
 
       {/* Criar */}
       <ExpertModal

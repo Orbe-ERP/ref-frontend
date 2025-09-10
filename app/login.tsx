@@ -19,6 +19,7 @@ const COLORS = {
 
 const Container = styled.View`
   flex: 1;
+  align-items: center;
   justify-content: center;
   padding: 24px;
   background-color: ${COLORS.background};
@@ -43,6 +44,8 @@ const Input = styled.TextInput`
   border-width: 1px;
   border-color: ${COLORS.border};
   padding: 14px;
+
+  width: 100%;
   border-radius: 10px;
   margin-bottom: 10px;
   color: ${COLORS.text};
@@ -70,6 +73,7 @@ const Button = styled.TouchableOpacity<ButtonProps>`
   padding: 16px;
   border-radius: 10px;
   align-items: center;
+  width: 100%;
   margin-top: 12px;
 `;
 
@@ -80,10 +84,8 @@ const ButtonText = styled.Text`
 `;
 
 const Logo = styled.Image`
-    width: 120;
-    height: 120;
-    marginBottom: 20;
-    borderWidth: 2;
+    width: 240;
+    height: 240;
 `;
 
 const LoginSchema = Yup.object().shape({
@@ -116,7 +118,7 @@ export default function Login() {
         position: "top",
         visibilityTime: 2000,
       });
-      router.replace("/");
+      router.replace("/select-restaurant");
     }
 
     setLoading(false);

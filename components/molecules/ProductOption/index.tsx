@@ -1,12 +1,14 @@
 import React from "react";
 import { Ionicons } from "@expo/vector-icons";
 import QuantitySelector from "../QuantitySelector";
-import { Actions, AddButton, Container, Dot, ProductText, Radio, Row } from "./styles";
+import { Actions, AddButton, Container, Dot, ProductText, Radio, Row, RowContainer } from "./styles";
+import { Text } from "@/components/atoms/Text";
 
 interface Props {
   name: string;
   selected: boolean;
   quantity: number;
+  price: any
   onSelect: () => void;
   onAdd: () => void;
   onIncrease: () => void;
@@ -17,6 +19,7 @@ export default function ProductOption({
   name,
   selected,
   quantity,
+  price,
   onSelect,
   onAdd,
   onIncrease,
@@ -25,10 +28,13 @@ export default function ProductOption({
   return (
     <Container>
       <Row>
+        <RowContainer>
         <Radio selected={selected} onPress={onSelect}>
           {selected && <Dot />}
         </Radio>
         <ProductText>{name}</ProductText>
+        </RowContainer>
+        <Text>Unidade: R${price}</Text>
       </Row>
 
       {selected && (

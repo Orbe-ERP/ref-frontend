@@ -19,7 +19,7 @@ export default function KitchenScreen() {
     MEAT: "#FF5733",
     OTHERS: "#33A1FF",
     UNCOOKABLE: "#FF33F1",
-    default: "#A0AEC0"
+    default: "#A0AEC0",
   };
 
   const getMainKitchen = (order: Order): KitchenType => {
@@ -36,8 +36,9 @@ export default function KitchenScreen() {
 
     if (Object.keys(kitchenCount).length === 0) return "default";
 
-    const mainKitchen = Object.entries(kitchenCount)
-      .sort((a, b) => b[1] - a[1])[0][0];
+    const mainKitchen = Object.entries(kitchenCount).sort(
+      (a, b) => b[1] - a[1]
+    )[0][0];
 
     return mainKitchen;
   };
@@ -49,7 +50,9 @@ export default function KitchenScreen() {
       if (!selectedRestaurant) return;
       setLoading(true);
       try {
-        const fetchedOrders = await getOrdersByRestaurant(selectedRestaurant.id);
+        const fetchedOrders = await getOrdersByRestaurant(
+          selectedRestaurant.id
+        );
         setOrders(fetchedOrders);
       } catch (err) {
         setError("Erro ao buscar pedidos");
@@ -94,14 +97,15 @@ export default function KitchenScreen() {
 
   return (
     <>
-      <Stack.Screen options={{title: "Cozinha", }} />
+      <Stack.Screen options={{ title: "Cozinha" }} />
       <Container>
         <FlatList
           data={orders}
           keyExtractor={(item) => item.id}
           renderItem={({ item }: { item: Order }) => {
             const mainKitchen = getMainKitchen(item);
-            const kitchenColor = kitchenColors[mainKitchen] || kitchenColors.default;
+            const kitchenColor =
+              kitchenColors[mainKitchen] || kitchenColors.default;
 
             return (
               <OrderCard
@@ -112,11 +116,14 @@ export default function KitchenScreen() {
               />
             );
           }}
+          ListEmptyComponent={
+            <EmptyText>Nenhum pedido encontrado no momento.</EmptyText>
+          }
         />
       </Container>
     </>
   );
-};
+}
 
 const Container = styled.View`
   flex: 1;
@@ -124,4 +131,10 @@ const Container = styled.View`
   justify-content: center;
   align-items: center;
   padding: 24px;
+`;
+const EmptyText = styled.Text`
+  color: #ffffff;
+  font-size: 16px;
+  margin-top: 20px;
+  text-align: center;
 `;

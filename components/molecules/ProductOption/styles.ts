@@ -7,9 +7,17 @@ export const Container = styled.View`
   margin-bottom: 12px;
 `;
 
+export const RowContainer = styled.View`
+  flex-direction: row;
+  align-items: center;
+`;
+
+
 export const Row = styled.View`
   flex-direction: row;
   align-items: center;
+  justify-content: space-between;
+  width: 100%;
 `;
 
 export const Radio = styled.TouchableOpacity<{ selected: boolean }>`

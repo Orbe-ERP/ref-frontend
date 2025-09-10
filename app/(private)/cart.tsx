@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { ScrollView, Alert, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import styled from "styled-components/native";
 import { Switch } from "react-native-paper";
-
 import { createOrder } from "@/services/order";
 import { getObservationsByProduct } from "@/services/product";
+import Button from "@/components/atoms/Button";
+import Toast from "react-native-toast-message";
 
 export default function CartScreen() {
   const router = useRouter();
@@ -15,23 +16,25 @@ export default function CartScreen() {
     addedProducts: string;
   }>();
 
-  // como params chegam em string, precisa parsear os produtos
   const initialProducts = addedProducts ? JSON.parse(addedProducts) : [];
 
-  const [availableObservations, setAvailableObservations] = useState<Record<string, string[]>>({});
+  const [availableObservations, setAvailableObservations] = useState<
+    Record<string, string[]>
+  >({});
   const [products, setProducts] = useState(() =>
     initialProducts.map((p: any) => ({
       ...p,
+      cartItemId: `${p.productId}-${Date.now()}-${Math.random()}`, // ID único
       observations: p.description ? [p.description] : [],
     }))
   );
   const [responsible, setResponsible] = useState("");
   const [toTake, setToTake] = useState(false);
 
-  const toggleObservation = (productId: string, obs: string) => {
-    setProducts((prev) =>
+  const toggleObservation = (cartItemId: string, obs: string) => {
+    setProducts((prev: any) =>
       prev.map((p: any) => {
-        if (p.productId !== productId) return p;
+        if (p.cartItemId !== cartItemId) return p;
         const alreadySelected = p.observations?.includes(obs);
         return {
           ...p,
@@ -51,7 +54,11 @@ export default function CartScreen() {
           const obsList = await getObservationsByProduct(product.productId);
           map[product.productId] = obsList.map((item: any) => item.description);
         } catch (err) {
-          console.error(`Erro ao carregar observações de ${product.productName}`, err);
+          Toast.show({
+            type: "error",
+            text1: "Erro ao carregar observações",
+            text2: `Não foi possível carregar as observações para ${product.productName}.`,
+          });
           map[product.productId] = [];
         }
       }
@@ -59,24 +66,19 @@ export default function CartScreen() {
     })();
   }, []);
 
-  const handleQuantityChange = (productId: string, observation: string, delta: number) => {
-    setProducts((prev) =>
+  const handleQuantityChange = (cartItemId: string, delta: number) => {
+    setProducts((prev: any) =>
       prev.map((p: any) =>
-        p.productId === productId && p.observation === observation
+        p.cartItemId === cartItemId
           ? { ...p, quantity: Math.max(1, p.quantity + delta) }
           : p
       )
     );
   };
 
-const handleRemoveProduct = (productId: string, observation: string) => {
-  setProducts((prev) => {
-    const filtered = prev.filter(
-      (p: any) =>
-        !(p.productId === productId && (p.observation || "") === (observation || ""))
-    );
-
-    // Atualiza os params com os produtos restantes
+  const handleRemoveProduct = (cartItemId: string) => {
+    const filtered = products.filter((p: any) => p.cartItemId !== cartItemId);
+    setProducts(filtered);
     router.replace({
       pathname: "/cart",
       params: {
@@ -84,14 +86,15 @@ const handleRemoveProduct = (productId: string, observation: string) => {
         addedProducts: JSON.stringify(filtered),
       },
     });
-
-    return filtered;
-  });
-};
+  };
 
   const handleOrderSubmit = async () => {
     if (products.length === 0) {
-      Alert.alert("Comanda vazia", "Adicione ao menos um produto.");
+      Toast.show({
+        type: "error",
+        text1: "Comanda vazia",
+        text2: "Adicione ao menos um produto.",
+      });
       return;
     }
 
@@ -102,105 +105,130 @@ const handleRemoveProduct = (productId: string, observation: string) => {
       products: products.map((product: any) => ({
         productId: product.productId,
         quantity: product.quantity,
-        observation: product.observation.id || "",
+        observation: product.observations?.join(", ") || "",
       })),
     };
 
     try {
-      const response = await createOrder(newOrder);
-      console.log("Pedido enviado para a cozinha:", response);
-      Alert.alert("Sucesso", "Pedido enviado para a cozinha!");
-      router.back();
+      await createOrder(newOrder);
+      setProducts([]);
+      router.replace({
+        pathname: "/cart",
+        params: { tableId, addedProducts: JSON.stringify([]) },
+      });
     } catch (error) {
-      console.error("Erro ao enviar pedido:", error);
-      Alert.alert("Erro", "Ocorreu um erro ao enviar o pedido.");
+      Toast.show({
+        type: "error",
+        text1: "Erro ao enviar pedido",
+        text2: "Tente novamente.",
+      });
     }
+  };
+
+  const goToOppenedOrder = () => {
+    router.push({ pathname: "/oppened-order", params: { tableId } });
   };
 
   return (
     <Container>
-      <ScrollView>
-        {products.length > 0 ? (
-          products.map((product: any, index: number) => (
-            <Card key={index}>
-              <Label>{product.productName}</Label>
-              <Label>Quantidade: {product.quantity}</Label>
+      <Stack.Screen
+        options={{
+          headerTitle: "Comanda",
+          headerRight: () => (
+            <Ionicons
+              name="restaurant-outline"
+              size={24}
+              color="white"
+              style={{ marginRight: 15 }}
+              onPress={goToOppenedOrder}
+            />
+          ),
+        }}
+      />
 
-              <Row>
-                <TouchableOpacity
-                  onPress={() =>
-                    handleQuantityChange(product.productId, product.observation, -1)
-                  }
-                >
-                  <Ionicons name="remove-outline" size={24} color="#fff" />
-                </TouchableOpacity>
-                <Label>{product.quantity}</Label>
-                <TouchableOpacity
-                  onPress={() =>
-                    handleQuantityChange(product.productId, product.observation, 1)
-                  }
-                >
-                  <Ionicons name="add-outline" size={24} color="#fff" />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() =>
-                    handleRemoveProduct(product.productId, product.observation)
-                  }
-                >
-                  <Ionicons name="trash-outline" size={24} color="#E74C3C" />
-                </TouchableOpacity>
-              </Row>
+      {products.length === 0 ? (
+        <EmptyText>O carrinho está vazio.</EmptyText>
+      ) : (
+        <>
+          <ScrollView>
+            {products.map((product: any) => (
+              <Card key={product.cartItemId}>
+                <Label>{product.productName}</Label>
+                <Label>Quantidade: {product.quantity}</Label>
 
-              {availableObservations[product.productId]?.length ? (
-                <CheckboxContainer>
-                  {availableObservations[product.productId].map((obs, idx) => {
-                    const isSelected = product.observations?.includes(obs);
-                    return (
-                      <CheckboxItem
-                        key={idx}
-                        selected={isSelected}
-                        onPress={() => toggleObservation(product.productId, obs)}
-                      >
-                        <CheckboxText>
-                          {isSelected ? "☑ " : "☐ "}
-                          {obs}
-                        </CheckboxText>
-                      </CheckboxItem>
-                    );
-                  })}
-                </CheckboxContainer>
-              ) : (
-                <Label>Nenhuma observação disponível</Label>
-              )}
-            </Card>
-          ))
-        ) : (
-          <EmptyText>O carrinho está vazio.</EmptyText>
-        )}
+                <Row>
+                  <TouchableOpacity
+                    onPress={() => handleQuantityChange(product.cartItemId, -1)}
+                  >
+                    <Ionicons name="remove-outline" size={24} color="#fff" />
+                  </TouchableOpacity>
 
-        <Input
-          placeholder="Responsável"
-          placeholderTextColor="#ccc"
-          value={responsible}
-          onChangeText={setResponsible}
-        />
+                  <Label>{product.quantity}</Label>
 
-        <Row>
-          <Label>Para viagem?</Label>
-          <Switch value={toTake} onValueChange={setToTake} />
-        </Row>
-      </ScrollView>
+                  <TouchableOpacity
+                    onPress={() => handleQuantityChange(product.cartItemId, 1)}
+                  >
+                    <Ionicons name="add-outline" size={24} color="#fff" />
+                  </TouchableOpacity>
 
-      {products.length > 0 && (
-        <SendButton onPress={handleOrderSubmit}>
-          <SendButtonText>Enviar para Cozinha</SendButtonText>
-        </SendButton>
+                  <TouchableOpacity
+                    onPress={() => handleRemoveProduct(product.cartItemId)}
+                  >
+                    <Ionicons name="trash-outline" size={24} color="#E74C3C" />
+                  </TouchableOpacity>
+                </Row>
+
+                {availableObservations[product.productId]?.length ? (
+                  <CheckboxContainer>
+                    {availableObservations[product.productId].map(
+                      (obs, idx) => {
+                        const isSelected = product.observations?.includes(obs);
+                        return (
+                          <CheckboxItem
+                            key={idx}
+                            selected={isSelected}
+                            onPress={() =>
+                              toggleObservation(product.cartItemId, obs)
+                            }
+                          >
+                            <CheckboxText>
+                              {isSelected ? "☑ " : "☐ "}
+                              {obs}
+                            </CheckboxText>
+                          </CheckboxItem>
+                        );
+                      }
+                    )}
+                  </CheckboxContainer>
+                ) : (
+                  <Label>Nenhuma observação disponível</Label>
+                )}
+              </Card>
+            ))}
+
+            <Input
+              placeholder="Responsável"
+              placeholderTextColor="#ccc"
+              value={responsible}
+              onChangeText={setResponsible}
+            />
+
+            <Row>
+              <Label>Para viagem?</Label>
+              <Switch value={toTake} onValueChange={setToTake} />
+            </Row>
+          </ScrollView>
+
+          <Button
+            label="Enviar Para Cozinha"
+            variant="secondary"
+            onPress={handleOrderSubmit}
+          />
+        </>
       )}
     </Container>
   );
 }
-
-/* ---------------- STYLED COMPONENTS ---------------- */
 
 export const Container = styled.View`
   flex: 1;
@@ -244,7 +272,8 @@ export const CheckboxContainer = styled.View`
 `;
 
 export const CheckboxItem = styled.TouchableOpacity<{ selected: boolean }>`
-  background-color: ${({ selected }) => (selected ? "#2563EB" : "#334155")};
+  background-color: ${({ selected }: { selected: any }) =>
+    selected ? "#038082" : "#334155"};
   border-radius: 6px;
   padding-vertical: 6px;
   padding-horizontal: 10px;
@@ -253,20 +282,6 @@ export const CheckboxItem = styled.TouchableOpacity<{ selected: boolean }>`
 export const CheckboxText = styled.Text`
   color: #fff;
   font-size: 14px;
-`;
-
-export const SendButton = styled.TouchableOpacity`
-  background-color: #2a4b7c;
-  border: 2px solid #038082;
-  padding: 16px;
-  border-radius: 10px;
-  align-items: center;
-  margin-top: 12px;
-`;
-
-export const SendButtonText = styled.Text`
-  color: #ffffff;
-  font-size: 16px;
 `;
 
 export const EmptyText = styled.Text`

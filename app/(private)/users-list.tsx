@@ -10,6 +10,10 @@ const UserListScreen = () => {
   const fetchUsers = async () => {
     try {
       const data = await getAll();
+      console.log(data)
+
+
+
       setUsers(data);
     } catch (error) {
       console.error("Erro ao buscar usuários", error);
