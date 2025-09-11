@@ -6,6 +6,7 @@ import CategoryList from "@/components/organisms/CategoryList";
 import Button from "@/components/atoms/Button";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import styled from "styled-components/native";
+import { getObservationsByProduct } from "@/services/product";
 
 export default function OrderScreen() {
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
@@ -31,13 +32,12 @@ export default function OrderScreen() {
     setExpandedCategory((prev) => (prev === id ? null : id));
   };
 
-  const handleProductChange = (catId: string, prodId: string, q: number) => {
+  const handleProductChange = async (catId: string, prodId: string, q: number) => {
     setSelectedProducts((prev: any) => ({
       ...prev,
       [catId]: { productId: prodId, quantity: q },
     }));
 
-    // 🔹 Buscar observações pré-cadastradas no backend
     try {
       const obs = await getObservationsByProduct(productId);
       setProductObservations((prev) => ({
