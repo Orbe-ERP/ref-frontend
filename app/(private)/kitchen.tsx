@@ -129,7 +129,6 @@ const Container = styled.View`
   flex: 1;
   background-color: #041224;
   justify-content: center;
-  align-items: center;
   padding: 24px;
 `;
 const EmptyText = styled.Text`

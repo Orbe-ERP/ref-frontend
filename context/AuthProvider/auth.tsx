@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, useCallback } from "react";
+import React, { createContext, useState, useEffect, useCallback, useContext } from "react";
 import { IContext, IAuthProvider, IUser } from "./types";
 import {
   LoginRequest,
@@ -6,10 +6,14 @@ import {
   getUserAsyncStorage,
   setUserAsyncStorage,
 } from "./utils";
+import useRestaurant from "@/hooks/useRestaurant";
 
 export const AuthContext = createContext<IContext>({} as IContext);
 
 export const AuthProvider = ({ children }: IAuthProvider) => {
+
+  const {selectRestaurant} = useRestaurant()
+
   const [user, setUser] = useState<IUser | null>({
     hasAuthenticatedUser: false,
   } as IUser);
@@ -55,10 +59,18 @@ export const AuthProvider = ({ children }: IAuthProvider) => {
         role: response.payload.role,
         hasAuthenticatedUser: true,
         token: response.payload.token,
+        defaultRestaurantId: response.payload.defaultRestaurantId,
+        restaurantName: response.payload.restaurantName,
       };
 
       setUser(payload);
       await setUserAsyncStorage(payload);
+
+          selectRestaurant({
+        id: payload.defaultRestaurantId!,
+        name: payload.restaurantName!,
+      });
+
 
       return true;
     } catch (error) {

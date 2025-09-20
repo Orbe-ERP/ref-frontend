@@ -49,8 +49,8 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <AuthProvider>
         <RestaurantProvider>
+      <AuthProvider>
           <AuthGuard>
             <Stack screenOptions={{ headerShown: false }}>
               <Stack.Screen
@@ -61,8 +61,8 @@ export default function RootLayout() {
           </AuthGuard>
           <StatusBar style="auto" />
           <Toast />
-        </RestaurantProvider>
       </AuthProvider>
+        </RestaurantProvider>
     </ThemeProvider>
   );
 }

@@ -33,7 +33,7 @@ export async function getUserAsyncStorage(): Promise<IUser | null> {
 export async function LoginRequest(
   email: string,
   password: string
-): Promise<{ payload: { token: string; role: string } } | null> {
+): Promise<{ payload: { token: string; role: string, defaultRestaurantId: string, restaurantName: string } } | null> {
   try {
     const request = await api.post("signin", { email, password });
     return request.data;

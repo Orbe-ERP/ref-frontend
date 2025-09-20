@@ -5,6 +5,8 @@ export interface IUser {
   role?: string;
   token?: string;
   hasAuthenticatedUser?: boolean;
+  defaultRestaurantId?: string;
+  restaurantName?: string;
 }
 
 export interface IContext {
