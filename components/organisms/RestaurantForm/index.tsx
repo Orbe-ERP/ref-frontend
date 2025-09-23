@@ -45,8 +45,6 @@ export const RestaurantForm: React.FC<Props> = ({
            
           />
 
-
-
           <Input
             placeholder="CNPJ"
             value={values.cnpj}
@@ -56,7 +54,7 @@ export const RestaurantForm: React.FC<Props> = ({
           
           />
 
-                    <Input
+          <Input
             placeholder="Inscrição Estadual"
             value={values.inscriçãoEstadual}
             onChangeText={handleChange("Inscrição Estadual")}
@@ -101,7 +99,7 @@ export const RestaurantForm: React.FC<Props> = ({
           />
 
           <Button
-            onPress={handleSubmit}
+            onPress={() => handleSubmit()}
             label={loading ? <ActivityIndicator color="#fff" /> : "Salvar"}
             variant="primary"
           />
