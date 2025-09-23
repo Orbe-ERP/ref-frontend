@@ -13,6 +13,7 @@ import Title from "@/components/atoms/Title";
 import { useRouter } from "expo-router";
 import ExpertModal from "@/components/organisms/ExpertModal";
 import AddExpertCard from "@/components/molecules/AddTableCard";
+import Toast from "react-native-toast-message";
 
 export default function TableScreen() {
   const [tables, setTables] = useState<Table[]>([]);
@@ -34,6 +35,16 @@ export default function TableScreen() {
   }, [selectedRestaurant]);
 
   const handleCreateTable = async () => {
+    if (!newTableName || !selectedRestaurant) {
+      Toast.show({
+        type: "error",
+        text1: "Erro",
+        text2: "Preencha o nome da mesa",
+      });
+
+      return;
+    }
+
     const newTable = await createTable({
       name: newTableName,
       restaurantId: selectedRestaurant?.id,
@@ -86,9 +97,8 @@ export default function TableScreen() {
           flexDirection: "row",
           flexWrap: "wrap",
           justifyContent: "space-between",
-          paddingTop: 20,  
+          paddingTop: 20,
           paddingBottom: 40,
-
         }}
       >
         {tables.map((table) => (

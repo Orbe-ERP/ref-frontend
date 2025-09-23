@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { View, Text } from "react-native";
+import { View, Text, ScrollView } from "react-native";
 import { Product } from "@/services/product";
 import useRestaurant from "@/hooks/useRestaurant";
 import Title from "@/components/atoms/Title";
-import { useRouter, useLocalSearchParams } from "expo-router";
+import { useRouter, useLocalSearchParams, Stack } from "expo-router";
 import AddExpertCard from "@/components/molecules/AddTableCard";
 import ExpertCard from "@/components/molecules/ExpertCard";
 import { getProductsByCategoryId } from "@/services/category";
@@ -40,22 +40,9 @@ export default function ProductScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: "#041224", padding: 24 }}>
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          backgroundColor: "#041224",
-          paddingVertical: 20,
-          paddingHorizontal: 15,
-          borderBottomWidth: 1,
-          borderBottomColor: "#038082",
-        }}
-      >
-        <Title>Produtos</Title>
-      </View>
-
-      <View
-        style={{
+      <Stack.Screen options={{ title: "Produtos" }} />
+      <ScrollView
+        contentContainerStyle={{
           flexDirection: "row",
           flexWrap: "wrap",
           justifyContent: "space-between",
@@ -95,7 +82,7 @@ export default function ProductScreen() {
           }}
           label="Criar Produto"
         />
-      </View>
+      </ScrollView>
 
       {selectedRestaurant && categoryId && (
         <ProductModal

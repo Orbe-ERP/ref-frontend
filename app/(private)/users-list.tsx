@@ -2,6 +2,7 @@ import { UserListTemplate } from "@/components/template/UserListTemplate";
 import { deleteUser, getAll, User } from "@/services/user";
 import { Stack, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
+import Toast from "react-native-toast-message";
 
 const UserListScreen = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -10,13 +11,15 @@ const UserListScreen = () => {
   const fetchUsers = async () => {
     try {
       const data = await getAll();
-      console.log(data)
-
-
-
       setUsers(data);
     } catch (error) {
-      console.error("Erro ao buscar usuários", error);
+            Toast.show({
+              type: "error",
+              text1: "Erro",
+              text2: "Erro ao buscar usuários",
+              position: "top",
+              visibilityTime: 3000,
+            });
     }
   };
 
@@ -25,7 +28,13 @@ const UserListScreen = () => {
       await deleteUser(userId);
       setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
     } catch (error) {
-      console.error("Erro ao deletar usuário:", error);
+            Toast.show({
+              type: "error",
+              text1: "Erro",
+              text2: "Erro ao deletar usuário",
+              position: "top",
+              visibilityTime: 3000,
+            });
     }
   };
 
