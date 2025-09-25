@@ -21,10 +21,10 @@ export const RestaurantCard: React.FC<Props> = ({ restaurant, isSelected, onSele
 
       <IconsContainer>
         <IconButton onPress={() => onEdit(restaurant)}>
-          <AppIcon name="create-outline" />
+          <AppIcon name="create-outline" size={18} color="#FFFFFF" />
         </IconButton>
         <IconButton onPress={() => onDelete(restaurant.id)}>
-          <AppIcon name="trash-outline" />
+          <AppIcon name="trash-outline" size={18} color="#FFFFFF" />
         </IconButton>
       </IconsContainer>
     </Container>

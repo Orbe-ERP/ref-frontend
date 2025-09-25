@@ -89,13 +89,20 @@ export default function OrderScreen() {
         options={{
           headerTitle: "Comanda",
           headerRight: () => (
-            <Ionicons
-              name="cart-outline"
-              size={24}
-              color="white"
-              style={{ marginRight: 15 }}
-              onPress={goToCart}
-            />
+            <CartContainer onPress={goToCart}>
+              <Ionicons
+                name="cart-outline"
+                size={24}
+                color="white"
+                // style={{ marginRight: 15 }}
+                // onPress={goToCart}
+              />
+              {addedProducts.length > 0 && (
+                <Badge>
+                  <BadgeText>{addedProducts.length}</BadgeText>
+                </Badge>
+              )}
+            </CartContainer>
           ),
         }}
       />
@@ -126,6 +133,29 @@ const Container = styled.View`
   background-color: #041224;
   padding: 16px;
 `;
+
 const Footer = styled.View`
   padding: 20px;
+`;
+
+const CartContainer = styled.TouchableOpacity`
+  margin-right: 15px;
+`;
+
+const Badge = styled.View`
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background-color: red;
+  border-radius: 10px;
+  width: 18px;
+  height: 18px;
+  justify-content: center;
+  align-items: center;
+`;
+
+const BadgeText = styled.Text`
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
 `;

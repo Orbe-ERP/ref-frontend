@@ -59,22 +59,20 @@ const ErrorText = styled.Text`
 `;
 
 type ButtonProps = {
-  variant?: "primary" | "secondary";
+  // variant?: "primary" | "secondary";
   disabled?: boolean;
 };
 
 const Button = styled.TouchableOpacity<ButtonProps>`
-  background-color: ${({ variant, disabled }: ButtonProps) =>
-    disabled
-      ? "#4B5563"
-      : variant === "secondary"
-      ? COLORS.secondary
-      : COLORS.primary};
+  background-color: ${({ disabled }: ButtonProps) =>
+    disabled ? "#4B5563" : COLORS.background};
   padding: 16px;
   border-radius: 10px;
   align-items: center;
   width: 100%;
   margin-top: 12px;
+  border-width: 1px;
+  border-color: ${COLORS.secondary};
 `;
 
 const ButtonText = styled.Text`
