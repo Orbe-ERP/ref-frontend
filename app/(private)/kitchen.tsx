@@ -4,6 +4,7 @@ import { getOrdersByRestaurant, Order, updateStatus } from "@/services/order";
 import { Stack } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, Alert, FlatList } from "react-native";
+import Toast from "react-native-toast-message";
 import io from "socket.io-client";
 import styled from "styled-components/native";
 
@@ -87,7 +88,11 @@ export default function KitchenScreen() {
           )
       );
     } catch (error) {
-      Alert.alert("Erro", "Não foi possível atualizar o status do pedido.");
+      Toast.show({
+        type: "error",
+        text1: "Não foi possível atualizar o status do pedido.",
+      });
+
     }
   };
 

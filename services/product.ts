@@ -1,10 +1,7 @@
 import { api } from "./api";
+import { Kitchen } from "./kitchen";
 
-export interface Kitchen {
-  MEAT: "MEAT";
-  OTHERS: "OTHERS";
-  UNCOOKABLE: "UNCOOKABLE";
-}
+
 
 export interface Product {
   id: string;
@@ -19,7 +16,7 @@ export interface ProductInput {
   name: string;
   price: number;
   active: boolean;
-  kitchen: string;
+  kitchen: Kitchen;
   categoryId: string;
   restaurantId: string | undefined;
 }

@@ -29,17 +29,17 @@ export interface UpdateUser {
 }
 
 export async function createUser(data: CreateUser) {
-  const response = await api.post<{ id: string }>('/signup', data);
+  const response = await api.post<{ id: string }>("/signup", data);
   return response.data;
 }
 
 export async function addUserOnAccount(data: AddUserOnAccount) {
-  const response = await api.patch<User>('/users/addAccount', data);
+  const response = await api.patch<User>("/users/addAccount", data);
   return response.data;
 }
 
 export async function getAll() {
-  const response = await api.get<User[]>('/users');
+  const response = await api.get<User[]>("/users");
   return response.data;
 }
 
@@ -49,17 +49,29 @@ export async function getUserById(id: string) {
 }
 
 export async function updateUser(data: UpdateUser) {
-  const response = await api.patch<User>('/users/update', data);
+  const response = await api.patch<User>("/users/update", data);
+  return response.data;
+}
+
+export async function defineFavoriteRestaurant(restaurantId: string) {
+  const response = await api.patch<User>(`/users/favorite/${restaurantId}`);
   return response.data;
 }
 
 export async function deleteUser(id: string) {
   try {
     const response = await api.delete(`/users/${id}`);
-    console.log("Usuário deletado com sucesso:", response.status, response.data);
+    console.log(
+      "Usuário deletado com sucesso:",
+      response.status,
+      response.data
+    );
     return response.data;
   } catch (error: any) {
-    console.error("Erro ao deletar no service:", error.response?.data || error.message);
+    console.error(
+      "Erro ao deletar no service:",
+      error.response?.data || error.message
+    );
     throw error;
   }
 }

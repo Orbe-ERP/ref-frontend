@@ -61,7 +61,7 @@ export async function deleteTable(tableId: string | undefined) {
     const response = await api.delete(`/tables/${tableId}`);
     return response.data;
   } catch (error) {
-    throw new Error(`Erro ao criar mesa: ${error}`);
+    throw new Error(`Erro ao deletar mesa: ${error}`);
   }
 }
 

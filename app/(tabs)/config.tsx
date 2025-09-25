@@ -67,6 +67,13 @@ export default function ConfigScreen() {
             />
           </ConfigCard>
 
+                    <ConfigCard icon="kitchen" title="Gerenciar Cozinhas">
+            <ConfigLink
+              href={{ pathname: "/create-kitchen" }}
+              label="Criar cozinhas..."
+            />
+          </ConfigCard>
+
           <ConfigCard icon="people" title="Gerenciar usuários">
             <ConfigLink
               href={{ pathname: "/create-user" }}

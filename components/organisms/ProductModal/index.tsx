@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Modal } from "react-native";
+import { Modal, TouchableOpacity, FlatList, Text, View } from "react-native";
 import Input from "@/components/atoms/Input";
 import {
   ModalOverlay,
@@ -9,7 +9,14 @@ import {
   ActionButton,
   ActionText,
 } from "./styles";
-import { createProduct, updateProduct, deleteProduct, Product, ProductInput } from "@/services/product";
+import {
+  createProduct,
+  updateProduct,
+  deleteProduct,
+  Product,
+  ProductInput,
+} from "@/services/product";
+import { Kitchen } from "@/services/kitchen";
 
 interface ProductModalProps {
   visible: boolean;
@@ -18,6 +25,7 @@ interface ProductModalProps {
   categoryId: string;
   restaurantId: string;
   onSaved: () => void;
+  kitchens: Kitchen[]; 
 }
 
 const ProductModal: React.FC<ProductModalProps> = ({
@@ -27,11 +35,15 @@ const ProductModal: React.FC<ProductModalProps> = ({
   categoryId,
   restaurantId,
   onSaved,
+  kitchens,
 }) => {
   const [name, setName] = useState(product?.name ?? "");
   const [price, setPrice] = useState(product?.price?.toString() ?? "");
-  const [kitchen, setKitchen] = useState(product?.kitchen ?? "OTHERS");
+  const [kitchen, setKitchen] = useState<string>(
+    product?.kitchen ?? kitchens[0]?.id ?? ""
+  );
   const [active, setActive] = useState(product?.active ?? true);
+  const [isKitchenModalVisible, setIsKitchenModalVisible] = useState(false);
 
   async function handleSave() {
     try {
@@ -49,7 +61,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
           name,
           price: parseFloat(price),
           active,
-          kitchen,
+          kitchen: kitchens.find((k) => k.id === kitchen) as Kitchen,
           categoryId,
           restaurantId,
         };
@@ -81,7 +93,20 @@ const ProductModal: React.FC<ProductModalProps> = ({
 
           <Input placeholder="Nome" value={name} onChangeText={setName} />
           <Input placeholder="Preço" value={price} onChangeText={setPrice} keyboardType="numeric" />
-          <Input placeholder="Cozinha (MEAT, OTHERS, UNCOOKABLE)" value={kitchen} onChangeText={setKitchen} />
+
+          <TouchableOpacity
+            onPress={() => setIsKitchenModalVisible(true)}
+            style={{
+              backgroundColor: "#1f2937",
+              padding: 12,
+              borderRadius: 8,
+              marginTop: 12,
+            }}
+          >
+            <Text style={{ color: "white" }}>
+              {kitchens.find((k) => k.id === kitchen)?.name || "Selecionar cozinha"}
+            </Text>
+          </TouchableOpacity>
 
           <Actions>
             {product && (
@@ -98,6 +123,44 @@ const ProductModal: React.FC<ProductModalProps> = ({
           </Actions>
         </ModalContent>
       </ModalOverlay>
+
+      <Modal
+        visible={isKitchenModalVisible}
+        animationType="fade"
+        transparent
+        onRequestClose={() => setIsKitchenModalVisible(false)}
+      >
+        <ModalOverlay>
+          <ModalContent style={{ maxHeight: "60%" }}>
+            <ModalTitle>Selecionar Cozinha</ModalTitle>
+            <FlatList
+              data={kitchens}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={{
+                    padding: 12,
+                    borderBottomWidth: 1,
+                    borderBottomColor: "#333",
+                  }}
+                  onPress={() => {
+                    setKitchen(item.id);
+                    setIsKitchenModalVisible(false);
+                  }}
+                >
+                  <Text style={{ color: "white" }}>{item.name}</Text>
+                </TouchableOpacity>
+              )}
+            />
+            <ActionButton
+              backgroundColor="#4B5563"
+              onPress={() => setIsKitchenModalVisible(false)}
+            >
+              <ActionText>Fechar</ActionText>
+            </ActionButton>
+          </ModalContent>
+        </ModalOverlay>
+      </Modal>
     </Modal>
   );
 };

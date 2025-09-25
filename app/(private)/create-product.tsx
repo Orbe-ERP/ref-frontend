@@ -8,10 +8,13 @@ import AddExpertCard from "@/components/molecules/AddTableCard";
 import ExpertCard from "@/components/molecules/ExpertCard";
 import { getProductsByCategoryId } from "@/services/category";
 import ProductModal from "@/components/organisms/ProductModal";
+import { getKitchens, Kitchen } from "@/services/kitchen";
+import Toast from "react-native-toast-message";
 
 export default function ProductScreen() {
   const [products, setProducts] = useState<Product[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [kitchens, setKitchens] = useState<Kitchen[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   const { selectedRestaurant } = useRestaurant();
@@ -34,8 +37,27 @@ export default function ProductScreen() {
     }
   }
 
+    async function fetchKitchens() {
+      if (!selectedRestaurant) return;
+      try {
+        const data = await getKitchens(selectedRestaurant.id);
+        setKitchens(data);
+      } catch (error: any) {
+        if (error.response?.status === 404) {
+          setKitchens([]);
+        } else {
+          Toast.show({
+            type: "error",
+            text1: "Erro ao buscar cozinhas",
+          });
+          console.error("Erro ao buscar cozinhas:", error);
+        }
+      }
+    }
+
   useEffect(() => {
     fetchProducts();
+    fetchKitchens();
   }, [selectedRestaurant, categoryId]);
 
   return (
@@ -85,17 +107,18 @@ export default function ProductScreen() {
       </ScrollView>
 
       {selectedRestaurant && categoryId && (
-        <ProductModal
-          visible={isModalVisible}
-          onClose={() => {
-            setIsModalVisible(false);
-            setSelectedProduct(null);
-          }}
-          product={selectedProduct || undefined}
-          categoryId={categoryId as string}
-          restaurantId={selectedRestaurant.id}
-          onSaved={fetchProducts}
-        />
+<ProductModal
+  visible={isModalVisible}
+  onClose={() => {
+    setIsModalVisible(false);
+    setSelectedProduct(null);
+  }}
+  product={selectedProduct || undefined}
+  categoryId={categoryId as string}
+  restaurantId={selectedRestaurant.id}
+  onSaved={fetchProducts}
+  kitchens={kitchens} 
+/>
       )}
     </View>
   );
