@@ -113,7 +113,7 @@ export default function OpenedOrderScreen() {
       <ScrollView style={{ width: "100%" }}>
         {orders.map((order) => {
           const total = order.products.reduce(
-            (sum, item) => sum + item.product.price * item.quantity,
+            (sum, item) => sum + (item.product?.price ?? 0) * item.quantity,
             0
           );
 
@@ -125,10 +125,18 @@ export default function OpenedOrderScreen() {
 
               {order.products.map((item) => (
                 <ProductContainer key={item.productId}>
-                  <ProductText>Nome: {item.product.name}</ProductText>
-                  <ProductText>Preço: R${item.product.price}</ProductText>
-                  <ProductText>Cozinha: {item.product.kitchen}</ProductText>
+                  <ProductText>Nome: {item.product?.name ?? "Produto não encontrado"}</ProductText>
+                  <ProductText>Preço: R${item.product?.price?.toFixed(2) ?? "0.00"}</ProductText>
+                  <ProductText>
+                    Cozinha: {item.product?.kitchen?.name ?? "Não definida"}
+                  </ProductText>
                   <ProductText>Quantidade: {item.quantity}</ProductText>
+                  {item.observations?.length > 0 && (
+                    <ProductText>
+                      Observações:{" "}
+                      {item.observations.map((obs) => obs.observation?.description).filter(Boolean).join(", ")}
+                    </ProductText>
+                  )}
                 </ProductContainer>
               ))}
 
@@ -210,7 +218,6 @@ export default function OpenedOrderScreen() {
         </ConcludeButton>
       )}
 
-      {/* Modal */}
       <Modal visible={isModalVisible} transparent animationType="slide">
         <ModalOverlay>
           <ModalContent>
@@ -229,6 +236,7 @@ export default function OpenedOrderScreen() {
     </Container>
   );
 }
+
 
 export const ModalOverlay = styled.View`
   flex: 1;

@@ -2,6 +2,7 @@ import UserForm from "@/components/molecules/UserForm";
 import { addUserOnAccount } from "@/services/user";
 import { Stack, useRouter } from "expo-router";
 import React from "react";
+import Toast from "react-native-toast-message";
 
 const CreateUserScreen = () => {
 
@@ -10,9 +11,14 @@ const CreateUserScreen = () => {
   const handleCreateUser = async (values: { name: string; email: string; password: string }) => {
     try {
       await addUserOnAccount(values);
-      router.navigate("/users-list");
+      router.navigate("/(tabs)/config");
     } catch (error) {
       console.error(error);
+      Toast.show({
+        type: "error",
+        text1: "Erro ao criar usuário",
+        text2: "Tente novamente mais tarde.",
+      });
     }
   };
 

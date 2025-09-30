@@ -6,7 +6,7 @@ export interface Restaurant {
   name: string;
   tradeName?: string;
   cnpj?: string;
-  documentType?: 'cpf' | 'cnpj';
+  stateRegistration?: string;
   address?: {
     street: string;
     houseNumber: string;
@@ -25,11 +25,13 @@ export async function getRestaurants() {
 }
 
 export async function getRestaurantById(restaurantId: string): Promise<Restaurant> {
+  if(!restaurantId) throw new Error("restaurantId is required");
+  console.log("getRestaurantById called with id:", restaurantId);
   try {
       const response = await api.get<Restaurant>(`/restaurants/${restaurantId}`);
       return response.data;
   } catch (error) {
-      throw new Error(`Erro ao obter detalhes do restaurante: ${error}`);
+      throw new Error(`Erro ao obter detalhes do restaurantee: ${error}`);
   }
 }
 

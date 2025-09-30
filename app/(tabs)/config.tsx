@@ -53,7 +53,7 @@ export default function ConfigScreen() {
           <ConfigCard icon="person" title="Gerenciar conta">
             <ConfigLink
               href={{
-                pathname: "/account-edit",
+                pathname: "/edit-account",
                 params: { field: "name" },
               }}
               label="Editar nome, alterar senha..."
@@ -73,6 +73,17 @@ export default function ConfigScreen() {
               label="Criar cozinhas..."
             />
           </ConfigCard>
+
+                    <ConfigCard icon="tax" title="Gerenciar conta">
+            <ConfigLink
+              href={{
+                pathname: "/tax",
+                params: { field: "name" },
+              }}
+              label="Taxas..."
+            />
+          </ConfigCard>
+
 
           <ConfigCard icon="people" title="Gerenciar usuários">
             <ConfigLink

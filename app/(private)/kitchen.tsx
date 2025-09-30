@@ -3,12 +3,10 @@ import useRestaurant from "@/hooks/useRestaurant";
 import { getOrdersByRestaurant, Order, updateStatus } from "@/services/order";
 import { Stack } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, Alert, FlatList } from "react-native";
+import { ActivityIndicator, FlatList } from "react-native";
 import Toast from "react-native-toast-message";
 import io from "socket.io-client";
 import styled from "styled-components/native";
-
-type KitchenType = "MEAT" | "OTHERS" | "UNCOOKABLE" | "default";
 
 export default function KitchenScreen() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -16,44 +14,35 @@ export default function KitchenScreen() {
   const [error, setError] = useState<string | null>(null);
   const { selectedRestaurant } = useRestaurant();
 
-  const kitchenColors: Record<KitchenType, string> = {
-    MEAT: "#FF5733",
-    OTHERS: "#33A1FF",
-    UNCOOKABLE: "#FF33F1",
-    default: "#A0AEC0",
-  };
+  console.log(orders)
 
-  const getMainKitchen = (order: Order): KitchenType => {
-    if (!order.products.length) return "default";
+  const DEFAULT_KITCHEN_COLOR = "#A0AEC0";
 
-    const kitchenCount = order.products.reduce((acc, product) => {
-      const kitchenKey = product.product.kitchen.toUpperCase();
-      if (Object.keys(kitchenColors).includes(kitchenKey)) {
-        const validKey = kitchenKey as KitchenType;
-        acc[validKey] = (acc[validKey] || 0) + 1;
-      }
-      return acc;
-    }, {} as Record<KitchenType, number>);
 
-    if (Object.keys(kitchenCount).length === 0) return "default";
+  const getMainKitchen = (order: Order) => {
+    if (!order.products.length) return null;
 
-    const mainKitchen = Object.entries(kitchenCount).sort(
-      (a, b) => b[1] - a[1]
-    )[0][0];
+    const kitchenCount: Record<string, number> = {};
 
+    order.products.forEach((product) => {
+      const kitchenName = product.product.kitchen?.name || "default";
+      kitchenCount[kitchenName] = (kitchenCount[kitchenName] || 0) + 1;
+    });
+
+
+    const mainKitchen = Object.entries(kitchenCount).sort((a, b) => b[1] - a[1])[0][0];
     return mainKitchen;
   };
+    console.log(orders)
 
   useEffect(() => {
-    const socket = io("http://localhost:3001");
+    const socket = io("http://localhost:3001"); 
 
     const fetchOrders = async () => {
       if (!selectedRestaurant) return;
       setLoading(true);
       try {
-        const fetchedOrders = await getOrdersByRestaurant(
-          selectedRestaurant.id
-        );
+        const fetchedOrders = await getOrdersByRestaurant(selectedRestaurant.id);
         setOrders(fetchedOrders);
       } catch (err) {
         setError("Erro ao buscar pedidos");
@@ -66,7 +55,7 @@ export default function KitchenScreen() {
     socket.on("newOrder", (newOrder: Order) => {
       setOrders((prevOrders) => [...prevOrders, newOrder]);
     });
-
+    
     return () => {
       socket.off("newOrder");
     };
@@ -92,7 +81,6 @@ export default function KitchenScreen() {
         type: "error",
         text1: "Não foi possível atualizar o status do pedido.",
       });
-
     }
   };
 
@@ -109,8 +97,7 @@ export default function KitchenScreen() {
           keyExtractor={(item) => item.id}
           renderItem={({ item }: { item: Order }) => {
             const mainKitchen = getMainKitchen(item);
-            const kitchenColor =
-              kitchenColors[mainKitchen] || kitchenColors.default;
+            const kitchenColor = item.products[0]?.product.kitchen?.color || DEFAULT_KITCHEN_COLOR;
 
             return (
               <OrderCard
@@ -136,6 +123,7 @@ const Container = styled.View`
   justify-content: center;
   padding: 24px;
 `;
+
 const EmptyText = styled.Text`
   color: #ffffff;
   font-size: 16px;

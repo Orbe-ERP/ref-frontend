@@ -57,7 +57,7 @@ export const RestaurantForm: React.FC<Props> = ({
           <Input
             placeholder="Inscrição Estadual"
             value={values.inscriçãoEstadual}
-            onChangeText={handleChange("Inscrição Estadual")}
+            onChangeText={handleChange("inscriçãoEstadual")}
             onBlur={handleBlur("Inscrição Estadual")}
             keyboardType="numeric"
           

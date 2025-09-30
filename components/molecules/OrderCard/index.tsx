@@ -1,18 +1,19 @@
 import { Order } from "@/services/order";
 import React from "react";
 import {
-    ActionButton,
-    ButtonContainer,
-    ButtonText,
-    Card,
-    CardTitle,
-    ItemContainer,
-    ItemDetails,
-    ItemName,
-    KitchenLabel,
-    KitchenLabelText,
-    ObsText
+  ActionButton,
+  ButtonContainer,
+  ButtonText,
+  Card,
+  CardTitle,
+  ItemContainer,
+  ItemDetails,
+  ItemName,
+  KitchenLabel,
+  KitchenLabelText,
+  ObsText,
 } from "./styles";
+import { View } from "react-native";
 
 type Props = {
   order: Order;
@@ -25,7 +26,7 @@ const OrderCard: React.FC<Props> = ({
   order,
   mainKitchen,
   kitchenColor,
-  onUpdateStatus
+  onUpdateStatus,
 }) => {
   return (
     <Card borderColor={kitchenColor}>
@@ -38,8 +39,32 @@ const OrderCard: React.FC<Props> = ({
       {order.products.map((product, index) => (
         <ItemContainer key={index}>
           <ItemName>{product.product.name}</ItemName>
-          <ItemDetails>{product.product.kitchen}</ItemDetails>
-          {product.observation && <ObsText>{product.observation}</ObsText>}
+
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+            <View
+              style={{
+                width: 10,
+                height: 10,
+                borderRadius: 5,
+                backgroundColor: product.product.kitchen?.color || "#A0AEC0",
+              }}
+            />
+            <ItemDetails>
+              {product.product.kitchen?.name || "Sem Cozinha"}
+            </ItemDetails>
+ 
+
+                <ItemDetails>Quantidade: {product.quantity}</ItemDetails>
+
+          </View>
+
+          {product.observations.length > 0 && (
+            <ObsText>
+              {product.observations
+                .map((obs) => obs.observation.description)
+                .join(", ")}
+            </ObsText>
+          )}
         </ItemContainer>
       ))}
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ScrollView, Alert, TouchableOpacity } from "react-native";
+import { ScrollView, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import styled from "styled-components/native";
@@ -21,26 +21,29 @@ export default function CartScreen() {
   const [availableObservations, setAvailableObservations] = useState<
     Record<string, string[]>
   >({});
+
   const [products, setProducts] = useState(() =>
     initialProducts.map((p: any) => ({
       ...p,
-      cartItemId: `${p.productId}-${Date.now()}-${Math.random()}`, // ID único
+      product: p, 
+      cartItemId: `${p.productId}-${Date.now()}-${Math.random()}`,
       observations: p.description ? [p.description] : [],
     }))
   );
+
   const [responsible, setResponsible] = useState("");
   const [toTake, setToTake] = useState(false);
 
-  const toggleObservation = (cartItemId: string, obs: string) => {
+  const toggleObservation = (cartItemId: string, obsId: string) => {
     setProducts((prev: any) =>
       prev.map((p: any) => {
         if (p.cartItemId !== cartItemId) return p;
-        const alreadySelected = p.observations?.includes(obs);
+        const alreadySelected = p.observations?.includes(obsId);
         return {
           ...p,
           observations: alreadySelected
-            ? p.observations.filter((o: string) => o !== obs)
-            : [...(p.observations || []), obs],
+            ? p.observations.filter((o: string) => o !== obsId)
+            : [...(p.observations || []), obsId],
         };
       })
     );
@@ -52,7 +55,7 @@ export default function CartScreen() {
       for (const product of initialProducts) {
         try {
           const obsList = await getObservationsByProduct(product.productId);
-          map[product.productId] = obsList.map((item: any) => item.description);
+          map[product.productId] = obsList.map((item: any) => item.id); // guardando IDs
         } catch (err) {
           Toast.show({
             type: "error",
@@ -98,23 +101,30 @@ export default function CartScreen() {
       return;
     }
 
-    const newOrder = {
-      tableId,
-      toTake,
-      responsible: responsible || "Genérico",
-      products: products.map((product: any) => ({
-        productId: product.productId,
-        quantity: product.quantity,
-        observation: product.observations?.join(", ") || "",
-      })),
-    };
+const newOrder = {
+  tableId,
+  toTake,
+  responsible: responsible || "Genérico",
+  products: products.map((product: any) => ({
+    productId: product.productId, 
+    quantity: product.quantity,
+    appliedPrice: product.appliedPrice ?? null, 
+    observations: product.observations || [], 
+  })),
+};
 
     try {
       await createOrder(newOrder);
+
       setProducts([]);
       router.replace({
         pathname: "/cart",
         params: { tableId, addedProducts: JSON.stringify([]) },
+      });
+
+      Toast.show({
+        type: "success",
+        text1: "Pedido enviado!",
       });
     } catch (error) {
       Toast.show({
@@ -122,6 +132,7 @@ export default function CartScreen() {
         text1: "Erro ao enviar pedido",
         text2: "Tente novamente.",
       });
+      console.error(error);
     }
   };
 
@@ -229,6 +240,8 @@ export default function CartScreen() {
     </Container>
   );
 }
+
+// ================= STYLES =================
 
 export const Container = styled.View`
   flex: 1;

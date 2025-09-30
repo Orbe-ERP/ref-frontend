@@ -12,6 +12,11 @@ import {
   patchKitchen,
   deleteKitchen,
 } from "@/services/kitchen";
+import Toast from "react-native-toast-message";
+
+const AVAILABLE_COLORS = [
+  "#FF5733", "#33A1FF", "#FF33F1", "#A0AEC0", "#038082", "#4B5563", "#FBBF24"
+];
 
 export default function KitchenScreen() {
   const [kitchens, setKitchens] = useState<Kitchen[]>([]);
@@ -19,6 +24,8 @@ export default function KitchenScreen() {
   const [isEditVisible, setIsEditVisible] = useState(false);
   const [newKitchenName, setNewKitchenName] = useState("");
   const [selectedKitchen, setSelectedKitchen] = useState<Kitchen | null>(null);
+  const [showOnKitchen, setShowOnKitchen] = useState(true);
+  const [selectedColor, setSelectedColor] = useState(AVAILABLE_COLORS[0]);
 
   const { selectedRestaurant } = useRestaurant();
 
@@ -31,6 +38,11 @@ export default function KitchenScreen() {
       if (error.response?.status === 404) {
         setKitchens([]);
       } else {
+        Toast.show({
+          type: "error",
+          text1: "Erro ao buscar cozinhas",
+          text2: error.message,
+        });
         console.error("Erro ao buscar cozinhas:", error);
       }
     }
@@ -42,13 +54,22 @@ export default function KitchenScreen() {
 
   const handleCreateKitchen = async () => {
     if (!selectedRestaurant) return;
+    if (!newKitchenName.trim()) {
+      Toast.show({
+        type: "error",
+        text1: "Nome inválido",
+        text2: "O nome da cozinha não pode estar vazio."})}
     try {
       const newKitchen = await createKitchen({
         name: newKitchenName,
+        showOnKitchen,
+        color: selectedColor,
         restaurantId: selectedRestaurant.id,
       });
       setKitchens((prev) => [...prev, newKitchen]);
       setNewKitchenName("");
+      setShowOnKitchen(true);
+      setSelectedColor(AVAILABLE_COLORS[0]);
       setIsCreateVisible(false);
     } catch (error) {
       console.error(error);
@@ -61,19 +82,22 @@ export default function KitchenScreen() {
       const updated = await patchKitchen({
         id: selectedKitchen.id,
         name: newKitchenName,
+        showOnKitchen,
+        color: selectedColor,
       });
       setKitchens((prev) =>
         prev.map((k) => (k.id === updated.id ? updated : k))
       );
       setNewKitchenName("");
       setSelectedKitchen(null);
+      setShowOnKitchen(true);
+      setSelectedColor(AVAILABLE_COLORS[0]);
       setIsEditVisible(false);
     } catch (error) {
       console.error(error);
     }
   };
 
-  // Deletar cozinha
   const handleDeleteKitchen = async () => {
     if (!selectedKitchen) return;
     try {
@@ -81,6 +105,9 @@ export default function KitchenScreen() {
       await deleteKitchen(selectedKitchen.id);
       setSelectedKitchen(null);
       setIsEditVisible(false);
+      setNewKitchenName("");
+      setShowOnKitchen(true);
+      setSelectedColor(AVAILABLE_COLORS[0]);
     } catch (error) {
       console.error(error);
     }
@@ -119,6 +146,8 @@ export default function KitchenScreen() {
               onEdit={() => {
                 setSelectedKitchen(kitchen);
                 setNewKitchenName(kitchen.name);
+                setShowOnKitchen(kitchen.showOnKitchen ?? true);
+                setSelectedColor(kitchen.color ?? AVAILABLE_COLORS[0]);
                 setIsEditVisible(true);
               }}
             />
@@ -129,6 +158,8 @@ export default function KitchenScreen() {
           onPress={() => {
             setSelectedKitchen(null);
             setNewKitchenName("");
+            setShowOnKitchen(true);
+            setSelectedColor(AVAILABLE_COLORS[0]);
             setIsCreateVisible(true);
           }}
           label="Criar Cozinha"
@@ -145,6 +176,14 @@ export default function KitchenScreen() {
         onClose={() => setIsCreateVisible(false)}
         onConfirm={handleCreateKitchen}
         confirmLabel="Criar Cozinha"
+        showSwitch
+        switchLabel="Mostrar na Cozinha"
+        switchValue={showOnKitchen}
+        onSwitchChange={setShowOnKitchen}
+        showColorPicker
+        colors={AVAILABLE_COLORS}
+        selectedColor={selectedColor}
+        onColorChange={setSelectedColor}
       />
 
       {/* Editar */}
@@ -159,6 +198,14 @@ export default function KitchenScreen() {
         confirmLabel="Atualizar"
         showDelete
         onDelete={handleDeleteKitchen}
+        showSwitch
+        switchLabel="Mostrar na Cozinha"
+        switchValue={showOnKitchen}
+        onSwitchChange={setShowOnKitchen}
+        showColorPicker
+        colors={AVAILABLE_COLORS}
+        selectedColor={selectedColor}
+        onColorChange={setSelectedColor}
       />
     </View>
   );

@@ -43,6 +43,8 @@ export default function SelectRestaurantScreen() {
   };
 
   const handleEditRestaurant = (restaurant: any) => {
+
+    router.push(`/(private)/edit-restaurant?restaurantId=${restaurant.id}`);
     return
   };
 

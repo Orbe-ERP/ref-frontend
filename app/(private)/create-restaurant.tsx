@@ -10,6 +10,7 @@ const validationSchema = Yup.object().shape({
   name: Yup.string().required("Nome é obrigatório"),
   tradeName: Yup.string().optional(),
   cnpj: Yup.string().required("CNPJ obrigatório"),
+  inscriçãoEstadual: Yup.string().optional(),
   address: Yup.object().shape({
     street: Yup.string().required("Rua é obrigatória"),
     houseNumber: Yup.string().required("Número é obrigatório"),
@@ -33,7 +34,7 @@ export default function RestaurantScreen() {
         text1: "Restaurante criado com sucesso!",
       });
 
-      router.push("/(private)/select-restaurant");
+      router.push("/(tabs)");
     } catch (error) {
       console.error(error);
       Toast.show({
@@ -61,7 +62,7 @@ export default function RestaurantScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ title: "Criar restaurante" }} />
+      <Stack.Screen options={{ title: "Criar Restaurante" }} />
       <View style={{ flex: 1, backgroundColor: "#041224" }}>
         <RestaurantForm
           initialValues={initialValues}

@@ -2,13 +2,19 @@ import { api } from "./api";
 import { Kitchen } from "./kitchen";
 
 
+export interface Observation {
+  id: string;
+  description: string;
+  productId: string;
+}
 
 export interface Product {
   id: string;
   name: string;
   price: number;
   active: boolean;
-  kitchen: string;
+  kitchen: Kitchen;
+  observations: Observation
   categoryId: string;
   restaurantId: string | undefined;
 }

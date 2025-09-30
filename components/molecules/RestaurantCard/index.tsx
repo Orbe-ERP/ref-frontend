@@ -11,7 +11,9 @@ interface Props {
   onDelete: (restaurantId: string) => void;
 }
 
-export const RestaurantCard: React.FC<Props> = ({ restaurant, isSelected, onSelect, onEdit, onDelete }) => {
+export const RestaurantCard: React.FC<Props> = ({ restaurant, isSelected, onSelect, onEdit, onDelete }) =>
+  
+  {
   return (
     <Container selected={isSelected} onPress={() => onSelect(restaurant)}>
       <Content>

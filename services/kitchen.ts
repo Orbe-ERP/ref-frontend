@@ -1,19 +1,26 @@
 import { api } from "./api";
 
 export interface Kitchen {
+  color: string;
   id: string;
   name: string;
+  showOnKitchen: boolean;
   products?: [];
 }
 
 export interface CreateKitchen {
   name: string;
   restaurantId: string | undefined;
+  showOnKitchen: boolean;
+  color:string
 }
 
 export interface PatchKitchen {
-  name: string;
   id: string | undefined;
+  name?: string;
+  showOnKitchen?: boolean;
+  color?: string;
+
 }
 
 export async function getKitchens(restaurantId: string | undefined) {
@@ -26,7 +33,6 @@ export async function getKitchens(restaurantId: string | undefined) {
       `kitchen/restaurant/${restaurantId}`
     );
 
-    console.log(response.data);
     return response.data;
   } catch (error) {
     throw new Error(`Error: ${error}`);
@@ -42,11 +48,17 @@ export async function getByKitchenId(kitchenId: string) {
   }
 }
 
-export async function createKitchen({ name, restaurantId }: CreateKitchen) {
+export async function createKitchen({ name, restaurantId, showOnKitchen, color}: CreateKitchen) {
+
+  if (!restaurantId) {
+    throw new Error(`ID do restaurante não definido`);
+  }
   try {
     const response = await api.post<CreateKitchen>(`/kitchen`, {
       name,
       restaurantId,
+      showOnKitchen,
+      color
     });
     return response.data;
   } catch (error) {
