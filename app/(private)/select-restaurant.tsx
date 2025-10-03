@@ -1,6 +1,7 @@
 import { RestaurantList } from "@/components/organisms/RestaurantList";
 import useRestaurant from "@/hooks/useRestaurant";
-import { deleteRestaurant, getRestaurants } from "@/services/restaurant";
+import { deleteRestaurant, getRestaurants, Restaurant } from "@/services/restaurant";
+import { defineFavoriteRestaurant } from "@/services/user";
 import { Stack, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components/native";
@@ -57,6 +58,15 @@ export default function SelectRestaurantScreen() {
     }
   };
 
+  const handleFavoriteRestaurant = (restaurant: Restaurant) => {
+    try {
+      defineFavoriteRestaurant(restaurant);
+      setRestaurants(prev => prev.filter(r => r.id !== restaurant));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const handleCreateRestaurant = () => {
     router.push("/(private)/create-restaurant");
   };
@@ -71,6 +81,7 @@ export default function SelectRestaurantScreen() {
           selectedRestaurant={selectedRestaurant}
           onSelectRestaurant={handleSelectRestaurant}
           onEditRestaurant={handleEditRestaurant}
+          onFavoriteRestaurant={handleFavoriteRestaurant}
           onDeleteRestaurant={handleDeleteRestaurant}
           onCreateRestaurant={handleCreateRestaurant}
         />

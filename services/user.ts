@@ -1,4 +1,5 @@
 import { api } from "./api";
+import { Restaurant } from "./restaurant";
 
 export interface User {
   id: string;
@@ -53,9 +54,21 @@ export async function updateUser(data: UpdateUser) {
   return response.data;
 }
 
-export async function defineFavoriteRestaurant(restaurantId: string) {
-  const response = await api.patch<User>(`/users/favorite/${restaurantId}`);
+export async function defineFavoriteRestaurant(restaurant: Restaurant) {
+
+  try {
+
+      const response = await api.patch<User>(`users/favorite/${restaurant.id}`);
+
   return response.data;
+  } catch (error: any) {
+        console.error(
+      "Erro ao deletar no service:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+
 }
 
 export async function deleteUser(id: string) {

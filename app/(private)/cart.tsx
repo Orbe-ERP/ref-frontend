@@ -19,15 +19,14 @@ export default function CartScreen() {
   const initialProducts = addedProducts ? JSON.parse(addedProducts) : [];
 
   const [availableObservations, setAvailableObservations] = useState<
-    Record<string, string[]>
+    Record<string, any[]>
   >({});
-
   const [products, setProducts] = useState(() =>
     initialProducts.map((p: any) => ({
       ...p,
-      product: p, 
       cartItemId: `${p.productId}-${Date.now()}-${Math.random()}`,
-      observations: p.description ? [p.description] : [],
+      observations: p.observations || [],
+      appliedPrice: p.appliedPrice ?? null,
     }))
   );
 
@@ -51,11 +50,11 @@ export default function CartScreen() {
 
   useEffect(() => {
     (async () => {
-      const map: Record<string, string[]> = {};
+      const map: Record<string, any[]> = {};
       for (const product of initialProducts) {
         try {
           const obsList = await getObservationsByProduct(product.productId);
-          map[product.productId] = obsList.map((item: any) => item.id); // guardando IDs
+          map[product.productId] = obsList;
         } catch (err) {
           Toast.show({
             type: "error",
@@ -101,27 +100,25 @@ export default function CartScreen() {
       return;
     }
 
-const newOrder = {
-  tableId,
-  toTake,
-  responsible: responsible || "Genérico",
-  products: products.map((product: any) => ({
-    productId: product.productId, 
-    quantity: product.quantity,
-    appliedPrice: product.appliedPrice ?? null, 
-    observations: product.observations || [], 
-  })),
-};
+    const newOrder = {
+      tableId,
+      toTake,
+      responsible: responsible || "Genérico",
+      products: products.map((product: any) => ({
+        productId: product.productId,
+        quantity: product.quantity,
+        appliedPrice: product.appliedPrice ?? null,
+        observations: product.observations || [],
+      })),
+    };
 
     try {
       await createOrder(newOrder);
-
       setProducts([]);
       router.replace({
         pathname: "/cart",
         params: { tableId, addedProducts: JSON.stringify([]) },
       });
-
       Toast.show({
         type: "success",
         text1: "Pedido enviado!",
@@ -167,6 +164,27 @@ const newOrder = {
                 <Label>{product.productName}</Label>
                 <Label>Quantidade: {product.quantity}</Label>
 
+                <Input
+                  placeholder="Preço Especial (R$)"
+                  placeholderTextColor="#ccc"
+                  keyboardType="numeric"
+                  value={product.appliedPrice?.toString() ?? ""}
+                  onChangeText={(text: any) => {
+                    const value = parseFloat(text);
+                    setProducts((prev: any) =>
+                      prev.map((p: any) =>
+                        p.cartItemId === product.cartItemId
+                          ? {
+                              ...p,
+                              appliedPrice:
+                                isNaN(value) || value < 0 ? null : value,
+                            }
+                          : p
+                      )
+                    );
+                  }}
+                />
+
                 <Row>
                   <TouchableOpacity
                     onPress={() => handleQuantityChange(product.cartItemId, -1)}
@@ -191,25 +209,23 @@ const newOrder = {
 
                 {availableObservations[product.productId]?.length ? (
                   <CheckboxContainer>
-                    {availableObservations[product.productId].map(
-                      (obs, idx) => {
-                        const isSelected = product.observations?.includes(obs);
-                        return (
-                          <CheckboxItem
-                            key={idx}
-                            selected={isSelected}
-                            onPress={() =>
-                              toggleObservation(product.cartItemId, obs)
-                            }
-                          >
-                            <CheckboxText>
-                              {isSelected ? "☑ " : "☐ "}
-                              {obs}
-                            </CheckboxText>
-                          </CheckboxItem>
-                        );
-                      }
-                    )}
+                    {availableObservations[product.productId].map((obs) => {
+                      const isSelected = product.observations?.includes(obs.id);
+                      return (
+                        <CheckboxItem
+                          key={obs.id}
+                          selected={isSelected}
+                          onPress={() =>
+                            toggleObservation(product.cartItemId, obs.id)
+                          }
+                        >
+                          <CheckboxText>
+                            {isSelected ? "☑ " : "☐ "}
+                            {obs.description}
+                          </CheckboxText>
+                        </CheckboxItem>
+                      );
+                    })}
                   </CheckboxContainer>
                 ) : (
                   <Label>Nenhuma observação disponível</Label>
@@ -240,8 +256,6 @@ const newOrder = {
     </Container>
   );
 }
-
-// ================= STYLES =================
 
 export const Container = styled.View`
   flex: 1;

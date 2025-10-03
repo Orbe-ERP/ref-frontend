@@ -12,6 +12,8 @@ import useAuth from "@/hooks/useAuth";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import Toast from "react-native-toast-message";
 import { RestaurantProvider } from "@/context/RestaurantProvider/restaurant";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 function AuthGuard({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -48,21 +50,31 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
 
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <RestaurantProvider>
-      <AuthProvider>
-          <AuthGuard>
-            <Stack screenOptions={{ headerShown: false }}>
-              <Stack.Screen
-                name="+not-found"
-                options={{ title: "Página não encontrada" }}
-              />
-            </Stack>
-          </AuthGuard>
-          <StatusBar style="auto" />
-          <Toast />
-      </AuthProvider>
-        </RestaurantProvider>
-    </ThemeProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <StatusBar style="dark" />
+
+        <ThemeProvider
+          value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+        >
+          <RestaurantProvider>
+            <AuthProvider>
+              <AuthGuard>
+                <SafeAreaView style={{ flex: 1, backgroundColor: "#000" }}>
+                  <Stack screenOptions={{ headerShown: false }}>
+                    <Stack.Screen
+                      name="+not-found"
+                      options={{ title: "Página não encontrada" }}
+                    />
+                  </Stack>
+                  <StatusBar style="auto" />
+                  <Toast />
+                </SafeAreaView>
+              </AuthGuard>
+            </AuthProvider>
+          </RestaurantProvider>
+        </ThemeProvider>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }

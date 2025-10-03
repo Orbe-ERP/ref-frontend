@@ -2,6 +2,7 @@ import { api } from "./api";
 import { Kitchen } from "./kitchen";
 
 export interface OrderProduct {
+  id: string
   productId: string;
   quantity: number;
   appliedPrice?: number;
@@ -50,6 +51,7 @@ export interface AddProductInput {
 
 export interface UpdateOrderStatus {
   id: string;
+  productId: string
   status: string;
 }
 
@@ -74,11 +76,28 @@ export async function createOrder(order: NewOrder) {
 
 export async function getOrdersByRestaurant(restaurantId: string, status?: string) {
   if (!restaurantId) throw new Error("Restaurant Id not defined");
+
   try {
     const response = await api.get(`/orders/restaurant/${restaurantId}`, {
       params: status ? { status } : {},
     });
-    return response.data;
+
+    const orders = response.data;
+
+    const filteredOrders = orders
+      .map((order: any) => {
+        const filteredProducts = order.products.filter(
+          (product: any) => product.product?.kitchen?.showOnKitchen !== false
+        );
+
+        return {
+          ...order,
+          products: filteredProducts,
+        };
+      })
+      .filter((order: any) => order.products.length > 0);
+
+    return filteredOrders;
   } catch (error) {
     console.error(error);
     throw new Error(`Error fetching orders by restaurant: ${error}`);
@@ -116,6 +135,8 @@ export async function updateStatus(orderData: UpdateOrderStatus) {
   }
 }
 
+
+
 export async function getOrderById(orderId: string) {
   if (!orderId) throw new Error("Order Id not defined");
   try {
@@ -143,6 +164,8 @@ export async function concludeOrders(
   restaurantId: string,
   additional: number = 0
 ) {
+
+
   try {
     const response = await api.put(
       `/orders/restaurant/${restaurantId}/table/${tableId}/conclude`,

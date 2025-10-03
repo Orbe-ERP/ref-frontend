@@ -1,13 +1,17 @@
 import React, { useState } from "react";
+import {
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+} from "react-native";
 import { Stack, useRouter } from "expo-router";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import Toast from "react-native-toast-message";
 import useAuth from "@/hooks/useAuth";
 import styled from "styled-components/native";
-import { ActivityIndicator, Image } from "react-native";
 
-// 🎨 Paleta principal
 const COLORS = {
   primary: "#038082",
   secondary: "#00B894",
@@ -44,7 +48,6 @@ const Input = styled.TextInput`
   border-width: 1px;
   border-color: ${COLORS.border};
   padding: 14px;
-
   width: 100%;
   border-radius: 10px;
   margin-bottom: 10px;
@@ -58,14 +61,8 @@ const ErrorText = styled.Text`
   margin-bottom: 8px;
 `;
 
-type ButtonProps = {
-  // variant?: "primary" | "secondary";
-  disabled?: boolean;
-};
-
-const Button = styled.TouchableOpacity<ButtonProps>`
-  background-color: ${({ disabled }: ButtonProps) =>
-    disabled ? "#4B5563" : COLORS.background};
+const Button = styled.TouchableOpacity<{ disabled?: boolean }>`
+  background-color: ${({ disabled }) => (disabled ? "#4B5563" : COLORS.background)};
   padding: 16px;
   border-radius: 10px;
   align-items: center;
@@ -82,8 +79,8 @@ const ButtonText = styled.Text`
 `;
 
 const Logo = styled.Image`
-    width: 240;
-    height: 240;
+  width: 240px;
+  height: 240px;
 `;
 
 const LoginSchema = Yup.object().shape({
@@ -116,56 +113,62 @@ export default function Login() {
         position: "top",
         visibilityTime: 2000,
       });
-      router.replace("/select-restaurant");
     }
 
     setLoading(false);
   };
 
   return (
-    <Container>
-      <Stack.Screen options={{ title: "Login" }} />
-
-
-    <Logo source={require("../assets/images/logo-comandante.png")}/>
-
-      <Title>Bem-vindo 👋</Title>
-      <Subtitle>Entre com sua conta para continuar</Subtitle>
-
-      <Formik
-        initialValues={{ email: "", password: "" }}
-        validationSchema={LoginSchema}
-        onSubmit={handleLogin}
+    <KeyboardAvoidingView
+      style={{ flex: 1, backgroundColor: COLORS.background }}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1, justifyContent: "center", alignItems: "center", padding: 24 }}
+        keyboardShouldPersistTaps="handled"
       >
-        {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
-          <>
-            <Input
-              placeholder="E-mail"
-              placeholderTextColor="#718096"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              onChangeText={handleChange("email")}
-              onBlur={handleBlur("email")}
-              value={values.email}
-            />
-            {errors.email && touched.email && <ErrorText>{errors.email}</ErrorText>}
+        <Stack.Screen options={{ title: "Login" }} />
 
-            <Input
-              placeholder="Senha"
-              placeholderTextColor="#718096"
-              secureTextEntry
-              onChangeText={handleChange("password")}
-              onBlur={handleBlur("password")}
-              value={values.password}
-            />
-            {errors.password && touched.password && <ErrorText>{errors.password}</ErrorText>}
+        <Logo source={require("../assets/images/logo-comandante.png")} />
 
-            <Button onPress={handleSubmit as any} disabled={loading}>
-              {loading ? <ActivityIndicator color="#fff" /> : <ButtonText>Entrar</ButtonText>}
-            </Button>
-          </>
-        )}
-      </Formik>
-    </Container>
+        <Title>Bem-vindo 👋</Title>
+        <Subtitle>Entre com sua conta para continuar</Subtitle>
+
+        <Formik
+          initialValues={{ email: "", password: "" }}
+          validationSchema={LoginSchema}
+          onSubmit={handleLogin}
+        >
+          {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+            <>
+              <Input
+                placeholder="E-mail"
+                placeholderTextColor="#718096"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                onChangeText={handleChange("email")}
+                onBlur={handleBlur("email")}
+                value={values.email}
+              />
+              {errors.email && touched.email && <ErrorText>{errors.email}</ErrorText>}
+
+              <Input
+                placeholder="Senha"
+                placeholderTextColor="#718096"
+                secureTextEntry
+                onChangeText={handleChange("password")}
+                onBlur={handleBlur("password")}
+                value={values.password}
+              />
+              {errors.password && touched.password && <ErrorText>{errors.password}</ErrorText>}
+
+              <Button onPress={handleSubmit as any} disabled={loading}>
+                {loading ? <ActivityIndicator color="#fff" /> : <ButtonText>Entrar</ButtonText>}
+              </Button>
+            </>
+          )}
+        </Formik>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }

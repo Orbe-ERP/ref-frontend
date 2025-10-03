@@ -6,7 +6,6 @@ import CategoryList from "@/components/organisms/CategoryList";
 import Button from "@/components/atoms/Button";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import styled from "styled-components/native";
-import { getObservationsByProduct } from "@/services/product";
 
 export default function OrderScreen() {
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
@@ -32,34 +31,19 @@ export default function OrderScreen() {
     setExpandedCategory((prev) => (prev === id ? null : id));
   };
 
-  const handleProductChange = async (catId: string, prodId: string, q: number) => {
+  const handleProductChange = (catId: string, prodId: string, q: number, name: string) => {
     setSelectedProducts((prev: any) => ({
       ...prev,
-      [catId]: { productId: prodId, quantity: q },
+      [catId]: { productId: prodId, quantity: q, productName: name },
     }));
-
-    try {
-      const obs = await getObservationsByProduct(productId);
-      setProductObservations((prev) => ({
-        ...prev,
-        [productId]: obs,
-      }));
-    } catch (err) {
-      console.log("Erro ao buscar observações", err);
-    }
   };
 
-  const handleQuantityChange = (
-    catId: string,
-    prodId: string,
-    delta: number
-  ) => {
-    const current =
-      selectedProducts[catId]?.productId === prodId
-        ? selectedProducts[catId].quantity
-        : 0;
+  const handleQuantityChange = (catId: string, prodId: string, delta: number, name: string) => {
+    const current = selectedProducts[catId]?.productId === prodId
+      ? selectedProducts[catId].quantity
+      : 0;
     const newQ = Math.max(1, current + delta);
-    handleProductChange(catId, prodId, newQ);
+    handleProductChange(catId, prodId, newQ, name);
   };
 
   const handleAddProduct = (id: string, name: string, q: number) => {
@@ -90,13 +74,7 @@ export default function OrderScreen() {
           headerTitle: "Comanda",
           headerRight: () => (
             <CartContainer onPress={goToCart}>
-              <Ionicons
-                name="cart-outline"
-                size={24}
-                color="white"
-                // style={{ marginRight: 15 }}
-                // onPress={goToCart}
-              />
+              <Ionicons name="cart-outline" size={24} color="white" />
               {addedProducts.length > 0 && (
                 <Badge>
                   <BadgeText>{addedProducts.length}</BadgeText>
