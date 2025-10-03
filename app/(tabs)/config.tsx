@@ -58,34 +58,34 @@ export default function ConfigScreen() {
               }}
               label="Editar nome, alterar senha..."
             />
-          </ConfigCard>
+        </ConfigCard>
 
-          <ConfigCard icon="book" title="Gerenciar Categorias e Produtos">
+        <ConfigCard icon="book" title="Gerenciar Categorias e Produtos">
             <ConfigLink
               href={{ pathname: "/category" }}
               label="Criar categorias, criar produtos..."
             />
-          </ConfigCard>
+        </ConfigCard>
 
-                    <ConfigCard icon="kitchen" title="Gerenciar Cozinhas">
+        <ConfigCard icon="kitchen" title="Gerenciar Cozinhas">
             <ConfigLink
               href={{ pathname: "/create-kitchen" }}
               label="Criar cozinhas..."
             />
-          </ConfigCard>
+        </ConfigCard>
 
-                    <ConfigCard icon="tax" title="Gerenciar conta">
+        <ConfigCard icon="tax" title="Gerenciar conta">
             <ConfigLink
               href={{
-                pathname: "/tax",
+                pathname: "/payment-config",
                 params: { field: "name" },
               }}
               label="Taxas..."
             />
-          </ConfigCard>
+        </ConfigCard>
 
 
-          <ConfigCard icon="people" title="Gerenciar usuários">
+        <ConfigCard icon="people" title="Gerenciar usuários">
             <ConfigLink
               href={{ pathname: "/create-user" }}
               label="Criar usuários"
@@ -94,11 +94,11 @@ export default function ConfigScreen() {
               href={{ pathname: "/users-list" }}
               label="Listar usuários"
             />
-          </ConfigCard>
+        </ConfigCard>
 
-          <Footer>
+        <Footer>
             <Text>Orbe v1.0</Text>
-          </Footer>
+        </Footer>
         </Content>
       </ScreenContainer>
     </ScrollView>
