@@ -1,25 +1,37 @@
 import { Text } from "@/components/atoms/Text";
 import Title from "@/components/atoms/Title";
-import { ConfigLink } from "@/components/molecules/ConfigLink";
-import { ConfigCard } from "@/components/organisms/ConfigCard";
 import { useRouter } from "expo-router";
 import React from "react";
-import { ScrollView, View } from "react-native";
+import { ScrollView } from "react-native";
 import styled from "styled-components/native";
+import { Ionicons } from "@expo/vector-icons";
 
 export const ScreenContainer = styled.View`
   flex: 1;
   background-color: #041224;
 `;
 
-export const Content = styled.View`
-  flex: 1;
-  padding: 15px;
+export const Header = styled.View`
+  padding: 20px;
+  border-bottom-width: 1px;
+  border-bottom-color: #038082;
+`;
+
+export const ItemRow = styled.TouchableOpacity`
+  flex-direction: row;
+  align-items: center;
+  padding-vertical: 15px;
+`;
+
+export const ItemText = styled.Text`
+  color: #ffffff;
+  font-size: 16px;
+  margin-left: 12px;
 `;
 
 export const Footer = styled.View`
   align-items: center;
-  margin-top: 20px;
+  margin-top: 40px;
 `;
 
 export default function ConfigScreen() {
@@ -28,78 +40,46 @@ export default function ConfigScreen() {
   return (
     <ScrollView
       style={{ flex: 1, backgroundColor: "#041224" }}
-      contentContainerStyle={{
-        flexGrow: 1,
-        padding: 20,
-        backgroundColor: "#041224",
-      }}
+      contentContainerStyle={{ paddingHorizontal: 20 }}
     >
       <ScreenContainer>
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            backgroundColor: "#041224",
-            paddingVertical: 20,
-            paddingHorizontal: 15,
-            borderBottomWidth: 1,
-            borderBottomColor: "#038082",
-          }}
-        >
-          <Title>Configurações</Title>
-        </View>
+        <Header>
+          <Title style={{ color: "#fff" }}>Configurações</Title>
+        </Header>
 
-        <Content>
-          <ConfigCard icon="person" title="Gerenciar conta">
-            <ConfigLink
-              href={{
-                pathname: "/edit-account",
-                params: { field: "name" },
-              }}
-              label="Editar nome, alterar senha..."
-            />
-        </ConfigCard>
+        <ItemRow onPress={() => router.push("/edit-account")}>
+          <Ionicons name="person-outline" size={22} color="#038082" />
+          <ItemText>Gerenciar conta</ItemText>
+        </ItemRow>
 
-        <ConfigCard icon="book" title="Gerenciar Categorias e Produtos">
-            <ConfigLink
-              href={{ pathname: "/category" }}
-              label="Criar categorias, criar produtos..."
-            />
-        </ConfigCard>
+        <ItemRow onPress={() => router.push("/category")}>
+          <Ionicons name="albums-outline" size={22} color="#038082" />
+          <ItemText>Gerenciar Categorias e Produtos</ItemText>
+        </ItemRow>
 
-        <ConfigCard icon="kitchen" title="Gerenciar Cozinhas">
-            <ConfigLink
-              href={{ pathname: "/create-kitchen" }}
-              label="Criar cozinhas..."
-            />
-        </ConfigCard>
+        <ItemRow onPress={() => router.push("/create-kitchen")}>
+          <Ionicons name="restaurant-outline" size={22} color="#038082" />
+          <ItemText>Gerenciar Cozinhas</ItemText>
+        </ItemRow>
 
-        <ConfigCard icon="tax" title="Gerenciar conta">
-            <ConfigLink
-              href={{
-                pathname: "/payment-config",
-                params: { field: "name" },
-              }}
-              label="Taxas..."
-            />
-        </ConfigCard>
+        <ItemRow onPress={() => router.push("/payment-config")}>
+          <Ionicons name="card-outline" size={22} color="#038082" />
+          <ItemText>Taxas</ItemText>
+        </ItemRow>
 
+        <ItemRow onPress={() => router.push("/create-user")}>
+          <Ionicons name="people-outline" size={22} color="#038082" />
+          <ItemText>Criar usuários</ItemText>
+        </ItemRow>
 
-        <ConfigCard icon="people" title="Gerenciar usuários">
-            <ConfigLink
-              href={{ pathname: "/create-user" }}
-              label="Criar usuários"
-            />
-            <ConfigLink
-              href={{ pathname: "/users-list" }}
-              label="Listar usuários"
-            />
-        </ConfigCard>
+        <ItemRow onPress={() => router.push("/users-list")}>
+          <Ionicons name="list-outline" size={22} color="#038082" />
+          <ItemText>Listar usuários</ItemText>
+        </ItemRow>
 
         <Footer>
-            <Text>Orbe v1.0</Text>
+          <Text style={{ color: "#038082" }}>Orbe v1.0</Text>
         </Footer>
-        </Content>
       </ScreenContainer>
     </ScrollView>
   );

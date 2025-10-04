@@ -220,17 +220,17 @@ export default function TaxPage() {
         <Label>Bandeira do Cartão</Label>
         <PickerContainer>
           <StyledPicker
-            selectedValue={method}
-            onValueChange={(value: string) => setMethod(value as PaymentMethod)}
+            selectedValue={brand}
+            onValueChange={(value: string) => setBrand(value as CardBrand)}
             dropdownIconColor="#ffffff"
           >
             <Picker.Item 
-              label="Selecione o tipo" 
+              label="Selecione a bandeira" 
               value="" 
               color="#a0aec0"
               style={{ fontSize: 14 }}
             />
-            {Object.entries(PaymentMethodLabels).map(([key, label]) => (
+            {Object.entries(CardBrandLabels).map(([key, label]) => (
               <Picker.Item 
                 key={key} 
                 label={label} 

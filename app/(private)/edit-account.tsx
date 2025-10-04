@@ -9,8 +9,7 @@ import {
 import { User, UpdateUser, getUserById, updateUser } from "@/services/user";
 import styled from "styled-components/native";
 import AccountForm from "@/components/organisms/AccountForm";
-import { useRouter } from "expo-router";
-import Title from "@/components/atoms/Title";
+import { Stack, useRouter } from "expo-router";
 
 interface AccountEditScreenProps {
   userId: string;
@@ -74,44 +73,45 @@ export default function AccountEditScreen({ userId }: AccountEditScreenProps) {
   }
 
   return (
-    <View
-      style={{
-        flexDirection: "column",
-        alignItems: "center",
-        backgroundColor: "#041224",
-        paddingVertical: 20,
-        paddingHorizontal: 15,
-        borderBottomWidth: 1,
-        borderBottomColor: "#038082",
-      }}
-    >
-      <Title>Editar Conta</Title>
-
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flex: 1 }}
+    <>
+      <Stack.Screen options={{ title: "Editar conta" }} />
+      <View
+        style={{
+          flexDirection: "column",
+          alignItems: "center",
+          backgroundColor: "#041224",
+          paddingVertical: 20,
+          paddingHorizontal: 15,
+          borderBottomWidth: 1,
+          borderBottomColor: "#038082",
+        }}
       >
-        <ScrollView
-          contentContainerStyle={{ flexGrow: 1 }}
-          keyboardShouldPersistTaps="handled"
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={{ flex: 1 }}
         >
-          <AccountForm
-            name={name}
-            setName={setName}
-            email={email}
-            setEmail={setEmail}
-            currentPassword={currentPassword}
-            setCurrentPassword={setCurrentPassword}
-            newPassword={newPassword}
-            setNewPassword={setNewPassword}
-            confirmPassword={confirmPassword}
-            setConfirmPassword={setConfirmPassword}
-            onSave={handleSave}
-            loading={loading}
-          />
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </View>
+          <ScrollView
+            contentContainerStyle={{ flexGrow: 1 }}
+            keyboardShouldPersistTaps="handled"
+          >
+            <AccountForm
+              name={name}
+              setName={setName}
+              email={email}
+              setEmail={setEmail}
+              currentPassword={currentPassword}
+              setCurrentPassword={setCurrentPassword}
+              newPassword={newPassword}
+              setNewPassword={setNewPassword}
+              confirmPassword={confirmPassword}
+              setConfirmPassword={setConfirmPassword}
+              onSave={handleSave}
+              loading={loading}
+            />
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </View>
+    </>
   );
 }
 
