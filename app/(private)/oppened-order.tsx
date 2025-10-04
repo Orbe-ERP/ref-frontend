@@ -7,6 +7,7 @@ import {
   Order,
   updatePaymentMethod,
   concludeOrders,
+  concludeOrder,
 } from "@/services/order";
 import useRestaurant from "@/hooks/useRestaurant";
 import styled from "styled-components/native";
@@ -94,6 +95,28 @@ export default function OpenedOrderScreen() {
     }
   };
 
+  const handleConcludeSingleOrder = async (orderId: string) => {
+    try {
+      setIsModalVisible(false);
+      const completedOrder = await concludeOrder(
+        orderId,
+        additional,
+        selectedRestaurant?.id
+      );
+      await fetchOrders();
+      router.push({
+        pathname: "/(tabs)/table",
+        params: { orderDetails: JSON.stringify(completedOrder) },
+      });
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Erro ao concluir comanda",
+        text2: "Não foi possível concluir a comanda. Tente novamente.",
+      });
+    }
+  };
+
   const handleAdditional = (value: number) => {
     if (isNaN(value) || value <= 0) setAdditional(0);
     else if (value > 100) setAdditional(100);
@@ -104,6 +127,15 @@ export default function OpenedOrderScreen() {
     <Container>
       <Stack.Screen options={{ headerTitle: "Comandas Abertas" }} />
 
+      <TopBar>
+        <OrderCountText>Comandas Abertas: {orders.length}</OrderCountText>
+        <TopButtonsContainer>
+          <TopButton>
+            <TopButtonText>Ver Comandas Fechadas</TopButtonText>
+          </TopButton>
+        </TopButtonsContainer>
+      </TopBar>
+
       {loading && <LoadingText>Carregando pedidos...</LoadingText>}
       {error && <ErrorText>{error}</ErrorText>}
       {!loading && !error && orders.length === 0 && (
@@ -113,32 +145,52 @@ export default function OpenedOrderScreen() {
       <ScrollView style={{ width: "100%" }}>
         {orders.map((order) => {
           const total = order.products.reduce(
-            (sum, item) => sum + (item.product?.price ?? 0) * item.quantity,
+            (sum, item) =>
+              sum +
+              (item.appliedPrice && item.appliedPrice > 0
+                ? item.appliedPrice
+                : item.product?.price ?? 0) *
+                item.quantity,
             0
           );
 
           return (
             <OrderItem key={order.id}>
               <OrderText>Responsável: {order.responsible}</OrderText>
-              <OrderText>Status: {getStatusLabel(order.status)}</OrderText>
+
               <OrderText>Produtos:</OrderText>
 
-              {order.products.map((item) => (
-                <ProductContainer key={item.productId}>
-                  <ProductText>Nome: {item.product?.name ?? "Produto não encontrado"}</ProductText>
-                  <ProductText>Preço: R${item.product?.price?.toFixed(2) ?? "0.00"}</ProductText>
-                  <ProductText>
-                    Cozinha: {item.product?.kitchen?.name ?? "Não definida"}
-                  </ProductText>
-                  <ProductText>Quantidade: {item.quantity}</ProductText>
-                  {item.observations?.length > 0 && (
+              {order.products.map((item) => {
+                const price =
+                  item.appliedPrice && item.appliedPrice > 0
+                    ? item.appliedPrice
+                    : item.product?.price ?? 0;
+
+                return (
+                  <ProductContainer key={item.productId}>
                     <ProductText>
-                      Observações:{" "}
-                      {item.observations.map((obs) => obs.observation?.description).filter(Boolean).join(", ")}
+                      Status: {getStatusLabel(item.status)}
                     </ProductText>
-                  )}
-                </ProductContainer>
-              ))}
+                    <ProductText>
+                      Nome: {item.product?.name ?? "Produto não encontrado"}
+                    </ProductText>
+                    <ProductText>Preço: R$ {price.toFixed(2)}</ProductText>
+                    <ProductText>
+                      Cozinha: {item.product?.kitchen?.name ?? "Não definida"}
+                    </ProductText>
+                    <ProductText>Quantidade: {item.quantity}</ProductText>
+                    {item.observations?.length > 0 && (
+                      <ProductText>
+                        Observações:{" "}
+                        {item.observations
+                          .map((obs) => obs.observation?.description)
+                          .filter(Boolean)
+                          .join(", ")}
+                      </ProductText>
+                    )}
+                  </ProductContainer>
+                );
+              })}
 
               <TotalText>Total: R$ {total.toFixed(2)}</TotalText>
 
@@ -205,7 +257,7 @@ export default function OpenedOrderScreen() {
 
               <Button
                 label="Concluir Comanda"
-                onPress={() => setIsModalVisible(true)}
+                onPress={() => handleConcludeSingleOrder(order.id)}
               />
             </OrderItem>
           );
@@ -236,7 +288,6 @@ export default function OpenedOrderScreen() {
     </Container>
   );
 }
-
 
 export const ModalOverlay = styled.View`
   flex: 1;
@@ -370,6 +421,37 @@ export const TotalText = styled.Text`
 
 export const PaymentMethodsContainer = styled.View`
   margin: 15px 0;
+`;
+
+export const TopBar = styled.View`
+  width: 100%;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+`;
+
+export const OrderCountText = styled.Text`
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: bold;
+`;
+
+export const TopButtonsContainer = styled.View`
+  flex-direction: row;
+  gap: 10px;
+`;
+
+export const TopButton = styled.TouchableOpacity`
+  background-color: #038082;
+  padding: 8px 12px;
+  border-radius: 5px;
+`;
+
+export const TopButtonText = styled.Text`
+  color: #fff;
+  font-weight: bold;
+  font-size: 14px;
 `;
 
 export const PaymentMethodsText = styled.Text`

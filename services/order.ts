@@ -104,6 +104,21 @@ export async function getOrdersByRestaurant(restaurantId: string, status?: strin
   }
 }
 
+
+
+export async function concludeOrder(orderId: string, additional: number = 0, restaurantId: string) {
+  try {
+    const response = await api.put(`/orders/${orderId}/restaurant/${restaurantId}/conclude`, null, {
+      params: { additional },
+    });
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw new Error(`Error concluding single order: ${error}`);
+  }
+}
+
+
 export async function getOrders(tableId: string) {
   if (!tableId) throw new Error("Table Id not defined");
   try {

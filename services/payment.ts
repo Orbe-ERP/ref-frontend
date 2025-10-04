@@ -45,12 +45,14 @@ export interface CreateOrUpdatePaymentConfig {
 }
 
 export async function getPaymentConfigs(restaurantId: string | undefined) {
+
   if (!restaurantId) {
     throw new Error("Nenhum restaurante selecionado");
   }
 
   try {
     const response = await api.get<PaymentConfig[]>(`/payment-config/${restaurantId}`);
+
     return response.data;
   } catch (error) {
     throw new Error(`Erro ao obter configurações de pagamento: ${error}`);

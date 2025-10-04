@@ -93,16 +93,26 @@ export default function RestaurantEditScreen({ restaurantId }: RestaurantEditScr
           contentContainerStyle={{ flexGrow: 1 }}
           keyboardShouldPersistTaps="handled"
         >
-          <RestaurantForm
-            name={name}
-            setName={setName}
-            tradeName={tradeName}
-            setTradeName={setTradeName}
-            cnpj={cnpj}
-            setCnpj={setCnpj}
-            onSave={handleSave}
-            loading={loading}
-          />
+<RestaurantForm
+  initialValues={{
+    name: restaurant?.name ?? "",
+    tradeName: restaurant?.tradeName ?? "",
+    cnpj: restaurant?.cnpj ?? "",
+  }}
+  onSubmit={async (values) => {
+    try {
+      setLoading(true);
+      await updateRestaurant(restaurantId, values);
+      navigation.back();
+    } catch (err) {
+      console.error("Erro ao atualizar restaurante:", err);
+    } finally {
+      setLoading(false);
+    }
+  }}
+  loading={loading}
+/>
+
         </ScrollView>
       </KeyboardAvoidingView>
     </View>
