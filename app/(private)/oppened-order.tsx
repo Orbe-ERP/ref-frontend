@@ -127,15 +127,6 @@ export default function OpenedOrderScreen() {
     <Container>
       <Stack.Screen options={{ headerTitle: "Comandas Abertas" }} />
 
-      <TopBar>
-        <OrderCountText>Comandas Abertas: {orders.length}</OrderCountText>
-        <TopButtonsContainer>
-          <TopButton>
-            <TopButtonText>Ver Comandas Fechadas</TopButtonText>
-          </TopButton>
-        </TopButtonsContainer>
-      </TopBar>
-
       {loading && <LoadingText>Carregando pedidos...</LoadingText>}
       {error && <ErrorText>{error}</ErrorText>}
       {!loading && !error && orders.length === 0 && (
