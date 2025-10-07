@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   link: {
-    backgroundColor: "#007AFF",
+    backgroundColor: "#00ff0d",
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 8,

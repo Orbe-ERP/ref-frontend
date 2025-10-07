@@ -59,6 +59,12 @@ export default function OrderScreen() {
       params: { tableId, addedProducts: JSON.stringify(addedProducts) },
     });
   };
+  const goToClosedOrders = () => {
+    router.push({
+      pathname: "/(private)/completed-orders",
+      params: { tableId},
+    });
+  };
 
   const handleTablePress = () => {
     router.push({
@@ -73,14 +79,25 @@ export default function OrderScreen() {
         options={{
           headerTitle: "Comanda",
           headerRight: () => (
-            <CartContainer onPress={goToCart}>
-              <Ionicons name="cart-outline" size={24} color="white" />
-              {addedProducts.length > 0 && (
-                <Badge>
-                  <BadgeText>{addedProducts.length}</BadgeText>
-                </Badge>
-              )}
-            </CartContainer>
+
+
+<HeaderRightContainer>
+        {/* Novo ícone */}
+        <CartContainer onPress={goToClosedOrders}>
+          <Ionicons name="time-outline" size={24} color="white" />
+        </CartContainer>
+
+        {/* Ícone do carrinho */}
+        <CartContainer onPress={goToCart}>
+          <Ionicons name="cart-outline" size={24} color="white" />
+          {addedProducts.length > 0 && (
+            <Badge>
+              <BadgeText>{addedProducts.length}</BadgeText>
+            </Badge>
+          )}
+        </CartContainer>
+      </HeaderRightContainer>
+
           ),
         }}
       />
@@ -120,6 +137,13 @@ const CartContainer = styled.TouchableOpacity`
   margin-right: 15px;
 `;
 
+
+const HeaderRightContainer = styled.View`
+flex-direction: row; 
+align-items: center;
+ gap: 10px; 
+` 
+
 const Badge = styled.View`
   position: absolute;
   top: -4px;
@@ -131,6 +155,7 @@ const Badge = styled.View`
   justify-content: center;
   align-items: center;
 `;
+
 
 const BadgeText = styled.Text`
   color: white;

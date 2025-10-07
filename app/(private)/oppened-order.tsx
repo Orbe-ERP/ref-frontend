@@ -129,11 +129,7 @@ export default function OpenedOrderScreen() {
 
       <TopBar>
         <OrderCountText>Comandas Abertas: {orders.length}</OrderCountText>
-        <TopButtonsContainer>
-          <TopButton>
-            <TopButtonText>Ver Comandas Fechadas</TopButtonText>
-          </TopButton>
-        </TopButtonsContainer>
+
       </TopBar>
 
       {loading && <LoadingText>Carregando pedidos...</LoadingText>}
@@ -437,22 +433,6 @@ export const OrderCountText = styled.Text`
   font-weight: bold;
 `;
 
-export const TopButtonsContainer = styled.View`
-  flex-direction: row;
-  gap: 10px;
-`;
-
-export const TopButton = styled.TouchableOpacity`
-  background-color: #038082;
-  padding: 8px 12px;
-  border-radius: 5px;
-`;
-
-export const TopButtonText = styled.Text`
-  color: #fff;
-  font-weight: bold;
-  font-size: 14px;
-`;
 
 export const PaymentMethodsText = styled.Text`
   color: #ffffff;

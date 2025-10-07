@@ -140,6 +140,22 @@ export async function addProductToOrder(productData: AddProductInput) {
   }
 }
 
+export async function getCompletedOrdersByTable(tableId: string) {
+  if (!tableId) throw new Error("Table Id not defined");
+
+  try {
+    const response = await api.get(`/orders/completed`, {
+      params: { tableId },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw new Error(`Error fetching completed orders: ${error}`);
+  }
+}
+
+
 export async function updateStatus(orderData: UpdateOrderStatus) {
   try {
     const response = await api.patch("/orders", orderData);
