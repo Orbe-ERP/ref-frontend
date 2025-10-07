@@ -129,7 +129,6 @@ export default function OpenedOrderScreen() {
 
       <TopBar>
         <OrderCountText>Comandas Abertas: {orders.length}</OrderCountText>
-
       </TopBar>
 
       {loading && <LoadingText>Carregando pedidos...</LoadingText>}

@@ -11,7 +11,7 @@ import {
   getObservationsByProduct,
 } from "@/services/product";
 import Input from "@/components/atoms/Input";
-import { useLocalSearchParams } from "expo-router";
+import { Stack, useLocalSearchParams } from "expo-router";
 
 /** 🔹 Atoms */
 const ScreenContainer = styled.View`
@@ -25,7 +25,14 @@ const InputRow = styled.View`
   align-items: center;
 `;
 
-
+const AddButtonWrapper = styled.View`
+  margin-left: 8px;
+  height: 44px;
+  width: 44px;
+  justify-content: center;
+  align-items: center;
+  margin-top: -18px;
+`;
 
 const ObservationItem = styled.View`
   background-color: #1e293b;
@@ -108,35 +115,41 @@ export default function ObservationScreen() {
   }
 
   return (
-    <ScreenContainer>
-      <InputRow>
-        <Input
-          placeholder="Digite a observação"
-          placeholderTextColor="#94a3b8"
-          value={observationText}
-          onChangeText={setObservationText}
-        />
-        <IconButton onPress={handleSave} icon="add">
-          <Ionicons name="add-circle" size={28} color="#fff" />
-        </IconButton>
-      </InputRow>
-
-      <FlatList
-        data={observations}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <ObservationItem>
-            <ObservationText>{item.description}</ObservationText>
-            <IconButton onPress={() => handleDelete(item.id)} icon="trash">
-              <Ionicons name="trash" size={20} color="#dc2626" />
+    <>
+      <Stack.Screen options={{title: "Observações", }} />
+      <ScreenContainer>
+        <InputRow>
+          <Input
+            placeholder="Digite a observação"
+            placeholderTextColor="#94a3b8"
+            value={observationText}
+            onChangeText={setObservationText}
+            style={{ flex: 1, paddingVertical: 6 }}
+          />
+          <AddButtonWrapper>
+            <IconButton onPress={handleSave} icon="add">
+              <Ionicons name="add-circle" size={28} color="#fff" />
             </IconButton>
-          </ObservationItem>
-        )}
-        ListEmptyComponent={
-          <ListEmptyText>Nenhuma observação adicionada.</ListEmptyText>
-        }
-        style={{ marginTop: 16 }}
-      />
-    </ScreenContainer>
+          </AddButtonWrapper>
+        </InputRow>
+
+        <FlatList
+          data={observations}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <ObservationItem>
+              <ObservationText>{item.description}</ObservationText>
+              <IconButton onPress={() => handleDelete(item.id)} icon="trash">
+                <Ionicons name="trash" size={20} color="#dc2626" />
+              </IconButton>
+            </ObservationItem>
+          )}
+          ListEmptyComponent={
+            <ListEmptyText>Nenhuma observação adicionada.</ListEmptyText>
+          }
+          style={{ marginTop: 16 }}
+        />
+      </ScreenContainer>
+    </>
   );
 }

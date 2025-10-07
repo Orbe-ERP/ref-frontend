@@ -51,6 +51,7 @@ export default function HomeScreen() {
       <Button label="Selecionar Restaurante" onPress={() =>{router.push('/(private)/select-restaurant')}} />
       <Button label="Cozinha" onPress={() =>{router.push('/(private)/kitchen')}} />
       <Button label="Relatórios" onPress={() =>{router.push('/(private)/report')}} />
+      <Button label="Tutorial" onPress={() =>{router.push('/(private)/onboarding')}} />
 
     </ScrollView>
   );

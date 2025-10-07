@@ -47,19 +47,14 @@ export default function ConfigScreen() {
           <Title style={{ color: "#fff" }}>Configurações</Title>
         </Header>
 
-        <ItemRow onPress={() => router.push("/edit-account")}>
-          <Ionicons name="person-outline" size={22} color="#038082" />
-          <ItemText>Gerenciar conta</ItemText>
+        <ItemRow onPress={() => router.push("/create-kitchen")}>
+          <Ionicons name="restaurant-outline" size={22} color="#038082" />
+          <ItemText>Gerenciar Cozinhas</ItemText>
         </ItemRow>
 
         <ItemRow onPress={() => router.push("/category")}>
           <Ionicons name="albums-outline" size={22} color="#038082" />
           <ItemText>Gerenciar Categorias e Produtos</ItemText>
-        </ItemRow>
-
-        <ItemRow onPress={() => router.push("/create-kitchen")}>
-          <Ionicons name="restaurant-outline" size={22} color="#038082" />
-          <ItemText>Gerenciar Cozinhas</ItemText>
         </ItemRow>
 
         <ItemRow onPress={() => router.push("/payment-config")}>
@@ -75,6 +70,11 @@ export default function ConfigScreen() {
         <ItemRow onPress={() => router.push("/users-list")}>
           <Ionicons name="list-outline" size={22} color="#038082" />
           <ItemText>Listar usuários</ItemText>
+        </ItemRow>
+
+        <ItemRow onPress={() => router.push("/edit-account")}>
+          <Ionicons name="person-outline" size={22} color="#038082" />
+          <ItemText>Gerenciar conta</ItemText>
         </ItemRow>
 
         <Footer>
