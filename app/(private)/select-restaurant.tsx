@@ -73,7 +73,14 @@ export default function SelectRestaurantScreen() {
 
   return (
     <>
-      <Stack.Screen options={{title: "Selecionar Restaurante", }} />
+      <Stack.Screen
+        options={{ 
+          title: 'Selecionar Restaurante',
+          headerStyle: { 
+            backgroundColor: "#041224"
+          }, 
+        }}
+      />
       <Container>
         <Subtitle>Restaurantes Disponíveis</Subtitle>
         <RestaurantList
