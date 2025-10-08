@@ -55,8 +55,7 @@ export default function RootLayout() {
         <StatusBar style="dark" />
 
         <ThemeProvider
-          value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-        >
+          value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
           <RestaurantProvider>
             <AuthProvider>
               <AuthGuard>

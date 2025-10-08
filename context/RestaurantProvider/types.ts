@@ -10,8 +10,8 @@ export interface IRestaurant {
   }
   
   export interface IContext extends IRestaurant {
-    selectRestaurant: (i: IRestaurant) => Promise<void>;
-    selectedRestaurant: () => IRestaurant;
+    selectRestaurant: (i: IRestaurant | null) => Promise<void>;
+    selectedRestaurant: () => IRestaurant | null;
   }
   
   export interface IAuthProvider {

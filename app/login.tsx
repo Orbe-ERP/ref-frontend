@@ -62,7 +62,7 @@ const ErrorText = styled.Text`
 `;
 
 const Button = styled.TouchableOpacity<{ disabled?: boolean }>`
-  background-color: ${({ disabled }) => (disabled ? "#4B5563" : COLORS.background)};
+  background-color: ${(props: { disabled?: boolean }) => (props.disabled ? "#4B5563" : COLORS.background)};
   padding: 16px;
   border-radius: 10px;
   align-items: center;

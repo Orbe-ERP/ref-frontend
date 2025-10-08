@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { ScrollView, View } from "react-native";
 import useRestaurant from "@/hooks/useRestaurant";
-import Title from "@/components/atoms/Title";
 import { Stack, useRouter } from "expo-router";
 import ExpertModal from "@/components/organisms/ExpertModal";
 import {
