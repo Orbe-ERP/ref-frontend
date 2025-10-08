@@ -62,7 +62,14 @@ export default function ProductScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: "#041224", padding: 24 }}>
-      <Stack.Screen options={{ title: "Produtos" }} />
+      <Stack.Screen 
+        options={{ 
+          title: "Produtos",
+          headerStyle: { 
+            backgroundColor: "#041224"
+          },
+        }}
+      />
       <ScrollView
         contentContainerStyle={{
           flexDirection: "row",

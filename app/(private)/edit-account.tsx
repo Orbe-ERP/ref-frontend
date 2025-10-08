@@ -74,7 +74,14 @@ export default function AccountEditScreen({ userId }: AccountEditScreenProps) {
 
   return (
     <>
-      <Stack.Screen options={{ title: "Editar conta" }} />
+      <Stack.Screen 
+        options={{ 
+          title: "Editar conta",
+          headerStyle: { 
+            backgroundColor: "#041224"
+          },
+        }}
+      />
       <View
         style={{
           flexDirection: "column",

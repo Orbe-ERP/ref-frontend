@@ -116,7 +116,14 @@ export default function ObservationScreen() {
 
   return (
     <>
-      <Stack.Screen options={{title: "Observações", }} />
+      <Stack.Screen 
+        options={{
+          title: "Observações",
+          headerStyle: { 
+            backgroundColor: "#041224"
+          }, 
+        }} 
+      />
       <ScreenContainer>
         <InputRow>
           <Input

@@ -70,7 +70,14 @@ export default function CategoryScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: "#041224", padding: 24 }}>
-      <Stack.Screen options={{ title: "Categorias" }} />
+      <Stack.Screen 
+        options={{ 
+          title: "Categorias", 
+          headerStyle: { 
+            backgroundColor: "#041224"
+          },  
+        }} 
+      />
 
       <ScrollView
         contentContainerStyle={{

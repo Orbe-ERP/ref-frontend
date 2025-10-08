@@ -179,7 +179,14 @@ export default function OpenedOrderScreen() {
 
   return (
     <Container>
-      <Stack.Screen options={{ headerTitle: "Comandas Abertas" }} />
+      <Stack.Screen 
+        options={{ 
+          headerTitle: "Comandas Abertas",
+          headerStyle: { 
+            backgroundColor: "#041224"
+          }, 
+        }} 
+      />
 
       <TopBar>
         <OrderCountText>Comandas Abertas: {orders.length}</OrderCountText>

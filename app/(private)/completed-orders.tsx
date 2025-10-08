@@ -45,6 +45,9 @@ const CompletedOrdersScreen = () => {
       <Stack.Screen
         options={{
           title: "Comandas Fechadas",
+          headerStyle: { 
+            backgroundColor: "#041224"
+          }, 
         }}
       />
 

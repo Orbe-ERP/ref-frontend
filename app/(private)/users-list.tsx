@@ -44,7 +44,14 @@ const UserListScreen = () => {
 
   return (
     <>
-      <Stack.Screen options={{title: "Lista de usuários", }} />
+      <Stack.Screen 
+        options={{
+          title: "Lista de usuários",
+          headerStyle: { 
+            backgroundColor: "#041224"
+          }, 
+        }} 
+      />
       <UserListTemplate
         users={users}
         onDelete={handleDeleteUser}

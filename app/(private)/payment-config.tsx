@@ -188,7 +188,14 @@ export default function TaxPage() {
 
   return (
     <>
-      <Stack.Screen options={{title: "Gestão de Taxas", }} />
+      <Stack.Screen 
+        options={{
+          title: "Gestão de Taxas",
+          headerStyle: { 
+            backgroundColor: "#041224"
+          }, 
+        }} 
+      />
       <Container>
         <Subtitle>Cadastre e gerencie as taxas dos cartões</Subtitle>
 

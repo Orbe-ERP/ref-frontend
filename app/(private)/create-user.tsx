@@ -24,7 +24,14 @@ const CreateUserScreen = () => {
 
   return (
     <>
-      <Stack.Screen options={{title: "Criar usuário", }} />
+      <Stack.Screen 
+        options={{
+          title: "Criar usuário", 
+          headerStyle: { 
+            backgroundColor: "#041224"
+          }, 
+        }}
+      />
       <UserForm onSubmit={handleCreateUser} />
     </>
   );

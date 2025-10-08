@@ -142,6 +142,9 @@ export default function CartScreen() {
       <Stack.Screen
         options={{
           headerTitle: "Comanda",
+          headerStyle: { 
+            backgroundColor: "#041224"
+          }, 
           headerRight: () => (
             <Ionicons
               name="restaurant-outline"
@@ -241,7 +244,7 @@ export default function CartScreen() {
 
             <Row>
               <Label>Para viagem?</Label>
-              <Switch value={toTake} onValueChange={setToTake} />
+              <Switch value={toTake} onValueChange={setToTake} color="#7FE06C" />
             </Row>
           </ScrollView>
 

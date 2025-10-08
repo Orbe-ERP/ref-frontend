@@ -115,7 +115,14 @@ export default function KitchenScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: "#041224", padding: 24 }}>
-      <Stack.Screen options={{ title: "Cozinhas" }} />
+      <Stack.Screen 
+        options={{ 
+          title: "Cozinhas",
+          headerStyle: { 
+            backgroundColor: "#041224"
+          },
+        }}
+      />
 
       <ScrollView
         contentContainerStyle={{

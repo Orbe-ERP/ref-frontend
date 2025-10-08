@@ -78,26 +78,28 @@ export default function OrderScreen() {
       <Stack.Screen
         options={{
           headerTitle: "Comanda",
+          headerStyle: { 
+            backgroundColor: "#041224"
+          }, 
           headerRight: () => (
 
 
-<HeaderRightContainer>
-        {/* Novo ícone */}
-        <CartContainer onPress={goToClosedOrders}>
-          <Ionicons name="print-outline" size={24} color="white" />
-        </CartContainer>
+            <HeaderRightContainer>
+              {/* Novo ícone */}
+              <CartContainer onPress={goToClosedOrders}>
+                <Ionicons name="print-outline" size={24} color="white" />
+              </CartContainer>
 
-        {/* Ícone do carrinho */}
-        <CartContainer onPress={goToCart}>
-          <Ionicons name="cart-outline" size={24} color="white" />
-          {addedProducts.length > 0 && (
-            <Badge>
-              <BadgeText>{addedProducts.length}</BadgeText>
-            </Badge>
-          )}
-        </CartContainer>
-      </HeaderRightContainer>
-
+              {/* Ícone do carrinho */}
+              <CartContainer onPress={goToCart}>
+                <Ionicons name="cart-outline" size={24} color="white" />
+                {addedProducts.length > 0 && (
+                  <Badge>
+                    <BadgeText>{addedProducts.length}</BadgeText>
+                  </Badge>
+                )}
+              </CartContainer>
+            </HeaderRightContainer>
           ),
         }}
       />

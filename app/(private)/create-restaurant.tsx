@@ -48,7 +48,14 @@ export default function RestaurantScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ title: "Criar Restaurante" }} />
+      <Stack.Screen 
+        options={{ 
+          title: "Criar Restaurante",
+          headerStyle: { 
+            backgroundColor: "#041224"
+          },
+        }}
+      />
       <View style={{ flex: 1, backgroundColor: "#041224" }}>
         <RestaurantForm
           initialValues={initialValues}
