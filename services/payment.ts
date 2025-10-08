@@ -77,14 +77,19 @@ export async function createOrUpdatePaymentConfig(
 
 export async function deletePaymentConfig(
   restaurantId: string | undefined,
-  id: string
+  method: PaymentMethod,
+  brand?: CardBrand
 ) {
   if (!restaurantId) {
     throw new Error("ID do restaurante não definido");
   }
 
   try {
-    const response = await api.delete<PaymentConfig>(`/payment-config/${restaurantId}/${id}`);
+    const url = `/payment-config/${restaurantId}/${method}${
+      brand ? `?brand=${encodeURIComponent(brand)}` : ''
+    }`;
+    
+    const response = await api.delete<PaymentConfig>(url);
     return response.data;
   } catch (error) {
     throw new Error(`Erro ao deletar configuração de pagamento: ${error}`);

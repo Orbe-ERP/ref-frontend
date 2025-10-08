@@ -137,32 +137,18 @@ export default function CartScreen() {
     router.push({ pathname: "/oppened-order", params: { tableId } });
   };
 
-  const goToClosedOrder = () => {
-    router.push({ pathname: "/closed-order", params: { tableId } });
-  };
-
   return (
     <Container>
       <Stack.Screen
         options={{
           headerTitle: "Comanda",
           headerRight: () => (
-            <View style={{ flexDirection: "row", marginRight: 15 }}>
-              <Ionicons
-                name="print-outline"
-                size={24}
-                color="white"
-                style={{ marginRight: 20 }}
-                onPress={goToClosedOrder}
-                // onPress={handlePrint} // função chamada ao clicar
-              />
-              <Ionicons
-                name="restaurant-outline"
-                size={24}
-                color="white"
-                onPress={goToOppenedOrder}
-              />
-            </View>
+            <Ionicons
+              name="restaurant-outline"
+              size={24}
+              color="white"
+              onPress={goToOppenedOrder}
+            />
           ),
         }}
       />

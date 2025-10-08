@@ -84,7 +84,7 @@ export default function OrderScreen() {
 <HeaderRightContainer>
         {/* Novo ícone */}
         <CartContainer onPress={goToClosedOrders}>
-          <Ionicons name="time-outline" size={24} color="white" />
+          <Ionicons name="print-outline" size={24} color="white" />
         </CartContainer>
 
         {/* Ícone do carrinho */}

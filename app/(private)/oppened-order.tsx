@@ -13,6 +13,14 @@ import useRestaurant from "@/hooks/useRestaurant";
 import styled from "styled-components/native";
 import Button from "@/components/atoms/Button";
 import Toast from "react-native-toast-message";
+import {
+  getPaymentConfigs,
+  PaymentConfig,
+  PaymentMethod,
+  PaymentMethodLabels,
+  CardBrandLabels,
+} from "@/services/payment";
+
 
 export default function OpenedOrderScreen() {
   const { tableId } = useLocalSearchParams();
@@ -23,6 +31,8 @@ export default function OpenedOrderScreen() {
   const [error, setError] = useState<string | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [additional, setAdditional] = useState<number>(10);
+  const [paymentConfigs, setPaymentConfigs] = useState<PaymentConfig[]>([]);
+  const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
 
   const { selectedRestaurant } = useRestaurant();
   const screenWidth = Dimensions.get("window").width;
@@ -42,6 +52,28 @@ export default function OpenedOrderScreen() {
     if (tableId) fetchOrders();
   }, [tableId]);
 
+  useEffect(() => {
+    async function loadConfigs() {
+      const configs = await getPaymentConfigs(selectedRestaurant?.id);
+      setPaymentConfigs(configs);
+    }
+    loadConfigs();
+  }, [selectedRestaurant?.id]);
+
+  const handleCardBrandSelect = (orderId: string, brand: string) => {
+    setOrders((prevOrders) =>
+      prevOrders.map((o) => {
+        if (o.id === orderId) {
+          if (o.cardBrand === brand) {
+            return { ...o, cardBrand: undefined };
+          }
+          return { ...o, cardBrand: brand };
+        }
+        return o;
+      })
+    );
+  };
+
   const getStatusLabel = (status: string) => {
     switch (status) {
       case "WAITING_DELIVERY":
@@ -59,22 +91,44 @@ export default function OpenedOrderScreen() {
     }
   };
 
-  const handlePaymentMethodSelect = async (orderId: string, method: string) => {
-    try {
-      await updatePaymentMethod({ id: orderId, paymentMethod: method });
-      setOrders((prev) =>
-        prev.map((order) =>
-          order.id === orderId ? { ...order, paymentMethod: method } : order
-        )
-      );
-    } catch (error) {
-      console.error(error);
-    }
+  const handlePaymentMethodSelect = (orderId: string, method: string) => {
+    setOrders((prevOrders) =>
+      prevOrders.map((o) =>
+        o.id === orderId
+          ? {
+              ...o,
+              paymentMethod: method,
+              cardBrand:
+                method === "CREDIT_CARD" || method === "DEBIT_CARD"
+                  ? o.cardBrand
+                  : undefined,
+            }
+          : o
+      )
+    );
   };
 
   const handleConcludeOrders = async (sumIndividually: boolean) => {
     try {
       setIsModalVisible(false);
+      console.log("Dados sendo enviados ao fechar comanda:", {
+      tableId: tableId as string,
+      sumIndividually,
+      restaurantId: selectedRestaurant?.id,
+      additional,
+      orders: orders.map(order => ({
+        id: order.id,
+        responsible: order.responsible,
+        paymentMethod: order.paymentMethod,
+        cardBrand: order.cardBrand,
+        products: order.products.map(product => ({
+          productId: product.productId,
+          quantity: product.quantity,
+          appliedPrice: product.appliedPrice,
+          status: product.status
+        }))
+      }))
+    });
       const completedOrderDetails = await concludeOrders(
         tableId as string,
         sumIndividually,
@@ -192,44 +246,67 @@ export default function OpenedOrderScreen() {
               <PaymentMethodsContainer>
                 <PaymentMethodsText>Método de pagamento:</PaymentMethodsText>
                 <PaymentOptions style={{ width: screenWidth * 0.9 }}>
-                  {["PIX", "CASH", "CREDIT_CARD", "DEBIT_CARD"].map(
-                    (method) => {
-                      const isSelected = order.paymentMethod === method;
-                      return (
-                        <PaymentButton
-                          key={method}
-                          selected={isSelected}
-                          onPress={() =>
-                            handlePaymentMethodSelect(order.id, method)
-                          }
-                        >
-                          <Ionicons
-                            name={
-                              method === "PIX"
-                                ? "cash-outline"
-                                : method === "CASH"
-                                ? "wallet-outline"
-                                : method === "CREDIT_CARD"
-                                ? "card-outline"
-                                : "card-sharp"
-                            }
-                            size={24}
-                            color={isSelected ? "#fff" : "#aaa"}
-                          />
-                          <PaymentButtonText selected={isSelected}>
-                            {method === "PIX"
-                              ? "PIX"
+                  {["PIX", "CASH", "CREDIT_CARD", "DEBIT_CARD"].map((method) => {
+                    const isSelected = order.paymentMethod === method;
+
+                    return (
+                      <PaymentButton
+                        key={method}
+                        selected={isSelected}
+                        onPress={() => handlePaymentMethodSelect(order.id, method)}
+                      >
+                        <Ionicons
+                          name={
+                            method === "PIX"
+                              ? "cash-outline"
                               : method === "CASH"
-                              ? "Dinheiro"
+                              ? "wallet-outline"
                               : method === "CREDIT_CARD"
-                              ? "Crédito"
-                              : "Débito"}
-                          </PaymentButtonText>
-                        </PaymentButton>
-                      );
-                    }
-                  )}
+                              ? "card-outline"
+                              : "card-sharp"
+                          }
+                          size={24}
+                          color={isSelected ? "#fff" : "#aaa"}
+                        />
+                        <PaymentButtonText selected={isSelected}>
+                          {method === "PIX"
+                            ? "PIX"
+                            : method === "CASH"
+                            ? "Dinheiro"
+                            : method === "CREDIT_CARD"
+                            ? "Crédito"
+                            : "Débito"}
+                        </PaymentButtonText>
+                      </PaymentButton>
+                    );
+                  })}
                 </PaymentOptions>
+
+                {(order.paymentMethod === "CREDIT_CARD" ||
+                  order.paymentMethod === "DEBIT_CARD") && (
+                  <TaxList>
+                    {paymentConfigs
+                      .filter((config) => config.method === order.paymentMethod)
+                      .map((config) => {
+                        const isBrandSelected = selectedBrand === config.brand;
+                        return (
+                          <TaxItem
+                            key={config.id}
+                            selected={isBrandSelected}
+                            onPress={() =>
+                              setSelectedBrand(
+                                isBrandSelected ? null : config.brand || null
+                              )
+                            }
+                          >
+                            <TaxText selected={isBrandSelected}>
+                              {CardBrandLabels[config.brand ?? "OUTRO"]}
+                            </TaxText>
+                          </TaxItem>
+                        );
+                      })}
+                  </TaxList>
+                )}
               </PaymentMethodsContainer>
 
               <OrderText style={{ marginTop: 10 }}>Adicional (%)</OrderText>
@@ -247,11 +324,13 @@ export default function OpenedOrderScreen() {
                   padding: 10,
                   borderRadius: 5,
                   fontSize: 16,
+                  marginBottom: 10,
                 }}
               />
 
               <Button
                 label="Concluir Comanda"
+                variant="primary"
                 onPress={() => handleConcludeSingleOrder(order.id)}
               />
             </OrderItem>
@@ -464,3 +543,23 @@ export const PaymentButtonText = styled.Text<{ selected?: boolean }>`
   font-size: 14px;
   font-weight: bold;
 `;
+
+const TaxList = styled.View`
+  margin-top: 12px;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 8px;
+`;
+
+const TaxItem = styled.TouchableOpacity<{ selected?: boolean }>`
+  background-color: ${({ selected }) => (selected ? "#9fd6d2" : "#1a1a1a")};
+  border: 1px solid ${({ selected }) => (selected ? "#9fd6d2" : "#444")};
+  border-radius: 8px;
+  padding: 8px 12px;
+`;
+
+const TaxText = styled.Text<{ selected?: boolean }>`
+  color: ${({ selected }) => (selected ? "#041224" : "#fff")};
+  font-size: 14px;
+`;
+

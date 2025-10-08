@@ -14,6 +14,7 @@ import {
 } from "@/services/payment";
 import useRestaurant from "@/hooks/useRestaurant";
 import { Stack } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 
 const Container = styled.ScrollView`
   flex: 1;
@@ -30,7 +31,7 @@ const Title = styled.Text`
 
 const Subtitle = styled.Text`
   font-size: 14px;
-  color: #666;
+  color: #fff;
   margin-bottom: 20px;
 `;
 
@@ -86,14 +87,28 @@ const ButtonText = styled.Text<{ variant?: "primary" | "secondary" }>`
   text-align: center;
 `;
 
+const DeleteButton = styled.TouchableOpacity`
+  padding: 6px;
+  justify-content: center;
+  align-items: center;
+`;
+
 const TaxItem = styled.View`
-  padding: 12px;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  margin-top: 10px;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  padding: 12px 14px;
+  /* border: 1px solid #eee; */
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  margin-top: 6px;
+`;
+
+const TaxText = styled.Text`
+  color: #fff;
+  font-size: 14px;
+  margin: 0;
+  flex-shrink: 1;
 `;
 
 export default function TaxPage() {
@@ -106,24 +121,18 @@ export default function TaxPage() {
   const loadConfigs = useCallback(async () => {
     try {
       if (!selectedRestaurant?.id) {
-        console.log("Nenhum restaurante selecionado");
         return;
       }
       const data = await getPaymentConfigs(selectedRestaurant.id);
       setConfigs(data);
     } catch (err: any) {
-      console.error("Erro ao carregar configurações:", err);
       Alert.alert("Erro", err.message);
     }
   }, [selectedRestaurant?.id]);
 
   async function handleAdd() {
-    console.log("handleAdd chamado", { method, brand, feePercent, restaurantId: selectedRestaurant?.id });
-
-    // Validação melhorada
     if (!method || !feePercent || !brand) {
       Alert.alert("Atenção", "Preencha todos os campos!");
-      console.log("Campos faltando:", { method, brand, feePercent });
       return;
     }
 
@@ -141,15 +150,11 @@ export default function TaxPage() {
     }
 
     try {
-      console.log("Tentando criar/atualizar configuração...");
-      
       await createOrUpdatePaymentConfig(selectedRestaurant.id, {
         method: method as PaymentMethod,
         brand: brand as CardBrand,
         feePercent: fee,
       });
-      
-      console.log("Configuração salva com sucesso!");
       
       // Reset dos campos
       setFeePercent("");
@@ -160,7 +165,6 @@ export default function TaxPage() {
       await loadConfigs();
       
     } catch (err: any) {
-      console.error("Erro ao salvar:", err);
       Alert.alert("Erro", err.message);
     }
   }
@@ -171,16 +175,14 @@ export default function TaxPage() {
         Alert.alert("Erro", "Nenhum restaurante selecionado!");
         return;
       }
-      await deletePaymentConfig(selectedRestaurant.id, item.id);
-      loadConfigs();
+      await deletePaymentConfig(selectedRestaurant.id, item.method, item.brand);
+      await loadConfigs();
     } catch (err: any) {
-      console.error("Erro ao deletar:", err);
       Alert.alert("Erro", err.message);
     }
   }
 
   useEffect(() => {
-    console.log("Restaurante selecionado:", selectedRestaurant?.id);
     loadConfigs();
   }, [loadConfigs, selectedRestaurant?.id]);
 
@@ -249,6 +251,7 @@ export default function TaxPage() {
           placeholder="Ex: 2.5"
           value={feePercent}
           onChangeText={setFeePercent}
+          style={{ color: "#a0aec0" }}
         />
 
         {/* Botões */}
@@ -275,13 +278,13 @@ export default function TaxPage() {
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
               <TaxItem>
-                <Subtitle>
+                <TaxText>
                   {item.method ? PaymentMethodLabels[item.method] : "Sem tipo"} -{" "}
                   {item.brand ? CardBrandLabels[item.brand] : "Sem bandeira"} - {item.feePercent}%
-                </Subtitle>
-                <Button variant="secondary" onPress={() => handleDelete(item)}>
-                  <ButtonText variant="secondary">Excluir</ButtonText>
-                </Button>
+                </TaxText>
+                <DeleteButton onPress={() => handleDelete(item)}>
+                  <Ionicons name="trash-outline" size={20} color="#ff4444" />
+                </DeleteButton>
               </TaxItem>
             )}
           />
