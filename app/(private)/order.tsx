@@ -80,10 +80,8 @@ export default function OrderScreen() {
           headerTitle: "Comanda",
           headerStyle: { 
             backgroundColor: "#041224"
-          }, 
+          },
           headerRight: () => (
-
-
             <HeaderRightContainer>
               {/* Novo ícone */}
               <CartContainer onPress={goToClosedOrders}>

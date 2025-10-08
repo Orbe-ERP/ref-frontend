@@ -218,7 +218,14 @@ export default function KitchenScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ title: "Cozinha" }} />
+      <Stack.Screen 
+        options={{ 
+          title: "Cozinha",
+          headerStyle: { 
+            backgroundColor: "#041224"
+          },
+        }} 
+      />
       <Container>
         <PickerContainer>
           <Picker
