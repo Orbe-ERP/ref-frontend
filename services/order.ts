@@ -82,22 +82,22 @@ export async function getOrdersByRestaurant(restaurantId: string, status?: strin
       params: status ? { status } : {},
     });
 
-    const orders = response.data;
+const orders = Array.isArray(response.data) ? response.data : [];
 
-    const filteredOrders = orders
-      .map((order: any) => {
-        const filteredProducts = order.products.filter(
-          (product: any) => product.product?.kitchen?.showOnKitchen !== false
-        );
+const filteredOrders = orders
+  .map((order: any) => {
+    const filteredProducts = order.products?.filter(
+      (product: any) => product.product?.kitchen?.showOnKitchen !== false
+    ) || [];
 
-        return {
-          ...order,
-          products: filteredProducts,
-        };
-      })
-      .filter((order: any) => order.products.length > 0);
+    return {
+      ...order,
+      products: filteredProducts,
+    };
+  })
+  .filter((order: any) => order.products.length > 0);
 
-    return filteredOrders;
+return filteredOrders;
   } catch (error) {
     console.error(error);
     throw new Error(`Error fetching orders by restaurant: ${error}`);

@@ -1,14 +1,11 @@
 import Button from "@/components/atoms/Button";
 import Header from "@/components/organisms/Header";
-import useRestaurant from "@/hooks/useRestaurant";
 import { useRouter } from "expo-router";
 import React from "react";
-import { Dimensions, ScrollView } from "react-native";
+import { ScrollView } from "react-native";
 import { LineChart } from "react-native-chart-kit";
 
 export default function HomeScreen() {
-
-  const {selectedRestaurant} = useRestaurant()
 
   // const salesData = {
   //   labels: ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"],
@@ -23,11 +20,11 @@ export default function HomeScreen() {
   //Aqui pode ser uam explicação breve de como usar o app e funcionalidades
 
   const router = useRouter();
-  
+
 
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1, padding: 20, backgroundColor: "#041224" }}>
-<Header title={selectedRestaurant ? `Restaurante ${selectedRestaurant.name}` : ""} />
+<Header title="" />
 
       {/* <LineChart
         data={salesData}

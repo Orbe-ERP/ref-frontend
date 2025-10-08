@@ -1,17 +1,19 @@
 import React, { useState } from "react";
-import { ActivityIndicator, Alert } from "react-native";
+import { ActivityIndicator, Alert, TouchableOpacity } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import Toast from "react-native-toast-message";
 import useAuth from "@/hooks/useAuth";
-import { Button, ButtonLabel } from "./styles";
 import { useRouter } from "expo-router";
 
-interface LogoutButtonProps {
-  label?: string;
-  confirm?: boolean; // se true, pede confirmação antes de sair
+interface LogoutIconProps {
+  size?: number;
+  color?: string;
+  confirm?: boolean;
 }
 
-const LogoutButton: React.FC<LogoutButtonProps> = ({
-  label = "Sair",
+const LogoutIcon: React.FC<LogoutIconProps> = ({
+  size = 24,
+  color = "#fff",
   confirm = false,
 }) => {
   const { logout } = useAuth();
@@ -52,14 +54,14 @@ const LogoutButton: React.FC<LogoutButtonProps> = ({
   };
 
   return (
-    <Button onPress={handlePress} disabled={loading} accessibilityLabel="Sair">
+    <TouchableOpacity onPress={handlePress} disabled={loading} accessibilityLabel="Sair">
       {loading ? (
-        <ActivityIndicator color="#fff" />
+        <ActivityIndicator color={color} />
       ) : (
-        <ButtonLabel>{label}</ButtonLabel>
+        <Ionicons name="log-out-outline" size={size} color={color} />
       )}
-    </Button>
+    </TouchableOpacity>
   );
 };
 
-export default LogoutButton;
+export default LogoutIcon;

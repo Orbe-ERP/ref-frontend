@@ -12,7 +12,7 @@ export interface CreateKitchen {
   name: string;
   restaurantId: string | undefined;
   showOnKitchen: boolean;
-  color:string
+  color: string;
 }
 
 export interface PatchKitchen {
@@ -20,7 +20,6 @@ export interface PatchKitchen {
   name?: string;
   showOnKitchen?: boolean;
   color?: string;
-
 }
 
 export async function getKitchens(restaurantId: string | undefined) {
@@ -48,8 +47,12 @@ export async function getByKitchenId(kitchenId: string) {
   }
 }
 
-export async function createKitchen({ name, restaurantId, showOnKitchen, color}: CreateKitchen) {
-
+export async function createKitchen({
+  name,
+  restaurantId,
+  showOnKitchen,
+  color,
+}: CreateKitchen) {
   if (!restaurantId) {
     throw new Error(`ID do restaurante não definido`);
   }
@@ -58,7 +61,7 @@ export async function createKitchen({ name, restaurantId, showOnKitchen, color}:
       name,
       restaurantId,
       showOnKitchen,
-      color
+      color,
     });
     return response.data;
   } catch (error) {

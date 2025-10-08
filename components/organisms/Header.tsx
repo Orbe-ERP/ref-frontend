@@ -26,7 +26,7 @@ export default function Header({ title }: HeaderProps) {
   return (
     <Container>
       <Title>{title}</Title>
-      <LogoutButton  confirm={false}/>
+      <LogoutButton confirm={false}/>
     </Container>
   );
 }
