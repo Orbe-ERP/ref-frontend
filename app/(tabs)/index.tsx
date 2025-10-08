@@ -112,7 +112,7 @@ export default function IndexScreen() {
             <View style={styles.emptyState}>
               <Text style={styles.emptyText}>Selecione um restaurante para ver as vendas</Text>
               <Button
-                label="🏪 Selecionar Restaurante"
+                label="🍴 Selecionar Restaurante"
                 onPress={() => router.push("/(private)/select-restaurant")}
                 style={styles.primaryButton}
                 textStyle={styles.buttonText}
