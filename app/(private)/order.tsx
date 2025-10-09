@@ -61,7 +61,7 @@ export default function OrderScreen() {
   };
   const goToClosedOrders = () => {
     router.push({
-      pathname: "/(private)/completed-orders",
+      pathname: "/(private)/closed-order",
       params: { tableId},
     });
   };
