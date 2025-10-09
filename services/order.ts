@@ -1,3 +1,4 @@
+import { NewOrder } from './order';
 import { api } from "./api";
 import { Kitchen } from "./kitchen";
 
@@ -66,6 +67,7 @@ export interface UpdatePaymentMethod {
 
 export interface ConcludeOrderInput {
   tableId: string;
+  ordersArray: Array<string>
   restaurantId: string;
   sumIndividually?: boolean;
   additional?: number;
@@ -82,10 +84,9 @@ export interface ConcludeSingleOrderInput {
   paymentConfigId?: string | null;
 }
 
-// ==============================
-// Requisições
-// ==============================
+
 export async function createOrder(order: NewOrder) {
+
   if (!order) throw new Error("Dados faltantes");
   try {
     const response = await api.post("/orders", order);
@@ -195,6 +196,7 @@ export async function concludeOrders({
   restaurantId,
   paymentMethod,
   paymentConfigId,
+  ordersArray,
   sumIndividually,
   additional = 0,
 }: ConcludeOrderInput) {
@@ -208,6 +210,7 @@ export async function concludeOrders({
       paymentConfigId: paymentConfigId || null,
       sumIndividually,
       additional,
+      ordersArray
     });
 
     return response.data;

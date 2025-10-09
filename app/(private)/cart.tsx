@@ -112,9 +112,9 @@ export default function CartScreen() {
       })),
     };
 
+
     try {
       await createOrder(newOrder);
-      // LIMPEZA COMPLETA do estado local
       setProducts([]);
       setResponsible("");
       setToTake(false);
@@ -165,7 +165,7 @@ export default function CartScreen() {
         <>
           <ScrollView>
             {products.map((product: any) => (
-              <Card key={product.cartItemId}>
+              <Card key={product}>
                 <Label>{product.productName}</Label>
                 <Label>Quantidade: {product.quantity}</Label>
 

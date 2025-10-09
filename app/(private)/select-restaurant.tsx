@@ -62,6 +62,8 @@ export default function SelectRestaurantScreen() {
     try {
       defineFavoriteRestaurant(restaurant);
       setRestaurants(prev => prev.filter(r => r.id !== restaurant));
+    router.push("/");
+
     } catch (error) {
       console.error(error);
     }
