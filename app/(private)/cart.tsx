@@ -114,10 +114,13 @@ export default function CartScreen() {
 
     try {
       await createOrder(newOrder);
+      // LIMPEZA COMPLETA do estado local
       setProducts([]);
+      setResponsible("");
+      setToTake(false);
       router.replace({
-        pathname: "/cart",
-        params: { tableId, addedProducts: JSON.stringify([]) },
+        pathname: "/(tabs)/table",
+        params: {},
       });
       Toast.show({
         type: "success",
