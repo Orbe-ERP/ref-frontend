@@ -264,3 +264,14 @@ export async function getOrderSummaryByIdentifier(
     throw new Error(`Failed to get order summary: ${error}`);
   }
 }
+
+export async function getCompletedOrdersByDateRange(
+  restaurantId: string,
+  initialDate: string,
+  endDate: string
+) {
+  const response = await api.get(`/orders/completed`, {
+    params: { restaurantId, initialDate, endDate },
+  });
+  return response.data;
+}
