@@ -49,7 +49,6 @@ export async function getProductsByCategoryId(categoryId: string) {
 
   try {
     const response = await api.get(`/products/category/${categoryId}`);
-    console.log(response.data.products);
 
     return response.data;
   } catch (error) {
@@ -75,20 +74,25 @@ export async function deleteCategory(
   }
 }
 
-export async function updateCategory(productData: UpdateCategoryInput) {
-  if (!productData.restaurantId || !productData.categoryId) {
-    throw new Error("Missing Data");
+export async function updateCategory(categoryData: UpdateCategoryInput) {
+  if (!categoryData.restaurantId || !categoryData.categoryId) {
+    throw new Error("Missing Data: restaurantId or id");
   }
 
   try {
-    const response = await api.patch(`/category/${productData.categoryId}`, {
-      name: productData.name,
-      restaurantId: productData.restaurantId,
-    });
+    const response = await api.patch(
+      `/categories/${categoryData.restaurantId}/${categoryData.categoryId}`,
+      {
+        name: categoryData.name,
+      }
+    );
 
     return response.data;
-  } catch (error) {
-    console.log(error);
-    throw new Error(`Erro ao atualizar produto: ${error}`);
+  } catch (error: any) {
+    console.error("Erro ao atualizar categoria:", error);
+    throw new Error(
+      error.response?.data?.message || "Erro ao atualizar categoria"
+    );
   }
 }
+

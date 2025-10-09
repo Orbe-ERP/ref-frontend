@@ -1,8 +1,11 @@
 import { api } from "./api";
 import { Kitchen } from "./kitchen";
 
+// ==============================
+// Tipos e Interfaces
+// ==============================
 export interface OrderProduct {
-  id: string
+  id: string;
   productId: string;
   quantity: number;
   appliedPrice?: number;
@@ -27,6 +30,7 @@ export interface Order {
   createdAt: string;
   updatedAt: string;
   additional?: number;
+  cardBrand?: string;
 }
 
 export type NewOrder = {
@@ -37,7 +41,7 @@ export type NewOrder = {
     productId: string;
     quantity: number;
     appliedPrice?: number;
-    observations?: string[]; 
+    observations?: string[];
   }[];
 };
 
@@ -51,7 +55,7 @@ export interface AddProductInput {
 
 export interface UpdateOrderStatus {
   id: string;
-  productId: string
+  productId: string;
   status: string;
 }
 
@@ -60,10 +64,28 @@ export interface UpdatePaymentMethod {
   paymentMethod: string;
 }
 
+export interface ConcludeOrderInput {
+  tableId: string;
+  restaurantId: string;
+  sumIndividually?: boolean;
+  additional?: number;
+  paymentMethod: 'CASH' | 'PIX' | 'CREDIT_CARD' | 'DEBIT_CARD' | 'OTHER';
+  paymentConfigId?: string | null;
+
+}
+
+export interface ConcludeSingleOrderInput {
+  orderId: string;
+  restaurantId: string;
+  additional?: number;
+  paymentMethod: 'CASH' | 'PIX' | 'CREDIT_CARD' | 'DEBIT_CARD' | 'OTHER';
+  paymentConfigId?: string | null;
+}
+
+// ==============================
+// Requisições
+// ==============================
 export async function createOrder(order: NewOrder) {
-
-
-  console.log(order)
   if (!order) throw new Error("Dados faltantes");
   try {
     const response = await api.post("/orders", order);
@@ -82,42 +104,28 @@ export async function getOrdersByRestaurant(restaurantId: string, status?: strin
       params: status ? { status } : {},
     });
 
-const orders = Array.isArray(response.data) ? response.data : [];
+    const orders = Array.isArray(response.data) ? response.data : [];
 
-const filteredOrders = orders
-  .map((order: any) => {
-    const filteredProducts = order.products?.filter(
-      (product: any) => product.product?.kitchen?.showOnKitchen !== false
-    ) || [];
+    const filteredOrders = orders
+      .map((order: any) => {
+        const filteredProducts =
+          order.products?.filter(
+            (product: any) => product.product?.kitchen?.showOnKitchen !== false
+          ) || [];
 
-    return {
-      ...order,
-      products: filteredProducts,
-    };
-  })
-  .filter((order: any) => order.products.length > 0);
+        return {
+          ...order,
+          products: filteredProducts,
+        };
+      })
+      .filter((order: any) => order.products.length > 0);
 
-return filteredOrders;
+    return filteredOrders;
   } catch (error) {
     console.error(error);
     throw new Error(`Error fetching orders by restaurant: ${error}`);
   }
 }
-
-
-
-export async function concludeOrder(orderId: string, additional: number = 0, restaurantId: string) {
-  try {
-    const response = await api.put(`/orders/${orderId}/restaurant/${restaurantId}/conclude`, null, {
-      params: { additional },
-    });
-    return response.data;
-  } catch (error) {
-    console.error(error);
-    throw new Error(`Error concluding single order: ${error}`);
-  }
-}
-
 
 export async function getOrders(tableId: string) {
   if (!tableId) throw new Error("Table Id not defined");
@@ -142,19 +150,14 @@ export async function addProductToOrder(productData: AddProductInput) {
 
 export async function getCompletedOrdersByTable(tableId: string) {
   if (!tableId) throw new Error("Table Id not defined");
-
   try {
-    const response = await api.get(`/orders/completed`, {
-      params: { tableId },
-    });
-
+    const response = await api.get(`/orders/completed`, { params: { tableId } });
     return response.data;
   } catch (error) {
     console.error(error);
     throw new Error(`Error fetching completed orders: ${error}`);
   }
 }
-
 
 export async function updateStatus(orderData: UpdateOrderStatus) {
   try {
@@ -165,8 +168,6 @@ export async function updateStatus(orderData: UpdateOrderStatus) {
     throw new Error(`Error updating order: ${error}`);
   }
 }
-
-
 
 export async function getOrderById(orderId: string) {
   if (!orderId) throw new Error("Order Id not defined");
@@ -189,22 +190,26 @@ export async function updatePaymentMethod(data: UpdatePaymentMethod) {
   }
 }
 
-export async function concludeOrders(
-  tableId: string,
-  sumIndividually: boolean,
-  restaurantId: string,
-  additional: number = 0
-) {
-
+export async function concludeOrders({
+  tableId,
+  restaurantId,
+  paymentMethod,
+  paymentConfigId,
+  sumIndividually,
+  additional = 0,
+}: ConcludeOrderInput) {
+  if (!tableId || !restaurantId) throw new Error("TableId e RestaurantId são obrigatórios");
 
   try {
-    const response = await api.put(
-      `/orders/restaurant/${restaurantId}/table/${tableId}/conclude`,
-      null,
-      {
-        params: { sumIndividually, additional },
-      }
-    );
+    const response = await api.put(`/orders/restaurant/conclude-orders`, {
+      tableId,
+      restaurantId,
+      paymentMethod,
+      paymentConfigId: paymentConfigId || null,
+      sumIndividually,
+      additional,
+    });
+
     return response.data;
   } catch (error) {
     console.error(error);
@@ -212,7 +217,39 @@ export async function concludeOrders(
   }
 }
 
-export async function getOrderSummaryByIdentifier(identifier: string, sumIndividually: boolean = false) {
+
+export async function concludeOrder({
+  orderId,
+  restaurantId,
+  additional = 0,
+  paymentMethod,
+  paymentConfigId,
+}: ConcludeSingleOrderInput) {
+  if (!orderId || !restaurantId)
+    throw new Error("OrderId e RestaurantId são obrigatórios");
+
+  try {
+    const response = await api.put(
+      `/orders/${orderId}/restaurant/${restaurantId}/conclude`,
+      {
+        additional,
+        paymentMethod,
+        paymentConfigId,
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw new Error(`Error concluding single order: ${error}`);
+  }
+}
+
+
+export async function getOrderSummaryByIdentifier(
+  identifier: string,
+  sumIndividually: boolean = false
+) {
   if (!identifier) throw new Error("Identifier is required");
   try {
     const response = await api.get(`/orders/${identifier}/summary`, {

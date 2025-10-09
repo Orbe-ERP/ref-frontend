@@ -5,7 +5,6 @@ import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import {
   getOrders,
   Order,
-  updatePaymentMethod,
   concludeOrders,
   concludeOrder,
 } from "@/services/order";
@@ -16,15 +15,13 @@ import Toast from "react-native-toast-message";
 import {
   getPaymentConfigs,
   PaymentConfig,
-  PaymentMethod,
-  PaymentMethodLabels,
   CardBrandLabels,
 } from "@/services/payment";
-
 
 export default function OpenedOrderScreen() {
   const { tableId } = useLocalSearchParams();
   const router = useRouter();
+  const { selectedRestaurant } = useRestaurant();
 
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
@@ -32,11 +29,9 @@ export default function OpenedOrderScreen() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [additional, setAdditional] = useState<number>(10);
   const [paymentConfigs, setPaymentConfigs] = useState<PaymentConfig[]>([]);
-  const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
-
-  const { selectedRestaurant } = useRestaurant();
   const screenWidth = Dimensions.get("window").width;
 
+  // Carrega pedidos
   const fetchOrders = async () => {
     try {
       const data = await getOrders(tableId as string);
@@ -52,45 +47,18 @@ export default function OpenedOrderScreen() {
     if (tableId) fetchOrders();
   }, [tableId]);
 
+  // Carrega configurações de pagamento
   useEffect(() => {
     async function loadConfigs() {
-      const configs = await getPaymentConfigs(selectedRestaurant?.id);
-      setPaymentConfigs(configs);
+      if (selectedRestaurant?.id) {
+        const configs = await getPaymentConfigs(selectedRestaurant.id);
+        setPaymentConfigs(configs);
+      }
     }
     loadConfigs();
   }, [selectedRestaurant?.id]);
 
-  const handleCardBrandSelect = (orderId: string, brand: string) => {
-    setOrders((prevOrders) =>
-      prevOrders.map((o) => {
-        if (o.id === orderId) {
-          if (o.cardBrand === brand) {
-            return { ...o, cardBrand: undefined };
-          }
-          return { ...o, cardBrand: brand };
-        }
-        return o;
-      })
-    );
-  };
-
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case "WAITING_DELIVERY":
-        return "Esperando Entrega";
-      case "PREPARING":
-        return "Preparando Pedido";
-      case "PENDING":
-        return "Pendente";
-      case "COMPLETED":
-        return "Concluído";
-      case "CANCELED":
-        return "Cancelado";
-      default:
-        return status;
-    }
-  };
-
+  // Seleção de método de pagamento por ordem
   const handlePaymentMethodSelect = (orderId: string, method: string) => {
     setOrders((prevOrders) =>
       prevOrders.map((o) =>
@@ -108,34 +76,47 @@ export default function OpenedOrderScreen() {
     );
   };
 
+  const handleCardBrandSelect = (orderId: string, brand: string) => {
+    setOrders((prevOrders) =>
+      prevOrders.map((o) =>
+        o.id === orderId
+          ? { ...o, cardBrand: o.cardBrand === brand ? undefined : brand }
+          : o
+      )
+    );
+  };
+
+  // Concluir todas as comandas da mesa
   const handleConcludeOrders = async (sumIndividually: boolean) => {
     try {
       setIsModalVisible(false);
-      console.log("Dados sendo enviados ao fechar comanda:", {
-      tableId: tableId as string,
-      sumIndividually,
-      restaurantId: selectedRestaurant?.id,
-      additional,
-      orders: orders.map(order => ({
-        id: order.id,
-        responsible: order.responsible,
-        paymentMethod: order.paymentMethod,
-        cardBrand: order.cardBrand,
-        products: order.products.map(product => ({
-          productId: product.productId,
-          quantity: product.quantity,
-          appliedPrice: product.appliedPrice,
-          status: product.status
-        }))
-      }))
-    });
-      const completedOrderDetails = await concludeOrders(
-        tableId as string,
+
+      const firstOrder = orders[0];
+      if (!firstOrder?.paymentMethod) throw new Error("Selecione o método de pagamento");
+
+      const isCard =
+        firstOrder.paymentMethod === "CREDIT_CARD" || firstOrder.paymentMethod === "DEBIT_CARD";
+      const paymentConfigId = isCard
+        ? paymentConfigs.find(
+            (c) =>
+              c.method === firstOrder.paymentMethod && c.brand === firstOrder.cardBrand
+          )?.id ?? null
+        : null;
+
+      const payload = {
+        tableId: tableId as string,
+        restaurantId: selectedRestaurant?.id!,
         sumIndividually,
-        selectedRestaurant?.id,
-        additional
-      );
+        additional,
+        paymentMethod: firstOrder.paymentMethod as any,
+        paymentConfigId,
+      };
+
+      console.log("📦 Concluindo todas as comandas:", payload);
+
+      const completedOrderDetails = await concludeOrders(payload);
       await fetchOrders();
+
       router.push({
         pathname: "/(tabs)/table",
         params: { orderDetails: JSON.stringify(completedOrderDetails) },
@@ -149,15 +130,36 @@ export default function OpenedOrderScreen() {
     }
   };
 
+  // Concluir uma única comanda
   const handleConcludeSingleOrder = async (orderId: string) => {
     try {
       setIsModalVisible(false);
-      const completedOrder = await concludeOrder(
+
+      const selectedOrder = orders.find((o) => o.id === orderId);
+      if (!selectedOrder || !selectedOrder.paymentMethod) return;
+
+      const isCard =
+        selectedOrder.paymentMethod === "CREDIT_CARD" || selectedOrder.paymentMethod === "DEBIT_CARD";
+      const paymentConfigId = isCard
+        ? paymentConfigs.find(
+            (c) =>
+              c.method === selectedOrder.paymentMethod && c.brand === selectedOrder.cardBrand
+          )?.id ?? null
+        : null;
+
+      const payload = {
         orderId,
+        restaurantId: selectedRestaurant?.id!,
         additional,
-        selectedRestaurant?.id
-      );
+        paymentMethod: selectedOrder.paymentMethod,
+        paymentConfigId,
+      };
+
+      console.log("📦 Concluindo comanda:", payload);
+
+      const completedOrder = await concludeOrder(payload);
       await fetchOrders();
+
       router.push({
         pathname: "/(tabs)/table",
         params: { orderDetails: JSON.stringify(completedOrder) },
@@ -171,6 +173,24 @@ export default function OpenedOrderScreen() {
     }
   };
 
+  // Função auxiliar de status
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case "WAITING_DELIVERY":
+        return "Esperando Entrega";
+      case "PREPARING":
+        return "Preparando Pedido";
+      case "PENDING":
+        return "Pendente";
+      case "COMPLETED":
+        return "Concluído";
+      case "CANCELED":
+        return "Cancelado";
+      default:
+        return status;
+    }
+  };
+
   const handleAdditional = (value: number) => {
     if (isNaN(value) || value <= 0) setAdditional(0);
     else if (value > 100) setAdditional(100);
@@ -179,13 +199,11 @@ export default function OpenedOrderScreen() {
 
   return (
     <Container>
-      <Stack.Screen 
-        options={{ 
+      <Stack.Screen
+        options={{
           headerTitle: "Comandas Abertas",
-          headerStyle: { 
-            backgroundColor: "#041224"
-          }, 
-        }} 
+          headerStyle: { backgroundColor: "#041224" },
+        }}
       />
 
       <TopBar>
@@ -213,7 +231,6 @@ export default function OpenedOrderScreen() {
           return (
             <OrderItem key={order.id}>
               <OrderText>Responsável: {order.responsible}</OrderText>
-
               <OrderText>Produtos:</OrderText>
 
               {order.products.map((item) => {
@@ -224,43 +241,30 @@ export default function OpenedOrderScreen() {
 
                 return (
                   <ProductContainer key={item.productId}>
-                    <ProductText>
-                      Status: {getStatusLabel(item.status)}
-                    </ProductText>
-                    <ProductText>
-                      Nome: {item.product?.name ?? "Produto não encontrado"}
-                    </ProductText>
+                    <ProductText>Status: {getStatusLabel(item.status)}</ProductText>
+                    <ProductText>Nome: {item.product?.name ?? "Produto não encontrado"}</ProductText>
                     <ProductText>Preço: R$ {price.toFixed(2)}</ProductText>
-                    <ProductText>
-                      Cozinha: {item.product?.kitchen?.name ?? "Não definida"}
-                    </ProductText>
+                    <ProductText>Cozinha: {item.product?.kitchen?.name ?? "Não definida"}</ProductText>
                     <ProductText>Quantidade: {item.quantity}</ProductText>
-                    {item.observations?.length > 0 && (
-                      <ProductText>
-                        Observações:{" "}
-                        {item.observations
-                          .map((obs) => obs.observation?.description)
-                          .filter(Boolean)
-                          .join(", ")}
-                      </ProductText>
-                    )}
                   </ProductContainer>
                 );
               })}
 
               <TotalText>Total: R$ {total.toFixed(2)}</TotalText>
 
+              {/* Seleção de método de pagamento */}
               <PaymentMethodsContainer>
                 <PaymentMethodsText>Método de pagamento:</PaymentMethodsText>
                 <PaymentOptions style={{ width: screenWidth * 0.9 }}>
                   {["PIX", "CASH", "CREDIT_CARD", "DEBIT_CARD"].map((method) => {
                     const isSelected = order.paymentMethod === method;
-
                     return (
                       <PaymentButton
                         key={method}
                         selected={isSelected}
-                        onPress={() => handlePaymentMethodSelect(order.id, method)}
+                        onPress={() =>
+                          handlePaymentMethodSelect(order.id, method)
+                        }
                       >
                         <Ionicons
                           name={
@@ -268,9 +272,7 @@ export default function OpenedOrderScreen() {
                               ? "cash-outline"
                               : method === "CASH"
                               ? "wallet-outline"
-                              : method === "CREDIT_CARD"
-                              ? "card-outline"
-                              : "card-sharp"
+                              : "card-outline"
                           }
                           size={24}
                           color={isSelected ? "#fff" : "#aaa"}
@@ -295,15 +297,13 @@ export default function OpenedOrderScreen() {
                     {paymentConfigs
                       .filter((config) => config.method === order.paymentMethod)
                       .map((config) => {
-                        const isBrandSelected = selectedBrand === config.brand;
+                        const isBrandSelected = order.cardBrand === config.brand;
                         return (
                           <TaxItem
                             key={config.id}
                             selected={isBrandSelected}
                             onPress={() =>
-                              setSelectedBrand(
-                                isBrandSelected ? null : config.brand || null
-                              )
+                              handleCardBrandSelect(order.id, config.brand!)
                             }
                           >
                             <TaxText selected={isBrandSelected}>
@@ -351,16 +351,17 @@ export default function OpenedOrderScreen() {
         </ConcludeButton>
       )}
 
+      {/* Modal de confirmação */}
       <Modal visible={isModalVisible} transparent animationType="slide">
         <ModalOverlay>
           <ModalContent>
-            <ModalTitle>Deseja fechar essa comanda?</ModalTitle>
+            <ModalTitle>Deseja fechar todas as comandas?</ModalTitle>
             <ModalButtonsContainer>
               <ModalButton onPress={() => setIsModalVisible(false)}>
                 <ModalButtonText>Cancelar</ModalButtonText>
               </ModalButton>
               <ModalButton onPress={() => handleConcludeOrders(false)}>
-                <ModalButtonText>Fechar Comanda</ModalButtonText>
+                <ModalButtonText>Fechar Comandas</ModalButtonText>
               </ModalButton>
             </ModalButtonsContainer>
           </ModalContent>
@@ -369,6 +370,7 @@ export default function OpenedOrderScreen() {
     </Container>
   );
 }
+
 
 export const ModalOverlay = styled.View`
   flex: 1;

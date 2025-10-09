@@ -1,4 +1,5 @@
 import { api } from "./api";
+import dayjs from "dayjs";
 
 export type PaymentMethod = 'CREDIT_CARD' | 'DEBIT_CARD' | 'CASH' | 'PIX' | 'OTHER';
 export interface ReportProduct {
@@ -26,6 +27,36 @@ export interface GetReportDataInput {
   initialDate: string;
   finalDate: string;
 }
+
+
+export interface TotalProductsSoldResponse {
+  totalProductsSold: number;
+  startDate: string;
+  endDate: string;
+}
+
+
+export async function getTotalProductsSold(
+  restaurantId: string,
+  startDate: Date,
+  endDate: Date
+): Promise<TotalProductsSoldResponse> {
+  try {
+    const response = await api.get("/products/total", {
+      params: {
+        restaurantId,
+        startDate: dayjs(startDate).toISOString(),
+        endDate: dayjs(endDate).toISOString(),
+      },
+    });
+
+    return response.data;
+  } catch (error: any) {
+    console.error("Erro ao buscar total de produtos vendidos:", error);
+    throw error;
+  }
+}
+
 
 
 export async function getReportData({ restaurantId, initialDate, finalDate }: GetReportDataInput): Promise<ReportData> {

@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import { FlatList, Dimensions, StatusBar } from "react-native";
-import { useRouter } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import styled from "styled-components/native";
 
 const { width, height } = Dimensions.get("window");
@@ -202,6 +202,13 @@ const OnboardingScreen = () => {
 
   return (
     <Container>
+            <Stack.Screen
+        options={{
+          title: "Onboarding",
+          headerStyle: { backgroundColor: "#041224" },
+          headerTintColor: "#fff",
+        }}
+      />
       <StatusBar backgroundColor={COLORS.primary} barStyle="light-content" />
       
       <FlatList

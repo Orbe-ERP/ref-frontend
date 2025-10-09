@@ -13,7 +13,8 @@ export interface CreateTable {
 
 export interface PatchTable {
   name: string;
-  id: string | undefined;
+  id: string;
+  restaurantId: string;
 }
 
 export async function getTables(restaurantId: string | undefined) {

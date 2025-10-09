@@ -59,6 +59,8 @@ export default function TableScreen() {
     const updated = await patchTable({
       id: selectedTable.id,
       name: newTableName,
+      restaurantId: selectedRestaurant?.id || "",
+      
     });
     setTables((prev: any) =>
       prev.map((t: any) => (t.id === updated.id ? updated : t))

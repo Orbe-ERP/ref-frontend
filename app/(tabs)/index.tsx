@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { ScrollView, View, Text, ActivityIndicator, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  ScrollView,
+  View,
+  Text,
+  ActivityIndicator,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
 import { Stack, useRouter } from "expo-router";
 import useRestaurant from "@/hooks/useRestaurant";
 import { HorizontalBarChart } from "@/components/organisms/TopProductsChart/components/HorizontalBarChart";
@@ -9,6 +16,7 @@ import { ProductSales } from "@/services/types";
 import Button from "@/components/atoms/Button";
 import { Ionicons } from "@expo/vector-icons";
 import LogoutIcon from "@/components/atoms/LogoutButton";
+import LogoutButton from "@/components/atoms/LogoutButton";
 
 const COLORS = {
   primary: "#041224",
@@ -47,7 +55,10 @@ export default function IndexScreen() {
         return;
       }
 
-      const orders = await getOrdersByRestaurant(selectedRestaurant.id, "COMPLETED");
+      const orders = await getOrdersByRestaurant(
+        selectedRestaurant.id,
+        "COMPLETED"
+      );
       const salesData = SalesService.getSalesByTimeRange(orders);
       setSalesData(salesData.day);
     } catch (error) {
@@ -64,6 +75,15 @@ export default function IndexScreen() {
     }
   };
 
+  const sortedSales = [...salesData].sort(
+    (a, b) => b.salesCount - a.salesCount
+  );
+  const topProduct = sortedSales[0] || null;
+  const totalSalesCount = sortedSales.reduce(
+    (sum, item) => sum + item.salesCount,
+    0
+  );
+
   return (
     <View style={styles.container}>
       <Stack.Screen
@@ -75,47 +95,46 @@ export default function IndexScreen() {
         }}
       />
 
-      <ScrollView 
-        contentContainerStyle={styles.scrollContent} 
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
         style={styles.scrollView}
       >
         <View style={styles.logoutContainer}>
-          <LogoutIcon size={22} color={"#ff4444"} confirm={true} />
+          <LogoutButton/>
         </View>
 
-        {/* Gráfico de Vendas */}
         <View style={styles.chartSection}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>📊 Pratos Mais Vendidos Hoje</Text>
+            <Text style={styles.sectionTitle}>
+              📊 Pratos Mais Vendidos Hoje
+            </Text>
             <View style={styles.headerRight}>
               {selectedRestaurant && (
                 <Text style={styles.salesCount}>
-                  {salesData.length} {salesData.length === 1 ? "produto" : "produtos"} vendidos
+                  {salesData.length}{" "}
+                  {salesData.length === 1 ? "produto" : "produtos"}{" "}
+                  {salesData.length === 1 ? "tipo" : "diferentes"} vendidos
                 </Text>
               )}
-              <TouchableOpacity 
-                onPress={refreshData} 
+              <TouchableOpacity
+                onPress={refreshData}
                 style={styles.refreshButton}
                 disabled={loading}
               >
-                <Ionicons 
-                  name="refresh" 
-                  size={20} 
-                  color={COLORS.text.accent} 
-                />
+                <Ionicons name="refresh" size={20} color={COLORS.text.accent} />
               </TouchableOpacity>
             </View>
           </View>
 
           {!selectedRestaurant ? (
             <View style={styles.emptyState}>
-              <Text style={styles.emptyText}>Selecione um restaurante para ver as vendas</Text>
+              <Text style={styles.emptyText}>
+                Selecione um restaurante para ver as vendas
+              </Text>
               <Button
                 label="🍴 Selecionar Restaurante"
                 onPress={() => router.push("/(private)/select-restaurant")}
-                style={styles.primaryButton}
-                textStyle={styles.buttonText}
               />
             </View>
           ) : loading ? (
@@ -126,23 +145,23 @@ export default function IndexScreen() {
           ) : error ? (
             <View style={styles.errorContainer}>
               <Text style={styles.errorText}>{error}</Text>
-              <Button
-                label="🔄 Tentar Novamente"
-                onPress={refreshData}
-                style={styles.secondaryButton}
-                textStyle={styles.buttonText}
-              />
+              <Button label="🔄 Tentar Novamente" onPress={refreshData} />
             </View>
           ) : (
             <>
               <HorizontalBarChart data={salesData} />
 
-              {salesData.length > 0 && (
+              {topProduct && (
                 <View style={styles.insightContainer}>
                   <Text style={styles.insightTitle}>💡 Destaque do Dia</Text>
                   <Text style={styles.insightText}>
-                    <Text style={styles.highlight}>{salesData[0]?.productName}</Text> lidera com{" "}
-                    <Text style={styles.highlight}>{salesData[0]?.salesCount} vendas</Text>
+                    <Text style={styles.highlight}>
+                      {topProduct.productName}
+                    </Text>{" "}
+                    lidera com{" "}
+                    <Text style={styles.highlight}>
+                      {topProduct.salesCount} vendas
+                    </Text>
                   </Text>
                 </View>
               )}
@@ -151,8 +170,6 @@ export default function IndexScreen() {
                 <Button
                   label="📊 Dashboard Completo"
                   onPress={() => router.push("/(private)/dashboard")}
-                  style={styles.outlineButton}
-                  textStyle={styles.outlineButtonText}
                 />
               </View>
             </>
@@ -165,26 +182,18 @@ export default function IndexScreen() {
             <Button
               label="🍴 Selecionar Restaurante"
               onPress={() => router.push("/(private)/select-restaurant")}
-              style={styles.menuButton}
-              textStyle={styles.menuButtonText}
             />
             <Button
               label="👨‍🍳 Cozinha"
               onPress={() => router.push("/(private)/kitchen")}
-              style={styles.menuButton}
-              textStyle={styles.menuButtonText}
             />
             <Button
               label="📈 Relatórios"
               onPress={() => router.push("/(private)/report")}
-              style={styles.menuButton}
-              textStyle={styles.menuButtonText}
             />
             <Button
               label="📱 Tutorial"
               onPress={() => router.push("/(private)/onboarding")}
-              style={styles.menuButton}
-              textStyle={styles.menuButtonText}
             />
           </View>
         </View>
@@ -192,12 +201,7 @@ export default function IndexScreen() {
         {/* Status */}
         {selectedRestaurant && (
           <View style={styles.statusSection}>
-            <View style={styles.statusItem}>
-              <Text style={styles.statusLabel}>Status</Text>
-              <View style={styles.statusOnline}>
-                <Text style={styles.statusValue}>🟢 Online</Text>
-              </View>
-            </View>
+
             <View style={styles.statusItem}>
               <Text style={styles.statusLabel}>Vendas Hoje</Text>
               <Text style={styles.statusValue}>
@@ -218,14 +222,14 @@ export default function IndexScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.primary },
   scrollView: { flex: 1 },
-  scrollContent: { 
-    padding: 16, 
+  scrollContent: {
+    padding: 16,
     paddingBottom: 40,
-    minHeight: '100%',
+    minHeight: "100%",
   },
 
   logoutContainer: {
-    alignItems: 'flex-end',
+    alignItems: "flex-end",
     marginBottom: 12,
   },
 
@@ -349,7 +353,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "rgba(211,47,47,0.3)",
   },
-  errorText: { color: "#FF6B6B", textAlign: "center", marginBottom: 10, fontSize: 13 },
+  errorText: {
+    color: "#FF6B6B",
+    textAlign: "center",
+    marginBottom: 10,
+    fontSize: 13,
+  },
 
   emptyState: {
     padding: 24,
@@ -375,10 +384,15 @@ const styles = StyleSheet.create({
     borderLeftWidth: 3,
     borderLeftColor: COLORS.secondary,
   },
-  insightTitle: { fontSize: 13, fontWeight: "bold", color: COLORS.text.accent, marginBottom: 4 },
+  insightTitle: {
+    fontSize: 13,
+    fontWeight: "bold",
+    color: COLORS.text.accent,
+    marginBottom: 4,
+  },
   insightText: { fontSize: 12, color: COLORS.text.primary, lineHeight: 18 },
   highlight: { fontWeight: "bold", color: COLORS.text.accent },
-  
+
   statusSection: {
     backgroundColor: COLORS.background,
     borderRadius: 16,
@@ -390,7 +404,12 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   statusItem: { alignItems: "center" },
-  statusLabel: { fontSize: 11, color: COLORS.text.secondary, marginBottom: 4, fontWeight: "500" },
+  statusLabel: {
+    fontSize: 11,
+    color: COLORS.text.secondary,
+    marginBottom: 4,
+    fontWeight: "500",
+  },
   statusValue: { fontSize: 14, fontWeight: "bold", color: COLORS.text.primary },
   statusOnline: {
     backgroundColor: "rgba(76,175,80,0.2)",
