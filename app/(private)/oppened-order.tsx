@@ -8,7 +8,11 @@ import useRestaurant from "@/hooks/useRestaurant";
 import styled from "styled-components/native";
 import Button from "@/components/atoms/Button";
 import Toast from "react-native-toast-message";
-import { getPaymentConfigs, PaymentConfig, CardBrandLabels } from "@/services/payment";
+import {
+  getPaymentConfigs,
+  PaymentConfig,
+  CardBrandLabels,
+} from "@/services/payment";
 
 export default function OpenedOrderScreen() {
   const { tableId } = useLocalSearchParams();
@@ -54,7 +58,9 @@ export default function OpenedOrderScreen() {
   // --- Selection ---
   const toggleOrderSelection = (orderId: string) => {
     setSelectedOrders((prev) =>
-      prev.includes(orderId) ? prev.filter((id) => id !== orderId) : [...prev, orderId]
+      prev.includes(orderId)
+        ? prev.filter((id) => id !== orderId)
+        : [...prev, orderId]
     );
   };
 
@@ -63,17 +69,25 @@ export default function OpenedOrderScreen() {
     setOrders((prevOrders) =>
       prevOrders.map((o) =>
         o.id === orderId
-          ? { ...o, paymentMethod: method, cardBrand: method.includes("CARD") ? o.cardBrand : undefined }
+          ? {
+              ...o,
+              paymentMethod: method,
+              cardBrand: method.includes("CARD") ? o.cardBrand : undefined,
+            }
           : o
       )
     );
   };
 
-  console.log(orders)
+  console.log(orders);
 
   const handleCardBrandSelect = (orderId: string, brand: string) => {
     setOrders((prevOrders) =>
-      prevOrders.map((o) => (o.id === orderId ? { ...o, cardBrand: o.cardBrand === brand ? undefined : brand } : o))
+      prevOrders.map((o) =>
+        o.id === orderId
+          ? { ...o, cardBrand: o.cardBrand === brand ? undefined : brand }
+          : o
+      )
     );
   };
 
@@ -89,12 +103,12 @@ export default function OpenedOrderScreen() {
       for (const orderId of selectedOrders) {
         const o = orders.find((ord) => ord.id === orderId);
         if (!o?.paymentMethod) {
-
-                Toast.show({
-        type: "error",
-        text1: "Selecione o método de pagamento",
-        text2: "Selecione o método de pagamento em todas as comandas selecionadas.",
-      });
+          Toast.show({
+            type: "error",
+            text1: "Selecione o método de pagamento",
+            text2:
+              "Selecione o método de pagamento em todas as comandas selecionadas.",
+          });
           return;
         }
       }
@@ -102,7 +116,11 @@ export default function OpenedOrderScreen() {
       const firstOrder = orders.find((o) => o.id === selectedOrders[0])!;
       const isCard = firstOrder.paymentMethod.includes("CARD");
       const paymentConfigId = isCard
-        ? paymentConfigs.find((c) => c.method === firstOrder.paymentMethod && c.brand === firstOrder.cardBrand)?.id ?? null
+        ? paymentConfigs.find(
+            (c) =>
+              c.method === firstOrder.paymentMethod &&
+              c.brand === firstOrder.cardBrand
+          )?.id ?? null
         : null;
 
       const payload = {
@@ -114,10 +132,11 @@ export default function OpenedOrderScreen() {
         paymentMethod: firstOrder.paymentMethod,
         paymentConfigId,
       };
-      
+
       const response = await concludeOrders(payload);
+
       setSelectedOrders([]);
-      setIsModalVisible(false)
+      setIsModalVisible(false);
       await fetchOrders();
 
       Toast.show({
@@ -126,11 +145,10 @@ export default function OpenedOrderScreen() {
         text2: "Comandas concluídas com sucesso!",
       });
 
-    router.push({
-      pathname: "/(private)/print-order",
-      params: { identifier: response.orderIdentifier },
-    });
-
+      router.push({
+        pathname: "/(private)/print-order",
+        params: { identifier: response.orderIdentifier },
+      });
     } catch (error) {
       console.error(error);
       Toast.show({
@@ -141,15 +159,20 @@ export default function OpenedOrderScreen() {
     }
   };
 
-
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case "WAITING_DELIVERY": return "Esperando Entrega";
-      case "PREPARING": return "Preparando Pedido";
-      case "PENDING": return "Pendente";
-      case "COMPLETED": return "Concluído";
-      case "CANCELED": return "Cancelado";
-      default: return status;
+      case "WAITING_DELIVERY":
+        return "Esperando Entrega";
+      case "PREPARING":
+        return "Preparando Pedido";
+      case "PENDING":
+        return "Pendente";
+      case "COMPLETED":
+        return "Concluído";
+      case "CANCELED":
+        return "Cancelado";
+      default:
+        return status;
     }
   };
 
@@ -174,13 +197,19 @@ export default function OpenedOrderScreen() {
 
       {loading && <LoadingText>Carregando pedidos...</LoadingText>}
       {error && <ErrorText>{error}</ErrorText>}
-      {!loading && !error && orders.length === 0 && <NoOrdersText>Nenhum pedido encontrado para essa mesa.</NoOrdersText>}
+      {!loading && !error && orders.length === 0 && (
+        <NoOrdersText>Nenhum pedido encontrado para essa mesa.</NoOrdersText>
+      )}
 
       <ScrollView style={{ width: "100%" }}>
         {orders.map((order) => {
           const total = order.products.reduce(
             (sum, item) =>
-              sum + (item.appliedPrice && item.appliedPrice > 0 ? item.appliedPrice : item.product?.price ?? 0) * item.quantity,
+              sum +
+              (item.appliedPrice && item.appliedPrice > 0
+                ? item.appliedPrice
+                : item.product?.price ?? 0) *
+                item.quantity,
             0
           );
           const isSelected = selectedOrders.includes(order.id);
@@ -200,13 +229,22 @@ export default function OpenedOrderScreen() {
               </Row>
 
               {order.products.map((item) => {
-                const price = item.appliedPrice && item.appliedPrice > 0 ? item.appliedPrice : item.product?.price ?? 0;
+                const price =
+                  item.appliedPrice && item.appliedPrice > 0
+                    ? item.appliedPrice
+                    : item.product?.price ?? 0;
                 return (
                   <ProductContainer key={item.productId}>
-                    <ProductText>Status: {getStatusLabel(item.status)}</ProductText>
-                    <ProductText>Nome: {item.product?.name ?? "Produto não encontrado"}</ProductText>
+                    <ProductText>
+                      Status: {getStatusLabel(item.status)}
+                    </ProductText>
+                    <ProductText>
+                      Nome: {item.product?.name ?? "Produto não encontrado"}
+                    </ProductText>
                     <ProductText>Preço: R$ {price.toFixed(2)}</ProductText>
-                    <ProductText>Cozinha: {item.product?.kitchen?.name ?? "Não definida"}</ProductText>
+                    <ProductText>
+                      Cozinha: {item.product?.kitchen?.name ?? "Não definida"}
+                    </ProductText>
                     <ProductText>Quantidade: {item.quantity}</ProductText>
                   </ProductContainer>
                 );
@@ -216,32 +254,61 @@ export default function OpenedOrderScreen() {
               <PaymentMethodsContainer>
                 <PaymentMethodsText>Método de pagamento:</PaymentMethodsText>
                 <PaymentOptions style={{ width: screenWidth * 0.9 }}>
-                  {["PIX", "CASH", "CREDIT_CARD", "DEBIT_CARD"].map((method) => {
-                    const selected = order.paymentMethod === method;
-                    return (
-                      <PaymentButton key={method} selected={selected} onPress={() => handlePaymentMethodSelect(order.id, method)}>
-                        <Ionicons
-                          name={method === "PIX" ? "cash-outline" : method === "CASH" ? "wallet-outline" : "card-outline"}
-                          size={24}
-                          color={selected ? "#fff" : "#aaa"}
-                        />
-                        <PaymentButtonText selected={selected}>
-                          {method === "PIX" ? "PIX" : method === "CASH" ? "Dinheiro" : method === "CREDIT_CARD" ? "Crédito" : "Débito"}
-                        </PaymentButtonText>
-                      </PaymentButton>
-                    );
-                  })}
+                  {["PIX", "CASH", "CREDIT_CARD", "DEBIT_CARD"].map(
+                    (method) => {
+                      const selected = order.paymentMethod === method;
+                      return (
+                        <PaymentButton
+                          key={method}
+                          selected={selected}
+                          onPress={() =>
+                            handlePaymentMethodSelect(order.id, method)
+                          }
+                        >
+                          <Ionicons
+                            name={
+                              method === "PIX"
+                                ? "cash-outline"
+                                : method === "CASH"
+                                ? "wallet-outline"
+                                : "card-outline"
+                            }
+                            size={24}
+                            color={selected ? "#fff" : "#aaa"}
+                          />
+                          <PaymentButtonText selected={selected}>
+                            {method === "PIX"
+                              ? "PIX"
+                              : method === "CASH"
+                              ? "Dinheiro"
+                              : method === "CREDIT_CARD"
+                              ? "Crédito"
+                              : "Débito"}
+                          </PaymentButtonText>
+                        </PaymentButton>
+                      );
+                    }
+                  )}
                 </PaymentOptions>
 
-                {(order.paymentMethod === "CREDIT_CARD" || order.paymentMethod === "DEBIT_CARD") && (
+                {(order.paymentMethod === "CREDIT_CARD" ||
+                  order.paymentMethod === "DEBIT_CARD") && (
                   <TaxList>
                     {paymentConfigs
                       .filter((c) => c.method === order.paymentMethod)
                       .map((config) => {
                         const selectedBrand = order.cardBrand === config.brand;
                         return (
-                          <TaxItem key={config.id} selected={selectedBrand} onPress={() => handleCardBrandSelect(order.id, config.brand!)}>
-                            <TaxText selected={selectedBrand}>{CardBrandLabels[config.brand ?? "OUTRO"]}</TaxText>
+                          <TaxItem
+                            key={config.id}
+                            selected={selectedBrand}
+                            onPress={() =>
+                              handleCardBrandSelect(order.id, config.brand!)
+                            }
+                          >
+                            <TaxText selected={selectedBrand}>
+                              {CardBrandLabels[config.brand ?? "OUTRO"]}
+                            </TaxText>
                           </TaxItem>
                         );
                       })}
@@ -256,22 +323,25 @@ export default function OpenedOrderScreen() {
                 onChangeText={(text) => handleAdditional(Number(text))}
                 placeholder="Ex: 10"
                 placeholderTextColor="#ccc"
-                style={{ backgroundColor: "#fff", padding: 10, borderRadius: 5, fontSize: 16, marginBottom: 10 }}
+                style={{
+                  backgroundColor: "#fff",
+                  padding: 10,
+                  borderRadius: 5,
+                  fontSize: 16,
+                  marginBottom: 10,
+                }}
               />
             </OrderItem>
           );
         })}
-        {orders.length > 0 && (
-          <ConcludeButton onPress={() => setIsModalVisible(true)}>
-            <ConcludeButtonText>Concluir todas as comandas</ConcludeButtonText>
-          </ConcludeButton>
-        )}
+
       </ScrollView>
 
       {orders.length > 0 && (
         <ConcludeButton onPress={() => setIsModalVisible(true)}>
           <ConcludeButtonText>
-            Concluir ({selectedOrders.length}) Comanda{selectedOrders.length !== 1 && "s"}
+            Concluir ({selectedOrders.length}) Comanda
+            {selectedOrders.length !== 1 && "s"}
           </ConcludeButtonText>
         </ConcludeButton>
       )}
@@ -283,10 +353,16 @@ export default function OpenedOrderScreen() {
               Deseja fechar as {selectedOrders.length} comandas selecionadas?
             </ModalTitle>
             <ModalButtonsContainer>
-              <ModalButton variant="cancel" onPress={() => setIsModalVisible(false)}>
+              <ModalButton
+                variant="cancel"
+                onPress={() => setIsModalVisible(false)}
+              >
                 <ModalButtonText>Cancelar</ModalButtonText>
               </ModalButton>
-              <ModalButton variant="confirm" onPress={handleConcludeSelectedOrders}>
+              <ModalButton
+                variant="confirm"
+                onPress={handleConcludeSelectedOrders}
+              >
                 <ModalButtonText>Fechar Comandas</ModalButtonText>
               </ModalButton>
             </ModalButtonsContainer>
@@ -297,12 +373,18 @@ export default function OpenedOrderScreen() {
   );
 }
 
-const Row = styled.View`flex-direction: row; align-items: center;`;
+const Row = styled.View`
+  flex-direction: row;
+  align-items: center;
+`;
 
-const OrderHeader = styled.View`margin-left: 8px;`;
+const OrderHeader = styled.View`
+  margin-left: 8px;
+`;
 
 export const OrderItem = styled.TouchableOpacity<{ selected?: boolean }>`
-  background-color: ${({ selected }: { selected?: boolean }) => (selected ? "#038082" : "#041b38")};
+  background-color: ${({ selected }: { selected?: boolean }) =>
+    selected ? "#038082" : "#041b38"};
   padding: 10px 15px;
   border-radius: 10px;
   margin: 10px 0;
@@ -409,8 +491,6 @@ export const ConcludeButtonText = styled.Text`
   font-size: 14px;
 `;
 
-
-
 export const OrderText = styled.Text`
   color: #ffffff;
   font-size: 14px;
@@ -451,7 +531,6 @@ export const OrderCountText = styled.Text`
   font-weight: bold;
 `;
 
-
 export const PaymentMethodsText = styled.Text`
   color: #ffffff;
   font-size: 16px;
@@ -467,7 +546,8 @@ export const PaymentOptions = styled.View`
 `;
 
 export const PaymentButton = styled.TouchableOpacity<{ selected?: boolean }>`
-  background-color: ${({ selected }: { selected?: boolean }) => (selected ? "#038082" : "#e9ecef")};
+  background-color: ${({ selected }: { selected?: boolean }) =>
+    selected ? "#038082" : "#e9ecef"};
   padding: 12px 15px;
   border-radius: 5px;
   margin-bottom: 10px;
@@ -478,7 +558,8 @@ export const PaymentButton = styled.TouchableOpacity<{ selected?: boolean }>`
 `;
 
 export const PaymentButtonText = styled.Text<{ selected?: boolean }>`
-  color: ${({ selected }: { selected?: boolean }) => (selected ? "#fff" : "#6c757d")};
+  color: ${({ selected }: { selected?: boolean }) =>
+    selected ? "#fff" : "#6c757d"};
   margin-left: 5px;
   font-size: 14px;
   font-weight: bold;
@@ -492,14 +573,15 @@ const TaxList = styled.View`
 `;
 
 const TaxItem = styled.TouchableOpacity<{ selected?: boolean }>`
-  background-color: ${({ selected }: { selected?: boolean }) => (selected ? "#038082" : "#e9ecef")};
+  background-color: ${({ selected }: { selected?: boolean }) =>
+    selected ? "#038082" : "#e9ecef"};
   border-radius: 8px;
   padding: 8px 12px;
 `;
 
 const TaxText = styled.Text<{ selected?: boolean }>`
-  color: ${({ selected }: { selected?: boolean }) => (selected ? "#fff" : "#6c757d")};
+  color: ${({ selected }: { selected?: boolean }) =>
+    selected ? "#fff" : "#6c757d"};
   font-size: 14px;
   font-weight: bold;
 `;
-

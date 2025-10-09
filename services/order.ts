@@ -1,4 +1,3 @@
-import { NewOrder } from './order';
 import { api } from "./api";
 import { Kitchen } from "./kitchen";
 
@@ -20,7 +19,7 @@ export interface OrderProduct {
 
 export interface Order {
   id: string;
-  identifier: string
+  identifier: string;
   tableId: string;
   quantity: number;
   products: OrderProduct[];
@@ -68,26 +67,23 @@ export interface UpdatePaymentMethod {
 
 export interface ConcludeOrderInput {
   tableId: string;
-  ordersArray: Array<string>
+  ordersArray: Array<string>;
   restaurantId: string;
   sumIndividually?: boolean;
   additional?: number;
-  paymentMethod: 'CASH' | 'PIX' | 'CREDIT_CARD' | 'DEBIT_CARD' | 'OTHER';
+  paymentMethod: "CASH" | "PIX" | "CREDIT_CARD" | "DEBIT_CARD" | "OTHER";
   paymentConfigId?: string | null;
-
 }
 
 export interface ConcludeSingleOrderInput {
   orderId: string;
   restaurantId: string;
   additional?: number;
-  paymentMethod: 'CASH' | 'PIX' | 'CREDIT_CARD' | 'DEBIT_CARD' | 'OTHER';
+  paymentMethod: "CASH" | "PIX" | "CREDIT_CARD" | "DEBIT_CARD" | "OTHER";
   paymentConfigId?: string | null;
 }
 
-
 export async function createOrder(order: NewOrder) {
-
   if (!order) throw new Error("Dados faltantes");
   try {
     const response = await api.post("/orders", order);
@@ -98,7 +94,10 @@ export async function createOrder(order: NewOrder) {
   }
 }
 
-export async function getOrdersByRestaurant(restaurantId: string, status?: string) {
+export async function getOrdersByRestaurant(
+  restaurantId: string,
+  status?: string
+) {
   if (!restaurantId) throw new Error("Restaurant Id not defined");
 
   try {
@@ -153,7 +152,9 @@ export async function addProductToOrder(productData: AddProductInput) {
 export async function getCompletedOrdersByTable(tableId: string) {
   if (!tableId) throw new Error("Table Id not defined");
   try {
-    const response = await api.get(`/orders/completed`, { params: { tableId } });
+    const response = await api.get(`/orders/completed`, {
+      params: { tableId },
+    });
     return response.data;
   } catch (error) {
     console.error(error);
@@ -201,7 +202,18 @@ export async function concludeOrders({
   sumIndividually,
   additional = 0,
 }: ConcludeOrderInput) {
-  if (!tableId || !restaurantId) throw new Error("TableId e RestaurantId são obrigatórios");
+  if (!tableId || !restaurantId)
+    throw new Error("TableId e RestaurantId são obrigatórios");
+
+  console.log(
+    tableId,
+    restaurantId,
+    paymentMethod,
+    paymentConfigId,
+    sumIndividually,
+    additional,
+    ordersArray
+  );
 
   try {
     const response = await api.put(`/orders/restaurant/conclude-orders`, {
@@ -211,9 +223,10 @@ export async function concludeOrders({
       paymentConfigId: paymentConfigId || null,
       sumIndividually,
       additional,
-      ordersArray
+      ordersArray,
     });
 
+    console.log(response.data);
 
     return response.data;
   } catch (error) {
@@ -221,7 +234,6 @@ export async function concludeOrders({
     throw new Error(`Error concluding orders: ${error}`);
   }
 }
-
 
 export async function concludeOrder({
   orderId,
@@ -249,7 +261,6 @@ export async function concludeOrder({
     throw new Error(`Error concluding single order: ${error}`);
   }
 }
-
 
 export async function getOrderSummaryByIdentifier(
   identifier: string,

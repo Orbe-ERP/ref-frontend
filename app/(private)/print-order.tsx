@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, ActivityIndicator, Alert, FlatList } from 'react-native';
 import styled from 'styled-components/native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { getOrderSummaryByIdentifier } from '@/services/order';
 
 export default function PrintOrderScreen() {
@@ -54,11 +54,17 @@ export default function PrintOrderScreen() {
 
   return (
     <Container>
+
+            <Stack.Screen
+        options={{
+          headerTitle: "Dados da Comanda",
+          headerStyle: { backgroundColor: "#041224" },
+        }}
+      />
       {/* Cabeçalho com info da comanda */}
       <Header>
         <Title>{orderSummary.restaurant.name} ({orderSummary.restaurant.tradeName})</Title>
         <Subtitle>CNPJ: {orderSummary.restaurant.cnpj}</Subtitle>
-        <Subtitle>Responsável: {orderSummary.responsible}</Subtitle>
         <Subtitle>Responsável: {orderSummary.responsible}</Subtitle>
         <Subtitle>Data: {formatDate(orderSummary.createdAt)}</Subtitle>
         <Subtitle>Comanda: #{orderSummary.orderIdentifier.slice(-6)}</Subtitle>

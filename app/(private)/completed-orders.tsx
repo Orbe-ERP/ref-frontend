@@ -35,6 +35,8 @@ export default function CompletedOrdersScreen() {
         end || dayjs().endOf('month').format('YYYY-MM-DD')
       );
 
+      console.log(completedOrders)
+
       setOrders(completedOrders);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar comandas fechadas';
