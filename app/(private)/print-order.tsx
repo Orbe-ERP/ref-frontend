@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, ActivityIndicator, Alert, FlatList } from 'react-native';
-import styled from 'styled-components/native';
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import { getOrderSummaryByIdentifier } from '@/services/order';
+import React, { useEffect, useState } from "react";
+import { View, Text, ActivityIndicator, Alert, FlatList } from "react-native";
+import styled from "styled-components/native";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { getOrderSummaryByIdentifier } from "@/services/order";
 
 export default function PrintOrderScreen() {
   const { identifier } = useLocalSearchParams<{ identifier: string }>();
@@ -21,7 +21,7 @@ export default function PrintOrderScreen() {
       const data = await getOrderSummaryByIdentifier(identifier, false);
       setOrderSummary(data);
     } catch (err: any) {
-      Alert.alert('Erro', err.message || 'Falha ao carregar comanda');
+      Alert.alert("Erro", err.message || "Falha ao carregar comanda");
       router.back();
     } finally {
       setLoading(false);
@@ -29,14 +29,21 @@ export default function PrintOrderScreen() {
   };
 
   const formatCurrency = (value: number) =>
-    new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+    new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    }).format(value);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('pt-BR') + ' ' + date.toLocaleTimeString('pt-BR', {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+    return (
+      date.toLocaleDateString("pt-BR") +
+      " " +
+      date.toLocaleTimeString("pt-BR", {
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    );
   };
 
   if (loading) {
@@ -52,10 +59,10 @@ export default function PrintOrderScreen() {
 
   const products = Object.values(orderSummary.totalProducts);
 
+
   return (
     <Container>
-
-            <Stack.Screen
+      <Stack.Screen
         options={{
           headerTitle: "Dados da Comanda",
           headerStyle: { backgroundColor: "#041224" },
@@ -63,7 +70,9 @@ export default function PrintOrderScreen() {
       />
       {/* Cabeçalho com info da comanda */}
       <Header>
-        <Title>{orderSummary.restaurant.name} ({orderSummary.restaurant.tradeName})</Title>
+        <Title>
+          {orderSummary.restaurant.name} ({orderSummary.restaurant.tradeName})
+        </Title>
         <Subtitle>CNPJ: {orderSummary.restaurant.cnpj}</Subtitle>
         <Subtitle>Responsável: {orderSummary.responsible}</Subtitle>
         <Subtitle>Data: {formatDate(orderSummary.createdAt)}</Subtitle>
@@ -71,12 +80,13 @@ export default function PrintOrderScreen() {
       </Header>
 
       {/* Lista de produtos */}
+
       <FlatList
         data={products}
         keyExtractor={(item: any) => item.productId || item.id}
         renderItem={({ item }: any) => (
           <ProductItem>
-            <ProductName>{item.productName}</ProductName>
+          <ProductName>{item.productName}</ProductName>
             <ProductQuantity>x{item.quantity}</ProductQuantity>
             <ProductPrice>{formatCurrency(item.price)}</ProductPrice>
             <ProductTotal>{formatCurrency(item.totalPrice)}</ProductTotal>
@@ -87,13 +97,19 @@ export default function PrintOrderScreen() {
       {/* Totais */}
       <TotalContainer>
         <TotalLabel>Subtotal:</TotalLabel>
-        <TotalValue>{formatCurrency(orderSummary.totalAmount - (orderSummary.additionalAmount || 0))}</TotalValue>
+        <TotalValue>
+          {formatCurrency(
+            orderSummary.totalAmount - (orderSummary.additionalAmount || 0)
+          )}
+        </TotalValue>
       </TotalContainer>
 
       {orderSummary.additionalAmount > 0 && (
         <TotalContainer>
           <TotalLabel>Taxa adicional:</TotalLabel>
-          <TotalValue>{formatCurrency(orderSummary.additionalAmount)}</TotalValue>
+          <TotalValue>
+            {formatCurrency(orderSummary.additionalAmount)}
+          </TotalValue>
         </TotalContainer>
       )}
 
@@ -108,10 +124,14 @@ export default function PrintOrderScreen() {
           <PaymentText>Taxa percentual: {orderSummary.feePercent}%</PaymentText>
         )}
         {orderSummary.feeFixed > 0 && (
-          <PaymentText>Taxa fixa: {formatCurrency(orderSummary.feeFixed)}</PaymentText>
+          <PaymentText>
+            Taxa fixa: {formatCurrency(orderSummary.feeFixed)}
+          </PaymentText>
         )}
         {orderSummary.feePaidValue > 0 && (
-          <PaymentText>Valor da taxa paga: {formatCurrency(orderSummary.feePaidValue)}</PaymentText>
+          <PaymentText>
+            Valor da taxa paga: {formatCurrency(orderSummary.feePaidValue)}
+          </PaymentText>
         )}
       </PaymentContainer>
     </Container>

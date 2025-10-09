@@ -35,7 +35,6 @@ export default function CompletedOrdersScreen() {
         end || dayjs().endOf('month').format('YYYY-MM-DD')
       );
 
-      console.log(completedOrders)
 
       setOrders(completedOrders);
     } catch (err) {
