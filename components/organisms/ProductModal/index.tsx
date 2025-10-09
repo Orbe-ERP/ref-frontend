@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Modal, TouchableOpacity, FlatList, Text, View } from "react-native";
+import React, { useState, useEffect } from "react";
+import { Modal, TouchableOpacity, FlatList, Text, View, Switch } from "react-native";
 import Input from "@/components/atoms/Input";
 import {
   ModalOverlay,
@@ -37,13 +37,19 @@ const ProductModal: React.FC<ProductModalProps> = ({
   onSaved,
   kitchens,
 }) => {
-  const [name, setName] = useState(product?.name ?? "");
-  const [price, setPrice] = useState(product?.price?.toString() ?? "");
-  const [kitchen, setKitchen] = useState<string>(
-    product?.kitchen ?? kitchens[0]?.id ?? ""
-  );
-  const [active, setActive] = useState(product?.active ?? true);
+  const [name, setName] = useState("");
+  const [price, setPrice] = useState("");
+  const [kitchen, setKitchen] = useState("");
+  const [active, setActive] = useState(true);
   const [isKitchenModalVisible, setIsKitchenModalVisible] = useState(false);
+
+  // Atualiza os estados sempre que o produto mudar
+  useEffect(() => {
+    setName(product?.name ?? "");
+    setPrice(product?.price?.toString() ?? "");
+    setKitchen(product?.kitchen ?? kitchens[0]?.id ?? "");
+    setActive(product?.active ?? true);
+  }, [product, kitchens]);
 
   async function handleSave() {
     try {
@@ -92,8 +98,25 @@ const ProductModal: React.FC<ProductModalProps> = ({
           <ModalTitle>{product ? "Editar Produto" : "Novo Produto"}</ModalTitle>
 
           <Input placeholder="Nome" value={name} onChangeText={setName} />
-          <Input placeholder="Preço" value={price} onChangeText={setPrice} keyboardType="numeric" />
+          <Input
+            placeholder="Preço"
+            value={price}
+            onChangeText={setPrice}
+            keyboardType="numeric"
+          />
 
+          {/* Switch para Ativo/Inativo */}
+          <View style={{ flexDirection: "row", alignItems: "center", marginTop: 12 }}>
+            <Text style={{ color: "white", marginRight: 10 }}>Ativo</Text>
+            <Switch
+              value={active}
+              onValueChange={setActive}
+              trackColor={{ false: "#767577", true: "#038082" }}
+              thumbColor={active ? "#f4f3f4" : "#f4f3f4"}
+            />
+          </View>
+
+          {/* Seleção de cozinha */}
           <TouchableOpacity
             onPress={() => setIsKitchenModalVisible(true)}
             style={{
@@ -124,6 +147,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
         </ModalContent>
       </ModalOverlay>
 
+      {/* Modal de seleção de cozinha */}
       <Modal
         visible={isKitchenModalVisible}
         animationType="fade"

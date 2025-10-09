@@ -14,6 +14,7 @@ export interface ReportData {
   id: string;
   restaurantId: string;
   totalValue: number;
+  feePaidValue: number;
   additional: number;
   paymentMethod: PaymentMethod;
   month: string;

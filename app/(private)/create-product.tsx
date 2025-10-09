@@ -37,23 +37,23 @@ export default function ProductScreen() {
     }
   }
 
-    async function fetchKitchens() {
-      if (!selectedRestaurant) return;
-      try {
-        const data = await getKitchens(selectedRestaurant.id);
-        setKitchens(data);
-      } catch (error: any) {
-        if (error.response?.status === 404) {
-          setKitchens([]);
-        } else {
-          Toast.show({
-            type: "error",
-            text1: "Erro ao buscar cozinhas",
-          });
-          console.error("Erro ao buscar cozinhas:", error);
-        }
+  async function fetchKitchens() {
+    if (!selectedRestaurant) return;
+    try {
+      const data = await getKitchens(selectedRestaurant.id);
+      setKitchens(data);
+    } catch (error: any) {
+      if (error.response?.status === 404) {
+        setKitchens([]);
+      } else {
+        Toast.show({
+          type: "error",
+          text1: "Erro ao buscar cozinhas",
+        });
+        console.error("Erro ao buscar cozinhas:", error);
       }
     }
+  }
 
   useEffect(() => {
     fetchProducts();
@@ -62,11 +62,11 @@ export default function ProductScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: "#041224", padding: 24 }}>
-      <Stack.Screen 
-        options={{ 
+      <Stack.Screen
+        options={{
           title: "Produtos",
-          headerStyle: { 
-            backgroundColor: "#041224"
+          headerStyle: {
+            backgroundColor: "#041224",
           },
         }}
       />
@@ -95,7 +95,9 @@ export default function ProductScreen() {
               icon="cube-outline"
               key={product.id}
               cardType={product}
-              onPress={() => router.push(`/observation?productId=${product.id}`)}
+              onPress={() =>
+                router.push(`/observation?productId=${product.id}`)
+              }
               onEdit={() => {
                 setSelectedProduct(product);
                 setIsModalVisible(true);
@@ -114,18 +116,18 @@ export default function ProductScreen() {
       </ScrollView>
 
       {selectedRestaurant && categoryId && (
-<ProductModal
-  visible={isModalVisible}
-  onClose={() => {
-    setIsModalVisible(false);
-    setSelectedProduct(null);
-  }}
-  product={selectedProduct || undefined}
-  categoryId={categoryId as string}
-  restaurantId={selectedRestaurant.id}
-  onSaved={fetchProducts}
-  kitchens={kitchens} 
-/>
+        <ProductModal
+          visible={isModalVisible}
+          onClose={() => {
+            setIsModalVisible(false);
+            setSelectedProduct(null);
+          }}
+          product={selectedProduct || undefined}
+          categoryId={categoryId as string}
+          restaurantId={selectedRestaurant.id}
+          onSaved={fetchProducts}
+          kitchens={kitchens}
+        />
       )}
     </View>
   );

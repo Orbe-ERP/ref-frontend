@@ -114,25 +114,36 @@ export default function ReportScreen() {
             ) : reportData.length > 0 ? (
             <TableWrapper>
                 <RowHeader>
-                <CellHeader style={{ flex: 0.8, textAlign: 'left', paddingLeft: 12 }}>Comanda</CellHeader>
                 <CellHeader>Data</CellHeader>
                 <CellHeader>Total</CellHeader>
-                <CellHeader>10%</CellHeader>
+                <CellHeader>Gorjeta</CellHeader>
+                <CellHeader>Taxa do Cartão</CellHeader>
                 <CellHeader>Pagamento</CellHeader>
                 </RowHeader>
 
                 {reportData.map((order, index) => (
                 <React.Fragment key={index}>
                     <Row background={index % 2 === 0 ? '#1a1a2e' : '#252545'}>
-                    <Cell style={{ flex: 0.8, textAlign: 'left', paddingLeft: 12 }}>#</Cell>
                     <Cell>{dayjs(order.createdAt).format('DD/MM HH:mm')}</Cell>
                     <Cell>R$ {order.totalValue.toFixed(2)}</Cell>
                     <Cell>R$ {order.additional.toFixed(2)}</Cell>
+                    <Cell>R$ {order.feePaidValue.toFixed(2)}</Cell>
                     <Cell>{order.paymentMethod}</Cell>
                     </Row>
                     <RowDivider />
                 </React.Fragment>
                 ))}
+
+
+                <RowFooter>
+                <Cell style={{ flex: 0.8, textAlign: 'left', paddingLeft: 12 }}>Gorjetas:</Cell>
+                <Cell>
+                    R${' '}
+                    {reportData
+                    .reduce((sum, order) => sum + order.additional, 0)
+                    .toFixed(2)}
+                </Cell>
+                </RowFooter>
 
                 <RowFooter>
                 <Cell style={{ flex: 0.8, textAlign: 'left', paddingLeft: 12 }}>Total Geral:</Cell>
