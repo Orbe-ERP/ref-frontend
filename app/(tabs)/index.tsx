@@ -150,22 +150,6 @@ export default function IndexScreen() {
           ) : (
             <>
               <HorizontalBarChart data={salesData} />
-
-              {topProduct && (
-                <View style={styles.insightContainer}>
-                  <Text style={styles.insightTitle}>💡 Destaque do Dia</Text>
-                  <Text style={styles.insightText}>
-                    <Text style={styles.highlight}>
-                      {topProduct.productName}
-                    </Text>{" "}
-                    lidera com{" "}
-                    <Text style={styles.highlight}>
-                      {topProduct.salesCount} vendas
-                    </Text>
-                  </Text>
-                </View>
-              )}
-
               <View style={styles.actionsRow}>
                 <Button
                   label="📊 Dashboard Completo"
@@ -340,6 +324,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 8,
     marginTop: 12,
+    justifyContent: "center",
+    alignItems: "center",
   },
 
   loadingContainer: { padding: 30, alignItems: "center" },

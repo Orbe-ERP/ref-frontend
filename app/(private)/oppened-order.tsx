@@ -89,7 +89,12 @@ export default function OpenedOrderScreen() {
       for (const orderId of selectedOrders) {
         const o = orders.find((ord) => ord.id === orderId);
         if (!o?.paymentMethod) {
-          Alert.alert("Aviso", "Selecione o método de pagamento em todas as comandas selecionadas.");
+
+                Toast.show({
+        type: "error",
+        text1: "Selecione o método de pagamento",
+        text2: "Selecione o método de pagamento em todas as comandas selecionadas.",
+      });
           return;
         }
       }
@@ -251,6 +256,11 @@ export default function OpenedOrderScreen() {
             </OrderItem>
           );
         })}
+        {orders.length > 0 && (
+          <ConcludeButton onPress={() => setIsModalVisible(true)}>
+            <ConcludeButtonText>Concluir todas as comandas</ConcludeButtonText>
+          </ConcludeButton>
+        )}
       </ScrollView>
 
       {orders.length > 0 && (
@@ -282,15 +292,12 @@ export default function OpenedOrderScreen() {
   );
 }
 
-// --- Styled Components ---
 const Row = styled.View`flex-direction: row; align-items: center;`;
+
 const OrderHeader = styled.View`margin-left: 8px;`;
 
-
-// --- Styled Components ---
-// Mantive os mesmos que você já tinha, só adicionando `selected` no OrderItem
 export const OrderItem = styled.TouchableOpacity<{ selected?: boolean }>`
-  background-color: ${({ selected }) => (selected ? "#038082" : "#041b38")};
+  background-color: ${({ selected }: { selected?: boolean }) => (selected ? "#038082" : "#041b38")};
   padding: 10px 15px;
   border-radius: 10px;
   margin: 10px 0;
@@ -299,7 +306,6 @@ export const OrderItem = styled.TouchableOpacity<{ selected?: boolean }>`
   shadow-offset: 0px 2px;
   shadow-radius: 5px;
 `;
-
 
 export const ModalOverlay = styled.View`
   flex: 1;
@@ -330,16 +336,18 @@ export const ModalButtonsContainer = styled.View`
   width: 100%;
 `;
 
-export const ModalButton = styled.TouchableOpacity<{
+interface ModalButtonProps {
   variant?: "cancel" | "confirm";
-}>`
+}
+
+export const ModalButton = styled.TouchableOpacity<ModalButtonProps>`
   flex: 1;
   padding: 12px;
   border-radius: 5px;
   align-items: center;
   justify-content: center;
   margin: 0 5px;
-  background-color: ${({ variant }) =>
+  background-color: ${({ variant }: ModalButtonProps) =>
     variant === "cancel" ? "#dc3545" : "#038082"};
 `;
 
@@ -380,22 +388,20 @@ export const OrdersList = styled.ScrollView`
 `;
 
 export const ConcludeButton = styled.TouchableOpacity`
-  background-color: #038082;
-  padding: 15px 0;
+  background-color: transparent;
+  padding: 12px 0;
   border-radius: 5px;
-  margin-top: 20px;
+  margin: 10px 0 20px 0;
   width: 100%;
-  shadow-color: #000;
-  shadow-opacity: 0.3;
-  shadow-offset: 0px 4px;
-  shadow-radius: 6px;
-  margin-bottom: 20px;
+  border: 1px solid #038082;
+  align-items: center;
 `;
 
 export const ConcludeButtonText = styled.Text`
-  color: #ffffff;
+  color: #038082;
   font-weight: bold;
   text-align: center;
+  font-size: 14px;
 `;
 
 
@@ -456,7 +462,7 @@ export const PaymentOptions = styled.View`
 `;
 
 export const PaymentButton = styled.TouchableOpacity<{ selected?: boolean }>`
-  background-color: ${({ selected }) => (selected ? "#038082" : "#e9ecef")};
+  background-color: ${({ selected }: { selected?: boolean }) => (selected ? "#038082" : "#e9ecef")};
   padding: 12px 15px;
   border-radius: 5px;
   margin-bottom: 10px;
@@ -467,7 +473,7 @@ export const PaymentButton = styled.TouchableOpacity<{ selected?: boolean }>`
 `;
 
 export const PaymentButtonText = styled.Text<{ selected?: boolean }>`
-  color: ${({ selected }) => (selected ? "#fff" : "#6c757d")};
+  color: ${({ selected }: { selected?: boolean }) => (selected ? "#fff" : "#6c757d")};
   margin-left: 5px;
   font-size: 14px;
   font-weight: bold;
@@ -481,14 +487,14 @@ const TaxList = styled.View`
 `;
 
 const TaxItem = styled.TouchableOpacity<{ selected?: boolean }>`
-  background-color: ${({ selected }) => (selected ? "#9fd6d2" : "#1a1a1a")};
-  border: 1px solid ${({ selected }) => (selected ? "#9fd6d2" : "#444")};
+  background-color: ${({ selected }: { selected?: boolean }) => (selected ? "#038082" : "#e9ecef")};
   border-radius: 8px;
   padding: 8px 12px;
 `;
 
 const TaxText = styled.Text<{ selected?: boolean }>`
-  color: ${({ selected }) => (selected ? "#041224" : "#fff")};
+  color: ${({ selected }: { selected?: boolean }) => (selected ? "#fff" : "#6c757d")};
   font-size: 14px;
+  font-weight: bold;
 `;
 

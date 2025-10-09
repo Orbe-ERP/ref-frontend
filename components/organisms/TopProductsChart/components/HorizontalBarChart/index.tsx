@@ -68,11 +68,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
     marginRight: 8,
+    color: '#fff',
   },
   salesCount: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#fff',
   },
   barBackground: {
     height: 20,

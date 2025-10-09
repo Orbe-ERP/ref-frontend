@@ -88,17 +88,13 @@ export const TopProductsChart: React.FC<TopProductsChartProps> = ({
       )}
 
       {/* Insight */}
-      {showInsights && topProduct && (
+      {showInsights && variant === "full" && topProduct && (
         <View style={styles.insightContainer}>
-          <Text style={styles.insightTitle}>
-            💡 {variant === "mini" ? "Destaque do Dia" : "Insight"}
-          </Text>
+          <Text style={styles.insightTitle}>💡 Insight</Text>
           <Text style={styles.insightText}>
             <Text style={styles.highlight}>{topProduct.productName}</Text> é o campeão com{" "}
             {topProduct.salesCount} vendas
-            {variant === "full" && topProduct.salesCount > 10
-              ? " - Considere aumentar o estoque!"
-              : ""}
+            {topProduct.salesCount > 10 ? " - Considere aumentar o estoque!" : ""}
           </Text>
         </View>
       )}

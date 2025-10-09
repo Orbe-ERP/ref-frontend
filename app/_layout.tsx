@@ -61,6 +61,11 @@ export default function RootLayout() {
               <AuthGuard>
                 <SafeAreaView style={{ flex: 1, backgroundColor: "#000" }}>
                   <Stack screenOptions={{ headerShown: false }}>
+                    {/* Define todas as rotas dos grupos */}
+                    <Stack.Screen name="(tabs)" />
+                    <Stack.Screen name="(private)" />
+                    <Stack.Screen name="login" />
+                    
                     <Stack.Screen
                       name="+not-found"
                       options={{ title: "Página não encontrada" }}
