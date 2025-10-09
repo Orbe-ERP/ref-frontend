@@ -337,19 +337,18 @@ export default function OpenedOrderScreen() {
 
               <Button
                 label="Concluir Comanda"
-                variant="primary"
+                variant="secondary"
                 onPress={() => handleConcludeSingleOrder(order.id)}
               />
             </OrderItem>
           );
         })}
+        {orders.length > 0 && (
+          <ConcludeButton onPress={() => setIsModalVisible(true)}>
+            <ConcludeButtonText>Concluir todas as comandas</ConcludeButtonText>
+          </ConcludeButton>
+        )}
       </ScrollView>
-
-      {orders.length > 0 && (
-        <ConcludeButton onPress={() => setIsModalVisible(true)}>
-          <ConcludeButtonText>Concluir todas as comandas</ConcludeButtonText>
-        </ConcludeButton>
-      )}
 
       {/* Modal de confirmação */}
       <Modal visible={isModalVisible} transparent animationType="slide">
@@ -370,7 +369,6 @@ export default function OpenedOrderScreen() {
     </Container>
   );
 }
-
 
 export const ModalOverlay = styled.View`
   flex: 1;
@@ -451,22 +449,20 @@ export const OrdersList = styled.ScrollView`
 `;
 
 export const ConcludeButton = styled.TouchableOpacity`
-  background-color: #038082;
-  padding: 15px 0;
+  background-color: transparent;
+  padding: 12px 0;
   border-radius: 5px;
-  margin-top: 20px;
+  margin: 10px 0 20px 0;
   width: 100%;
-  shadow-color: #000;
-  shadow-opacity: 0.3;
-  shadow-offset: 0px 4px;
-  shadow-radius: 6px;
-  margin-bottom: 20px;
+  border: 1px solid #038082;
+  align-items: center;
 `;
 
 export const ConcludeButtonText = styled.Text`
-  color: #ffffff;
+  color: #038082;
   font-weight: bold;
   text-align: center;
+  font-size: 14px;
 `;
 
 export const OrderItem = styled.View`
@@ -561,14 +557,14 @@ const TaxList = styled.View`
 `;
 
 const TaxItem = styled.TouchableOpacity<{ selected?: boolean }>`
-  background-color: ${({ selected }) => (selected ? "#9fd6d2" : "#1a1a1a")};
-  border: 1px solid ${({ selected }) => (selected ? "#9fd6d2" : "#444")};
+  background-color: ${({ selected }) => (selected ? "#038082" : "#e9ecef")};
   border-radius: 8px;
   padding: 8px 12px;
 `;
 
 const TaxText = styled.Text<{ selected?: boolean }>`
-  color: ${({ selected }) => (selected ? "#041224" : "#fff")};
+  color: ${({ selected }) => (selected ? "#fff" : "#6c757d")};
   font-size: 14px;
+  font-weight: bold;
 `;
 
