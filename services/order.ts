@@ -20,6 +20,7 @@ export interface OrderProduct {
 
 export interface Order {
   id: string;
+  identifier: string
   tableId: string;
   quantity: number;
   products: OrderProduct[];
@@ -212,6 +213,7 @@ export async function concludeOrders({
       additional,
       ordersArray
     });
+
 
     return response.data;
   } catch (error) {

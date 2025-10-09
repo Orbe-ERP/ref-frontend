@@ -10,6 +10,7 @@ import Toast from "react-native-toast-message";
 import io from "socket.io-client";
 import styled from "styled-components/native";
 import {
+  deleteProductFromOrder,
   updateQuantityOnProduct,
   updateStatusOnProduct,
 } from "@/services/order-product";
@@ -66,7 +67,7 @@ export default function KitchenScreen() {
   };
 
   useEffect(() => {
-    const socket = io("http://localhost:3001");
+    const socket = io("http://192.168.1.10:3001");
 
     const fetchOrders = async () => {
       if (!selectedRestaurant) return;
@@ -164,6 +165,27 @@ export default function KitchenScreen() {
       });
     }
   };
+  
+const handleDeleteProduct = async (orderId: string, productId: string) => {
+
+    console.log('productId', productId, '--------', 'orderId', orderId)
+  try {
+    await deleteProductFromOrder(productId); 
+    setOrders(prev =>
+      prev.map(order =>
+        order.id === orderId
+          ? {
+              ...order,
+              products: order.products.filter(p => p.id !== productId),
+            }
+          : order
+      )
+    );
+    Toast.show({ type: "success", text1: "Produto removido com sucesso" });
+  } catch {
+    Toast.show({ type: "error", text1: "Erro ao remover produto" });
+  }
+};
 
   const handleDeleteObservation = async (
     orderId: string,
@@ -286,6 +308,9 @@ export default function KitchenScreen() {
                       }
                       confirmDeleteObservation={(productId, obsId) =>
                         handleDeleteObservation(order.id, productId, obsId)
+                      }
+                      handleDeleteProduct={( orderId: string, productId: string,) =>
+                        handleDeleteProduct(orderId, productId)
                       }
                     />
                   </View>

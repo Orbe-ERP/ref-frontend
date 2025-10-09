@@ -58,6 +58,7 @@ interface Props {
   handleProductStatus: (id: string, status: string) => void;
   onUpdateQuantity?: (productId: string, quantity: number) => void;
   confirmDeleteObservation?: (productId: string, observationId: string) => void;
+  handleDeleteProduct?: (orderId: string, productId: string) => void;
 }
 
 export default function OrderCard({
@@ -65,6 +66,7 @@ export default function OrderCard({
   handleProductStatus,
   onUpdateQuantity,
   confirmDeleteObservation,
+  handleDeleteProduct,
 }: Props) {
   const [modalVisible, setModalVisible] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -169,17 +171,17 @@ export default function OrderCard({
                 />
                 <ActionText>Concluir</ActionText>
               </ActionButton>
-
-              <CancelButtonStyled
-                onPress={() => handleProductStatus(p.id, "CANCELED")}
-              >
-                <Ionicons name="close-circle-outline" size={16} color="#fff" />
-                <ActionText>Cancelar</ActionText>
-              </CancelButtonStyled>
+<CancelButtonStyled
+    onPress={() => {
+      handleDeleteProduct?.(order.id, p.id);
+    }}
+  >
+    <Ionicons name="close-circle-outline" size={16} color="#fff" />
+    <ActionText>Cancelar</ActionText>
+  </CancelButtonStyled>
             </ProductActions>
           </ItemContainer>
         ))}
-
 
       {modalVisible && editingProduct && (
         <ModalContainer>

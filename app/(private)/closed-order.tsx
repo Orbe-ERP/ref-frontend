@@ -49,10 +49,14 @@ export default function ClosedOrdersScreen() {
     loadCompletedOrders();
   };
 
-  const handlePrintOrder = async (order: Order) => {
-    setSelectedOrder(order);
-    setShowPrintModal(true);
-  };
+const handlePrintOrder = (order: Order) => {
+  console.log(order)
+  console.log(order.identifier)
+  router.push({
+    pathname: '/print-order', 
+    params: { identifier: order.identifier },
+  });
+};
 
   const confirmPrint = async () => {
     if (!selectedOrder) return;
@@ -72,6 +76,8 @@ export default function ClosedOrdersScreen() {
     }
   };
 
+
+    console.log(orders)
   const printOrder = async (order: Order) => {
     // Implemente aqui a lógica de impressão
     // Isso pode variar dependendo da sua biblioteca de impressão

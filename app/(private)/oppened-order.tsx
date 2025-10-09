@@ -115,7 +115,7 @@ export default function OpenedOrderScreen() {
         paymentConfigId,
       };
       
-      await concludeOrders(payload);
+      const response = await concludeOrders(payload);
       setSelectedOrders([]);
       setIsModalVisible(false)
       await fetchOrders();
@@ -126,7 +126,11 @@ export default function OpenedOrderScreen() {
         text2: "Comandas concluídas com sucesso!",
       });
 
-      router.push({ pathname: "/(tabs)/table" });
+    router.push({
+      pathname: "/(private)/print-order",
+      params: { identifier: response.orderIdentifier },
+    });
+
     } catch (error) {
       console.error(error);
       Toast.show({
@@ -136,6 +140,7 @@ export default function OpenedOrderScreen() {
       });
     }
   };
+
 
   const getStatusLabel = (status: string) => {
     switch (status) {

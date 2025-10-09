@@ -112,7 +112,6 @@ export default function CartScreen() {
       })),
     };
 
-
     try {
       await createOrder(newOrder);
       setProducts([]);
@@ -165,7 +164,7 @@ export default function CartScreen() {
         <>
           <ScrollView>
             {products.map((product: any) => (
-              <Card key={product}>
+              <Card key={product.cartItemId}>
                 <Label>{product.productName}</Label>
                 <Label>Quantidade: {product.quantity}</Label>
 

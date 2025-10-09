@@ -33,9 +33,15 @@ export async function updateQuantityOnProduct(data: UpdateOrderProductQuantity) 
   }
 }
 
-export async function deleteProductFromOrder(orderProductId: string) {
+export async function deleteProductFromOrder(productId: string) {
+
+  console.log(productId, 'aqui')
+
   try {
-    const response = await api.delete(`/order-product/${orderProductId}`);
+    const response = await api.delete(`/order-product/${productId}`);
+
+    console.log(response)
+
     return response.data;
   } catch (error: any) {
     console.error("Erro ao deletar produto do pedido:", error?.response?.data || error.message);
