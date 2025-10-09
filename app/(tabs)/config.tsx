@@ -72,6 +72,11 @@ export default function ConfigScreen() {
           <ItemText>Listar usuários</ItemText>
         </ItemRow>
 
+        <ItemRow onPress={() => router.push("/completed-orders")}>
+          <Ionicons name="print-outline" size={22} color="#038082" />
+          <ItemText>Comandas finalizadas</ItemText>
+        </ItemRow>
+
         <ItemRow onPress={() => router.push("/edit-account")}>
           <Ionicons name="person-outline" size={22} color="#038082" />
           <ItemText>Gerenciar conta</ItemText>
