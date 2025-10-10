@@ -67,7 +67,7 @@ export default function KitchenScreen() {
   };
 
   useEffect(() => {
-    const socket = io("http://192.168.1.10:3001");
+    const socket = io("http://localhost:3001");
 
     const fetchOrders = async () => {
       if (!selectedRestaurant) return;

@@ -15,20 +15,38 @@ import { getOrdersByRestaurant } from "@/services/order";
 import { ProductSales } from "@/services/types";
 import Button from "@/components/atoms/Button";
 import { Ionicons } from "@expo/vector-icons";
-import LogoutIcon from "@/components/atoms/LogoutButton";
 import LogoutButton from "@/components/atoms/LogoutButton";
+import { ThemeToggle } from "@/components/molecules/ToggleTheme";
 
-const COLORS = {
-  primary: "#041224",
-  secondary: "#038082",
-  accent: "#04C4D9",
-  background: "#0A1A2F",
+
+export const COLORS = {
+  primary: "#041224", // Azul petróleo escuro — base
+  secondary: "#038082", // Verde-azulado — botões e destaques
+  accent: "#04C4D9", // Ciano vibrante — toques visuais e ícones ativos
+  background: "#0A1A2F", // Fundo principal — escuro e profundo
+  surface: "#13263F", // Cartões e modais — contraste leve sobre o fundo
+  overlay: "rgba(0,0,0,0.6)", // Overlays e sombras
+
   text: {
-    primary: "#FFFFFF",
-    secondary: "#B0BEC5",
-    accent: "#04C4D9",
+    primary: "#FFFFFF", // Texto principal
+    secondary: "#C6D4E1", // Texto secundário (descrições)
+    accent: "#04C4D9", // Links ou destaques
+    muted: "#8A9BB3", // Labels e placeholders
+  },
+
+  success: "#00C896", 
+  warning: "#F6B73C",
+  error: "#E63946",
+  info: "#2196F3", 
+
+  border: "#1C2F4A",
+
+  disabled: {
+    background: "#1B2A41",
+    text: "#637187",
   },
 };
+
 
 export default function IndexScreen() {
   const [salesData, setSalesData] = useState<ProductSales[]>([]);
@@ -101,7 +119,9 @@ export default function IndexScreen() {
         style={styles.scrollView}
       >
         <View style={styles.logoutContainer}>
-          <LogoutButton/>
+                      <ThemeToggle />
+
+          <LogoutButton />
         </View>
 
         <View style={styles.chartSection}>
@@ -117,6 +137,7 @@ export default function IndexScreen() {
                   {salesData.length === 1 ? "tipo" : "diferentes"} vendidos
                 </Text>
               )}
+
               <TouchableOpacity
                 onPress={refreshData}
                 style={styles.refreshButton}
@@ -185,7 +206,6 @@ export default function IndexScreen() {
         {/* Status */}
         {selectedRestaurant && (
           <View style={styles.statusSection}>
-
             <View style={styles.statusItem}>
               <Text style={styles.statusLabel}>Vendas Hoje</Text>
               <Text style={styles.statusValue}>
@@ -204,6 +224,22 @@ export default function IndexScreen() {
 }
 
 const styles = StyleSheet.create({
+  headerRight: {
+    flexDirection: "row",
+    flexWrap: "wrap", // 👈 faz os itens quebrarem de linha automaticamente
+    alignItems: "center",
+    justifyContent: "flex-end",
+    gap: 8, // espaçamento entre o texto e o botão
+  },
+  salesCount: {
+    fontSize: 14,
+    color: "#333",
+    marginBottom: 4, // 👈 um pequeno espaço para quando ele quebrar de linha
+  },
+  refreshButton: {
+    padding: 6,
+  },
+
   container: { flex: 1, backgroundColor: COLORS.primary },
   scrollView: { flex: 1 },
   scrollContent: {
@@ -214,6 +250,8 @@ const styles = StyleSheet.create({
 
   logoutContainer: {
     alignItems: "flex-end",
+    display: "flex",
+    flexDirection: "row",
     marginBottom: 12,
   },
 
@@ -231,25 +269,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 12,
   },
-  headerRight: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
-  refreshButton: {
-    padding: 4,
-    borderRadius: 20,
-    backgroundColor: "rgba(3,128,130,0.1)",
-  },
+
   sectionTitle: {
     fontSize: 16,
     fontWeight: "bold",
     color: COLORS.text.primary,
-  },
-  salesCount: {
-    fontSize: 12,
-    color: COLORS.text.accent,
-    fontWeight: "600",
   },
 
   menuSection: {
