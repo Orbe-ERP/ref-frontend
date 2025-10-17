@@ -5,6 +5,7 @@ import { Stack, useRouter } from "expo-router";
 import Toast from "react-native-toast-message";
 import { RestaurantForm } from "@/components/organisms/RestaurantForm";
 import { createRestaurant } from "@/services/restaurant";
+import { COLORS } from "@/theme/colors";
 
 export default function RestaurantScreen() {
   const [loading, setLoading] = useState(false);
@@ -48,12 +49,12 @@ export default function RestaurantScreen() {
 
   return (
     <>
-      <Stack.Screen 
-        options={{ 
+      <Stack.Screen
+        options={{
           title: "Criar Restaurante",
-          headerStyle: { 
-            backgroundColor: "#041224"
-          },
+          headerStyle: { backgroundColor: COLORS.dark.primary },
+          headerTintColor: COLORS.dark.text.primary,
+          headerTitleStyle: { color: COLORS.dark.text.primary },
         }}
       />
       <View style={{ flex: 1, backgroundColor: "#041224" }}>

@@ -12,6 +12,7 @@ import { SalesService } from "@/services/salesService";
 import { SalesTimeRange } from "@/services/types";
 import { TopProductsChart } from "@/components/organisms/TopProductsChart";
 import useRestaurant from "@/hooks/useRestaurant";
+import { COLORS } from "@/theme/colors";
 
 export default function DashboardScreen() {
   const { selectedRestaurant } = useRestaurant();
@@ -76,8 +77,9 @@ export default function DashboardScreen() {
       <Stack.Screen
         options={{
           title: "Dashboard",
-          headerStyle: { backgroundColor: "#041224" },
-          headerTintColor: "#fff",
+          headerStyle: { backgroundColor: COLORS.dark.primary },
+          headerTintColor: COLORS.dark.text.primary,
+          headerTitleStyle: { color: COLORS.dark.text.primary },
         }}
       />
 

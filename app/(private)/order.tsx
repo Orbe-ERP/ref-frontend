@@ -6,6 +6,7 @@ import CategoryList from "@/components/organisms/CategoryList";
 import Button from "@/components/atoms/Button";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import styled from "styled-components/native";
+import { COLORS } from "@/theme/colors";
 
 export default function OrderScreen() {
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
@@ -77,10 +78,10 @@ export default function OrderScreen() {
     <Container>
       <Stack.Screen
         options={{
-          headerTitle: "Comanda",
-          headerStyle: { 
-            backgroundColor: "#041224"
-          },
+          title: "Comanda",
+          headerStyle: { backgroundColor: COLORS.dark.primary },
+          headerTintColor: COLORS.dark.text.primary,
+          headerTitleStyle: { color: COLORS.dark.text.primary },
           headerRight: () => (
             <HeaderRightContainer>
               {/* Novo ícone */}

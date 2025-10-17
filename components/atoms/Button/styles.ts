@@ -1,28 +1,23 @@
+import { TYPOGRAPHY } from "@/theme/typography";
 import styled from "styled-components/native";
-import { AppThemeFonts } from "@/theme/typography";
+import { DefaultTheme } from "styled-components/native";
 
-export const StyledButton = styled.TouchableOpacity<{
-  variant: "primary" | "secondary" | "danger";
-}>`
-  background-color: ${({ theme, variant }) =>
-    variant === "primary"
-      ? theme.colors.primary
-      : variant === "secondary"
-      ? theme.colors.secondary
-      : variant === "danger"
-      ? theme.custom.feedback.error
-      : theme.colors.primary};
+export const StyledButton = styled.TouchableOpacity.attrs({ activeOpacity: 0.7, })<{ variant: "primary" | "secondary" | "danger";}>`
+  background-color: ${(props: { theme: DefaultTheme; variant: "primary" | "secondary" | "danger" }) =>
+    props.variant === "primary"
+      ? props.theme.colors.primary
+      : props.variant === "secondary"
+      ? props.theme.colors.secondary
+      : props.theme.custom.feedback.error};
   border-radius: 5px;
-  background-color: ${({ theme }) => theme.colors.primary};
   padding: 15px;
   align-items: center;
   margin-bottom: 15px;
 `;
 
-import { DefaultTheme } from "styled-components/native";
-
-export const Label = styled.Text<{ weight?: keyof AppThemeFonts }>`
+export const Label = styled.Text<{ weight?: keyof typeof TYPOGRAPHY.family }>`
   font-size: 18px;
-  color: ${({ theme }: { theme: DefaultTheme }) => theme.colors.text.primary};
-  font-family: ${({ theme, weight = "medium" }: { theme: DefaultTheme; weight?: keyof AppThemeFonts }) => theme.fonts[weight]};
+  color: ${(props: { theme: DefaultTheme }) => props.theme.colors.text.primary};
+  font-family: ${(props: { theme: DefaultTheme; weight?: keyof typeof TYPOGRAPHY.family }) => 
+    props.theme.fonts.family[props.weight || "regular"]};
 `;

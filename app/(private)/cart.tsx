@@ -8,6 +8,7 @@ import { createOrder } from "@/services/order";
 import { getObservationsByProduct } from "@/services/product";
 import Button from "@/components/atoms/Button";
 import Toast from "react-native-toast-message";
+import { COLORS } from "@/theme/colors";
 
 export default function CartScreen() {
   const router = useRouter();
@@ -143,10 +144,10 @@ export default function CartScreen() {
     <Container>
       <Stack.Screen
         options={{
-          headerTitle: "Comanda",
-          headerStyle: { 
-            backgroundColor: "#041224"
-          }, 
+          title: "Comanda",
+          headerStyle: { backgroundColor: COLORS.dark.primary },
+          headerTintColor: COLORS.dark.text.primary,
+          headerTitleStyle: { color: COLORS.dark.text.primary },
           headerRight: () => (
             <Ionicons
               name="restaurant-outline"

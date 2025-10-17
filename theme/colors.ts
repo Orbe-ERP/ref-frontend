@@ -1,7 +1,7 @@
 export const COLORS = {
   light: {
     primary: "#E8F1FF",
-    secondary: "#C5F5F6",
+    secondary: "#C5F5F6", 
     accent: "#A8F1FA",
     background: "#FFFFFF",
     surface: "#F5F7FA",
@@ -41,11 +41,32 @@ export const COLORS = {
 
   feedback: {
     success: "#00C896",
-    warning: "#F6B73C",
+    warning: "#F6B73C", 
     error: "#E63946",
     info: "#2196F3",
   },
-}
+} as const;
 
-export type AppColors = typeof COLORS.light;
+export type ColorPalette = {
+  primary: string;
+  secondary: string;
+  accent: string;
+  background: string;
+  surface: string;
+  text: {
+    primary: string;
+    secondary: string;
+    accent: string;
+    muted: string;
+  };
+  border: string;
+  overlay: string;
+  disabled: {
+    background: string;
+    text: string;
+  };
+};
+
+export type ColorMode = 'light' | 'dark';
+export type AppColors = ColorPalette;
 export type FeedbackColors = typeof COLORS.feedback;

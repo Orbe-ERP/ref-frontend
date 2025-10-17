@@ -13,6 +13,7 @@ import {
   PaymentConfig,
   CardBrandLabels,
 } from "@/services/payment";
+import { COLORS } from "@/theme/colors";
 
 export default function OpenedOrderScreen() {
   const { tableId } = useLocalSearchParams();
@@ -186,8 +187,10 @@ export default function OpenedOrderScreen() {
     <Container>
       <Stack.Screen
         options={{
-          headerTitle: "Comandas Abertas",
-          headerStyle: { backgroundColor: "#041224" },
+          title: "Comandas Abertas",
+          headerStyle: { backgroundColor: COLORS.dark.primary },
+          headerTintColor: COLORS.dark.text.primary,
+          headerTitleStyle: { color: COLORS.dark.text.primary },
         }}
       />
 

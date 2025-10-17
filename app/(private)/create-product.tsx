@@ -10,6 +10,7 @@ import { getProductsByCategoryId } from "@/services/category";
 import ProductModal from "@/components/organisms/ProductModal";
 import { getKitchens, Kitchen } from "@/services/kitchen";
 import Toast from "react-native-toast-message";
+import { COLORS } from "@/theme/colors";
 
 export default function ProductScreen() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -65,9 +66,9 @@ export default function ProductScreen() {
       <Stack.Screen
         options={{
           title: "Produtos",
-          headerStyle: {
-            backgroundColor: "#041224",
-          },
+          headerStyle: { backgroundColor: COLORS.dark.primary },
+          headerTintColor: COLORS.dark.text.primary,
+          headerTitleStyle: { color: COLORS.dark.text.primary },
         }}
       />
       <ScrollView

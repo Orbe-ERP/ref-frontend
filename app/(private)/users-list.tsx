@@ -1,5 +1,6 @@
 import { UserListTemplate } from "@/components/template/UserListTemplate";
 import { deleteUser, getAll, User } from "@/services/user";
+import { COLORS } from "@/theme/colors";
 import { Stack, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import Toast from "react-native-toast-message";
@@ -46,10 +47,10 @@ const UserListScreen = () => {
     <>
       <Stack.Screen 
         options={{
-          title: "Lista de usuários",
-          headerStyle: { 
-            backgroundColor: "#041224"
-          }, 
+          title: "Lista de Usuários",
+          headerStyle: { backgroundColor: COLORS.dark.primary },
+          headerTintColor: COLORS.dark.text.primary,
+          headerTitleStyle: { color: COLORS.dark.text.primary },
         }} 
       />
       <UserListTemplate

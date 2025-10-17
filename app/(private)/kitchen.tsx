@@ -15,6 +15,7 @@ import {
   updateStatusOnProduct,
 } from "@/services/order-product";
 import { deleteObservationLink } from "@/services/order-product-obs";
+import { COLORS } from "@/theme/colors";
 
 export default function KitchenScreen() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -240,13 +241,13 @@ const handleDeleteProduct = async (orderId: string, productId: string) => {
 
   return (
     <>
-      <Stack.Screen 
-        options={{ 
+      <Stack.Screen
+        options={{
           title: "Cozinha",
-          headerStyle: { 
-            backgroundColor: "#041224"
-          },
-        }} 
+          headerStyle: { backgroundColor: COLORS.dark.primary },
+          headerTintColor: COLORS.dark.text.primary,
+          headerTitleStyle: { color: COLORS.dark.text.primary },
+        }}
       />
       <Container>
         <PickerContainer>

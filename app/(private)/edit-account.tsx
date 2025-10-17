@@ -10,6 +10,7 @@ import { User, UpdateUser, getUserById, updateUser } from "@/services/user";
 import styled from "styled-components/native";
 import AccountForm from "@/components/organisms/AccountForm";
 import { Stack, useRouter } from "expo-router";
+import { COLORS } from "@/theme/colors";
 
 interface AccountEditScreenProps {
   userId: string;
@@ -77,9 +78,9 @@ export default function AccountEditScreen({ userId }: AccountEditScreenProps) {
       <Stack.Screen 
         options={{ 
           title: "Editar conta",
-          headerStyle: { 
-            backgroundColor: "#041224"
-          },
+          headerStyle: { backgroundColor: COLORS.dark.primary },
+          headerTintColor: COLORS.dark.text.primary,
+          headerTitleStyle: { color: COLORS.dark.text.primary },
         }}
       />
       <View

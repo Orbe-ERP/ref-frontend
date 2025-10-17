@@ -107,9 +107,9 @@ export default function IndexScreen() {
       <Stack.Screen
         options={{
           title: "Início",
-          headerStyle: { backgroundColor: COLORS.primary },
-          headerTintColor: COLORS.text.primary,
-          headerTitleStyle: { color: COLORS.text.primary },
+          headerStyle: { backgroundColor: '#041224' },
+          headerTintColor: '#FFFFFF',
+          headerTitleStyle: { color: '#FFFFFF' },
         }}
       />
 
@@ -119,8 +119,7 @@ export default function IndexScreen() {
         style={styles.scrollView}
       >
         <View style={styles.logoutContainer}>
-                      <ThemeToggle />
-
+          <ThemeToggle />
           <LogoutButton />
         </View>
 
@@ -249,10 +248,11 @@ const styles = StyleSheet.create({
   },
 
   logoutContainer: {
-    alignItems: "flex-end",
-    display: "flex",
     flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 12,
+    width: "100%",
   },
 
   chartSection: {

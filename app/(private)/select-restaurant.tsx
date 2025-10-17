@@ -2,6 +2,7 @@ import { RestaurantList } from "@/components/organisms/RestaurantList";
 import useRestaurant from "@/hooks/useRestaurant";
 import { deleteRestaurant, getRestaurants, Restaurant } from "@/services/restaurant";
 import { defineFavoriteRestaurant } from "@/services/user";
+import { COLORS } from "@/theme/colors";
 import { Stack, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components/native";
@@ -76,11 +77,11 @@ export default function SelectRestaurantScreen() {
   return (
     <>
       <Stack.Screen
-        options={{ 
-          title: 'Selecionar Restaurante',
-          headerStyle: { 
-            backgroundColor: "#041224"
-          }, 
+        options={{
+          title: "Selecionar Restaurante",
+          headerStyle: { backgroundColor: COLORS.dark.primary },
+          headerTintColor: COLORS.dark.text.primary,
+          headerTitleStyle: { color: COLORS.dark.text.primary },
         }}
       />
       <Container>

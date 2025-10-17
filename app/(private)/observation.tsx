@@ -12,6 +12,7 @@ import {
 } from "@/services/product";
 import Input from "@/components/atoms/Input";
 import { Stack, useLocalSearchParams } from "expo-router";
+import { COLORS } from "@/theme/colors";
 
 /** 🔹 Atoms */
 const ScreenContainer = styled.View`
@@ -116,13 +117,13 @@ export default function ObservationScreen() {
 
   return (
     <>
-      <Stack.Screen 
+      <Stack.Screen
         options={{
           title: "Observações",
-          headerStyle: { 
-            backgroundColor: "#041224"
-          }, 
-        }} 
+          headerStyle: { backgroundColor: COLORS.dark.primary },
+          headerTintColor: COLORS.dark.text.primary,
+          headerTitleStyle: { color: COLORS.dark.text.primary },
+        }}
       />
       <ScreenContainer>
         <InputRow>

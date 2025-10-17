@@ -15,6 +15,7 @@ import {
 import useRestaurant from "@/hooks/useRestaurant";
 import { Stack } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { COLORS } from "@/theme/colors";
 
 const Container = styled.ScrollView`
   flex: 1;
@@ -191,9 +192,9 @@ export default function TaxPage() {
       <Stack.Screen 
         options={{
           title: "Gestão de Taxas",
-          headerStyle: { 
-            backgroundColor: "#041224"
-          }, 
+          headerStyle: { backgroundColor: COLORS.dark.primary },
+          headerTintColor: COLORS.dark.text.primary,
+          headerTitleStyle: { color: COLORS.dark.text.primary },
         }} 
       />
       <Container>
