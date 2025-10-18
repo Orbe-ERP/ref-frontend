@@ -13,10 +13,10 @@ export const AddButton = styled.TouchableOpacity`
   border: 1px dashed #4b5563;
   width: 45%;
   aspect-ratio: 1;
+  margin: 0;
   justify-content: center;
   align-items: center;
   border-radius: 12px;
-  margin-vertical: 10px;
 `;
 
 export const AddText = styled.Text`

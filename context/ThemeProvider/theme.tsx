@@ -67,13 +67,11 @@ import React, { createContext, useContext, useState, useEffect, useMemo } from "
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ThemeProvider as StyledThemeProvider } from "styled-components/native";
 import { AppTheme, DarkAppTheme, LightAppTheme } from ".";
-import { AppThemeFonts, TYPOGRAPHY } from "./typography";
 
 interface ThemeContextProps {
   isDark: boolean;
   toggleTheme: () => void;
   theme: AppTheme;
-  fonts: AppThemeFonts;
   loading: boolean;
 }
 
@@ -84,7 +82,6 @@ export const AppThemeProvider = ({ children }: { children: React.ReactNode }) =>
   const [isDark, setIsDark] = useState(true);
   const [loading, setLoading] = useState(true);
 
-  // Carregar tema do AsyncStorage
   useEffect(() => {
     (async () => {
       try {
@@ -98,7 +95,6 @@ export const AppThemeProvider = ({ children }: { children: React.ReactNode }) =>
     })();
   }, []);
 
-  // Salvar tema no AsyncStorage
   useEffect(() => {
     if (!loading) {
       AsyncStorage.setItem(STORAGE_KEY, isDark ? "dark" : "light").catch((err) =>
@@ -111,15 +107,14 @@ export const AppThemeProvider = ({ children }: { children: React.ReactNode }) =>
   const theme = useMemo(() => (isDark ? DarkAppTheme : LightAppTheme), [isDark]);
 
   return (
-    <ThemeContext.Provider value={{ isDark, toggleTheme, theme, fonts: TYPOGRAPHY, loading }}>
-      <StyledThemeProvider theme={theme}> {/* Remova a duplicação aqui */}
+    <ThemeContext.Provider value={{ isDark, toggleTheme, theme, loading }}>
+      <StyledThemeProvider theme={{ ...theme }}>
         {children}
       </StyledThemeProvider>
     </ThemeContext.Provider>
   );
 };
 
-// Hook para usar tema
 export const useAppTheme = () => {
   const context = useContext(ThemeContext);
   if (!context) throw new Error("useAppTheme must be used within AppThemeProvider");

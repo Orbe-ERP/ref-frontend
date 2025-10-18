@@ -26,7 +26,7 @@ interface ExpertModalProps {
   onDelete?: () => void;
   onSwitchChange?: (value: boolean) => void;
   inputPlaceholder: string;
-   showColorPicker?: boolean;
+  showColorPicker?: boolean;
   colors?: string[];
   selectedColor?: string;
   onColorChange?: (color: string) => void;
@@ -50,7 +50,7 @@ const ExpertModal: React.FC<ExpertModalProps> = ({
   showColorPicker = false,
   colors,
   selectedColor,
-  onColorChange
+  onColorChange,
 }) => (
   <Modal
     visible={visible}
@@ -67,42 +67,44 @@ const ExpertModal: React.FC<ExpertModalProps> = ({
           onChangeText={onChangeText}
         />
 
-         {showSwitch && (
-          <View style={{ flexDirection: "row", alignItems: "center", marginTop: 12 }}>
+        {showSwitch && (
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              marginTop: 12,
+            }}
+          >
             <Label>{switchLabel}</Label>
             <Switch value={switchValue} onValueChange={onSwitchChange} />
           </View>
         )}
 
         {showColorPicker && colors && onColorChange && (
-  <View style={{ flexDirection: "row", flexWrap: "wrap", marginTop: 12 }}>
-    {colors.map((color) => (
-      <View
-        key={color}
-        style={{
-          width: 30,
-          height: 30,
-          borderRadius: 15,
-          backgroundColor: color,
-          margin: 4,
-          borderWidth: selectedColor === color ? 2 : 0,
-          borderColor: "#fff",
-        }}
-      >
-
-        
-        <Text
-          style={{ flex: 1 }}
-          onPress={() => onColorChange(color)}
-        />
-      </View>
-    ))}
-  </View>
-)}
-
-
-        
-
+          <View
+            style={{ flexDirection: "row", flexWrap: "wrap", marginTop: 12 }}
+          >
+            {colors.map((color) => (
+              <View
+                key={color}
+                style={{
+                  width: 30,
+                  height: 30,
+                  borderRadius: 15,
+                  backgroundColor: color,
+                  margin: 4,
+                  borderWidth: selectedColor === color ? 2 : 0,
+                  borderColor: "#fff",
+                }}
+              >
+                <Text
+                  style={{ flex: 1 }}
+                  onPress={() => onColorChange(color)}
+                />
+              </View>
+            ))}
+          </View>
+        )}
 
         <Actions>
           {showDelete && onDelete && (

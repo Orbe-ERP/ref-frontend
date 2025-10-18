@@ -45,28 +45,7 @@ export const COLORS = {
     error: "#E63946",
     info: "#2196F3",
   },
-} as const;
-
-export type ColorPalette = {
-  primary: string;
-  secondary: string;
-  accent: string;
-  background: string;
-  surface: string;
-  text: {
-    primary: string;
-    secondary: string;
-    accent: string;
-    muted: string;
-  };
-  border: string;
-  overlay: string;
-  disabled: {
-    background: string;
-    text: string;
-  };
 };
 
-export type ColorMode = 'light' | 'dark';
-export type AppColors = ColorPalette;
+export type AppColors = typeof COLORS.light;
 export type FeedbackColors = typeof COLORS.feedback;

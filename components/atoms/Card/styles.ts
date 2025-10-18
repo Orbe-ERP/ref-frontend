@@ -1,10 +1,10 @@
 import styled from "styled-components/native";
 
 export const Container = styled.View`
-  background-color: #f3f4f6;
+  background-color: ${({ theme }) => theme.colors.background};
   padding: 16px;
   border-radius: 12px;
-  shadow-color: #000;
+  shadow-color: ${({ theme }) => theme.colors.surface};
   shadow-offset: 0px 2px;
   shadow-opacity: 0.2;
   shadow-radius: 4px;

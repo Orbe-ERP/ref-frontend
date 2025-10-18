@@ -1,7 +1,7 @@
 import styled from "styled-components/native";
 
 export const Container = styled.View`
-  background-color: #1e293b;
+  background-color: ${({ theme }) => theme.colors.background};
   border-radius: 10px;
   padding: 12px;
   margin-bottom: 12px;
@@ -34,7 +34,8 @@ export const Dot = styled.View`
   width: 10px;
   height: 10px;
   border-radius: 5px;
-  background-color: #038082;
+  background-color: ${({ theme }) => theme.colors.background};
+
 `;
 
 export const ProductText = styled.Text`
@@ -51,7 +52,7 @@ export const Actions = styled.View`
 `;
 
 export const AddButton = styled.TouchableOpacity`
-  background-color: #038082;
   padding: 10px;
+  background-color: ${({ theme }) => theme.colors.background};
   border-radius: 50px;
 `;

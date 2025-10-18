@@ -28,7 +28,7 @@ export const IconsContainer = styled.View`
 `;
 
 export const IconButton = styled.TouchableOpacity`
-  background-color: #038082;
+  background-color: ${({ theme }) => theme.colors.background};
   padding: 5px;
   border-radius: 50px;
   justify-content: center;

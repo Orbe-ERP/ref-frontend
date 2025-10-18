@@ -112,7 +112,6 @@ export const EditButton = styled.TouchableOpacity``;
 export const AddButton = styled.TouchableOpacity`
   flex-direction: row;
   align-items: center;
-  margin-top: 10px;
 `;
 
 export const AddText = styled.Text`

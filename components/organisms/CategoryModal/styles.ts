@@ -9,14 +9,14 @@ export const Overlay = styled.View`
 
 export const Content = styled.View`
   width: 80%;
-  background-color: #1e293b;
+  background-color: ${({ theme }) => theme.colors.background};
   padding: 20px;
   border-radius: 12px;
   align-items: center;
 `;
 
 export const Title = styled.Text`
-  color: white;
+  color: ${({ theme }) => theme.colors.text.primary};
   font-size: 20px;
   margin-bottom: 20px;
   font-weight: bold;
@@ -36,6 +36,6 @@ export const CancelButton = styled.TouchableOpacity`
 
 export const ConfirmButton = styled.TouchableOpacity`
   padding: 10px;
-  background-color: #038082;
+  background-color: ${({ theme }) => theme.colors.background};
   border-radius: 8px;
 `;

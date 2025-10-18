@@ -18,7 +18,6 @@ import { Ionicons } from "@expo/vector-icons";
 import LogoutButton from "@/components/atoms/LogoutButton";
 import { ThemeToggle } from "@/components/molecules/ToggleTheme";
 
-
 export const COLORS = {
   primary: "#041224", // Azul petróleo escuro — base
   secondary: "#038082", // Verde-azulado — botões e destaques
@@ -34,10 +33,10 @@ export const COLORS = {
     muted: "#8A9BB3", // Labels e placeholders
   },
 
-  success: "#00C896", 
+  success: "#00C896",
   warning: "#F6B73C",
   error: "#E63946",
-  info: "#2196F3", 
+  info: "#2196F3",
 
   border: "#1C2F4A",
 
@@ -46,7 +45,6 @@ export const COLORS = {
     text: "#637187",
   },
 };
-
 
 export default function IndexScreen() {
   const [salesData, setSalesData] = useState<ProductSales[]>([]);
