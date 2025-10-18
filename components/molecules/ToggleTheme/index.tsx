@@ -1,9 +1,9 @@
+import { useAppTheme } from "@/context/ThemeProvider/theme";
 import React from "react";
-import { TouchableOpacity, Text } from "react-native";
-import { useAppTheme } from "@/theme/ThemeProvider";
+import { Text, TouchableOpacity } from "react-native";
 
 export const ThemeToggle = () => {
-  const { isDark, toggleTheme, theme, fonts } = useAppTheme();
+  const { isDark, toggleTheme, theme } = useAppTheme();
 
   return (
     <TouchableOpacity
@@ -18,11 +18,6 @@ export const ThemeToggle = () => {
       }}
     >
       <Text
-        style={{
-          color: theme.colors.text,
-          fontFamily: fonts.medium,
-          fontSize: 14,
-        }}
       >
         {isDark ? "☀️" : "🌙"}
       </Text>

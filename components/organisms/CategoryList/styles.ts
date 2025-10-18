@@ -8,13 +8,13 @@ export const Header = styled.TouchableOpacity`
   flex-direction: row;
   justify-content: space-between;
   padding: 15px;
-  background-color: #2c3e50;
+  background-color: ${({ theme }) => theme.colors.background};
   border-radius: 8px;
 `;
 
 export const CategoryText = styled.Text`
   font-size: 18px;
-  color: white;
+  color: ${({ theme }) => theme.colors.text.primary};
 `;
 
 export const Products = styled.View`

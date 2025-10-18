@@ -1,12 +1,14 @@
 import styled from "styled-components/native";
 import type { TitleVariant } from "./index";
 
-export const StyledTitle = styled.Text<{
+type StyledTitleProps = {
   variant: TitleVariant;
   align: "left" | "center" | "right";
   color?: string;
-}>`
-  ${({ variant }: { variant: TitleVariant }) => {
+};
+
+export const StyledTitle = styled.Text<StyledTitleProps>`
+  ${({ variant }) => {
     switch (variant) {
       case "page":
         return `font-size: 22px; font-weight: 700;`;
@@ -18,6 +20,7 @@ export const StyledTitle = styled.Text<{
         return `font-size: 18px; font-weight: 700;`;
     }
   }}
-  color: ${({ color }: { color?: string }) => color ?? "#ffffff"};
-  text-align: ${({ align }: { align: "left" | "center" | "right" }) => align};
+
+  color: ${({ color, theme }) => color ?? theme.colors.text.primary};
+  text-align: ${({ align }) => align};
 `;

@@ -1,7 +1,7 @@
 import styled from "styled-components/native";
 
 export const Button = styled.TouchableOpacity`
-  background-color: #ea5a82; /* mantém a paleta usada no chart */
+  background-color: #ea5a82;
   padding: 8px 12px;
   border-radius: 8px;
   align-items: center;

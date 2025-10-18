@@ -15,7 +15,7 @@ interface ExpertCardProps {
 }
 
 const ExpertCard: React.FC<ExpertCardProps> = ({ cardType, onPress, onEdit, icon = "pencil" }) => (
-  <View style={{ position: "relative", width: "45%", aspectRatio: 1, marginVertical: 10 }}>
+  <View style={{ position: "relative", width: "45%", aspectRatio: 1,}}>
     <Card onPress={onPress}>
       <Ionicons name="restaurant" size={24} color="white" />
       <CardLabel>{cardType.name}</CardLabel>

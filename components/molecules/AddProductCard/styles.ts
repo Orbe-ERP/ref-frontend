@@ -6,14 +6,14 @@ export const AddButton = styled.TouchableOpacity`
   border-style: dashed;
   width: 45%;
   aspect-ratio: 1;
+  margin 0;
   justify-content: center;
   align-items: center;
   border-radius: 12px;
-  margin-vertical: 10px;
 `;
 
 export const AddLabel = styled.Text`
-  color: white;
+  color: ${({ theme }) => theme.colors.text};
   margin-top: 8px;
   font-size: 16px;
   font-weight: bold;

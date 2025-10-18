@@ -45,7 +45,7 @@ export const COLORS = {
     error: "#E63946",
     info: "#2196F3",
   },
-}
+};
 
 export type AppColors = typeof COLORS.light;
 export type FeedbackColors = typeof COLORS.feedback;

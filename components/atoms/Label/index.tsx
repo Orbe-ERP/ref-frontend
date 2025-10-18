@@ -1,7 +1,7 @@
 import styled from "styled-components/native";
 
 const Label = styled.Text`
-  color: white;
+  color: ${({ theme }) => theme.colors.text};
   margin-bottom: 8px;
   font-size: 16px;
 `;

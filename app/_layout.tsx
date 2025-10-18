@@ -1,14 +1,14 @@
-import React from "react";
-import { ActivityIndicator, View } from "react-native";
+import { AuthProvider } from "@/context/AuthProvider/auth";
+import { RestaurantProvider } from "@/context/RestaurantProvider/restaurant";
+import { AppThemeProvider, useAppTheme } from "@/context/ThemeProvider/theme";
+import useAuth from "@/hooks/useAuth";
 import { Stack, usePathname, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { AuthProvider } from "@/context/AuthProvider/auth";
-import useAuth from "@/hooks/useAuth";
-import Toast from "react-native-toast-message";
-import { RestaurantProvider } from "@/context/RestaurantProvider/restaurant";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import React from "react";
+import { ActivityIndicator, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { AppThemeProvider, useAppTheme } from "@/theme/ThemeProvider";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import Toast from "react-native-toast-message";
 
 function AuthGuard({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();

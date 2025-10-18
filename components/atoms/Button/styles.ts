@@ -1,5 +1,4 @@
 import styled from "styled-components/native";
-import { AppThemeFonts } from "@/theme/typography";
 
 export const StyledButton = styled.TouchableOpacity<{
   variant: "primary" | "secondary" | "danger";
@@ -10,7 +9,7 @@ export const StyledButton = styled.TouchableOpacity<{
       : variant === "secondary"
       ? theme.colors.secondary
       : variant === "danger"
-      ? theme.custom.feedback.error
+      ? theme.colors.feedback.warning
       : theme.colors.primary};
   border-radius: 5px;
   background-color: ${({ theme }) => theme.colors.primary};
@@ -19,10 +18,8 @@ export const StyledButton = styled.TouchableOpacity<{
   margin-bottom: 15px;
 `;
 
-import { DefaultTheme } from "styled-components/native";
 
-export const Label = styled.Text<{ weight?: keyof AppThemeFonts }>`
+export const Label = styled.Text`
   font-size: 18px;
-  color: ${({ theme }: { theme: DefaultTheme }) => theme.colors.text.primary};
-  font-family: ${({ theme, weight = "medium" }: { theme: DefaultTheme; weight?: keyof AppThemeFonts }) => theme.fonts[weight]};
+  color: ${({ theme }) => theme.colors.text.primary};
 `;

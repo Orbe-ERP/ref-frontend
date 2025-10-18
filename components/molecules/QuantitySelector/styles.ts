@@ -9,7 +9,7 @@ export const CircleButton = styled.TouchableOpacity`
   width: 36px;
   height: 36px;
   border-radius: 18px;
-  background-color: #038082;
+  background-color: ${({ theme }) => theme.colors.background};
   align-items: center;
   justify-content: center;
 `;
@@ -17,6 +17,6 @@ export const CircleButton = styled.TouchableOpacity`
 export const QuantityText = styled.Text`
   font-size: 18px;
   font-weight: 600;
-  color: #fff;
+  color: ${({ theme }) => theme.colors.text.primary};
   margin: 0 12px;
 `;

@@ -5,7 +5,7 @@ import React from "react";
 import styled from "styled-components/native";
 
 const Card = styled.View`
-  background-color: #1e293b;
+  background-color: ${({ theme }) => theme.colors.background};
   border-radius: 12px;
   padding: 16px;
   margin-bottom: 16px;

@@ -1,10 +1,8 @@
 import { COLORS, AppColors, FeedbackColors } from "./colors";
-import { TYPOGRAPHY, AppThemeFonts } from "./typography";
 
 export type AppTheme = {
-  colors: AppColors;
-  custom: AppColors & { feedback: FeedbackColors; typography: AppThemeFonts };
-}
+  colors: AppColors & { feedback: FeedbackColors };
+};
 
 export const DarkAppTheme: AppTheme = {
   colors: {
@@ -15,11 +13,10 @@ export const DarkAppTheme: AppTheme = {
     secondary: COLORS.dark.secondary,
     text: COLORS.dark.text,
     border: COLORS.dark.border,
-  },
-  custom: {
-    ...COLORS.dark,
+    overlay: COLORS.dark.overlay,
+    disabled: COLORS.dark.disabled,
+    accent: COLORS.dark.accent,
     feedback: COLORS.feedback,
-    typography: TYPOGRAPHY,
   },
 };
 
@@ -32,10 +29,9 @@ export const LightAppTheme: AppTheme = {
     secondary: COLORS.light.secondary,
     text: COLORS.light.text,
     border: COLORS.light.border,
-  },
-  custom: {
-    ...COLORS.light,
+    overlay: COLORS.light.overlay,
+    disabled: COLORS.light.disabled,
+    accent: COLORS.light.accent,
     feedback: COLORS.feedback,
-    typography: TYPOGRAPHY,
   },
 };
