@@ -1,10 +1,10 @@
 import styled from "styled-components/native";
 
 export const Container = styled.TouchableOpacity<{ selected?: boolean }>`
-  background-color: ${({ selected }: { selected?: boolean }) => (selected ? "#038082" : "#2D3748")};
+  background-color: ${({ theme, selected }) =>
+    selected ? theme.colors.secondary : theme.colors.surface};
   padding: 15px;
   border-radius: 8px;
-  margin: 10px;
   flex: 1;
   justify-content: center;
   align-items: center;

@@ -35,8 +35,6 @@ export async function updateQuantityOnProduct(data: UpdateOrderProductQuantity) 
 
 export async function deleteProductFromOrder(productId: string) {
 
-  console.log(productId, 'aqui')
-
   try {
     const response = await api.delete(`/order-product/${productId}`);
 

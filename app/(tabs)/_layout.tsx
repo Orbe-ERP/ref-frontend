@@ -4,22 +4,21 @@ import { Platform } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { HapticTab } from "@/components/HapticTab";
-import { Colors } from "@/constants/Colors";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import TabBarBackground from "@/components/ui/TabBarBackground";
 import useAuth from "@/hooks/useAuth";
+import { useAppTheme } from "@/context/ThemeProvider/theme";
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
+  const { theme } = useAppTheme();
 
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
-        tabBarInactiveTintColor: "#8E8E93",
+        tabBarActiveTintColor: theme.colors.primary,
+        tabBarInactiveTintColor: theme.colors.text.muted,
         tabBarButton: HapticTab,
         tabBarBackground: TabBarBackground,
         tabBarShowLabel: true,
@@ -27,12 +26,13 @@ export default function TabLayout() {
           fontSize: 12,
           fontWeight: "600",
           marginBottom: 4,
+          color: theme.colors.text.primary,
         },
         tabBarIconStyle: {
           marginBottom: -2,
         },
         tabBarStyle: {
-          backgroundColor: "#041224",
+          backgroundColor: theme.colors.background,
           borderTopWidth: 0,
           elevation: 0,
           height: Platform.OS === "ios" ? 60 + insets.bottom : 60,

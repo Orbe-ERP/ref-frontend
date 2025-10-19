@@ -1,22 +1,38 @@
 import styled from "styled-components/native";
 
 export const Category = styled.View`
-  margin-bottom: 12px;
+  margin-bottom: 16px;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: ${({ theme }) => theme.colors.surface};
+  shadow-color: #000;
+  shadow-offset: 0px 2px;
+  shadow-opacity: 0.1;
+  shadow-radius: 4px;
+  elevation: 3;
 `;
 
 export const Header = styled.TouchableOpacity`
   flex-direction: row;
   justify-content: space-between;
-  padding: 15px;
-  background-color: ${({ theme }) => theme.colors.background};
-  border-radius: 8px;
+  align-items: center;
+  padding-vertical: 14px;
+  padding-horizontal: 18px;
+  background-color: ${({ theme }) => theme.colors.primary};
 `;
 
 export const CategoryText = styled.Text`
   font-size: 18px;
-  color: ${({ theme }) => theme.colors.text.primary};
+  font-weight: 600;
+  color: #ffffff;
+  text-transform: capitalize;
+  letter-spacing: 0.3px;
 `;
 
 export const Products = styled.View`
-  margin-top: 10px;
+  padding: 10px 14px;
+  background-color: ${({ theme }) => theme.colors.surface};
+  border-top-width: 1px;
+  border-top-color: ${({ theme }) => theme.colors.border};
+  gap: 10px;
 `;

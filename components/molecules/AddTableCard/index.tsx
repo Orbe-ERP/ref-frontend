@@ -14,7 +14,7 @@ const AddExpertCard: React.FC<AddExpertCardProps> = ({ onPress, label }) => {
 
   return (
     <AddButton onPress={onPress}>
-      <Ionicons name="add" size={36} color={theme.theme.colors.text.primary} />
+      <Ionicons name="add" size={40} color={theme.theme.colors.primary} />
       <AddLabel>{label}</AddLabel>
     </AddButton>
   );

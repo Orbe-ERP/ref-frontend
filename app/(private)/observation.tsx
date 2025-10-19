@@ -12,9 +12,7 @@ import {
 } from "@/services/product";
 import Input from "@/components/atoms/Input";
 import { Stack, useLocalSearchParams } from "expo-router";
-import { COLORS } from "@/theme/colors";
 
-/** 🔹 Atoms */
 const ScreenContainer = styled.View`
   flex: 1;
   background-color: #041224;
@@ -120,9 +118,7 @@ export default function ObservationScreen() {
       <Stack.Screen
         options={{
           title: "Observações",
-          headerStyle: { backgroundColor: COLORS.dark.primary },
-          headerTintColor: COLORS.dark.text.primary,
-          headerTitleStyle: { color: COLORS.dark.text.primary },
+
         }}
       />
       <ScreenContainer>

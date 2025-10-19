@@ -4,6 +4,7 @@ import { RestaurantCard } from "../../molecules/RestaurantCard";
 import { Container, AddButton, AddButtonText } from "./styles";
 import { AppIcon } from "../../atoms/Icons";
 import { Restaurant } from "@/services/restaurant";
+import { useAppTheme } from "@/context/ThemeProvider/theme";
 
 interface Props {
   restaurants: any[];
@@ -22,7 +23,7 @@ export const RestaurantList: React.FC<Props> = ({
   onEditRestaurant,
   onDeleteRestaurant,
   onCreateRestaurant,
-  onFavoriteRestaurant
+  onFavoriteRestaurant,
 }) => {
   const renderItem: ListRenderItem<any> = ({ item }) => (
     <RestaurantCard
@@ -35,6 +36,8 @@ export const RestaurantList: React.FC<Props> = ({
     />
   );
 
+  const theme = useAppTheme();
+
   return (
     <Container>
       <FlatList
@@ -45,7 +48,7 @@ export const RestaurantList: React.FC<Props> = ({
         columnWrapperStyle={{ justifyContent: "space-between" }}
         ListFooterComponent={
           <AddButton onPress={onCreateRestaurant}>
-            <AppIcon name="add" size={24} />
+            <AppIcon name="add" size={30} color={theme.theme.colors.primary} />
             <AddButtonText>Criar Restaurante</AddButtonText>
           </AddButton>
         }

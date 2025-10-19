@@ -20,11 +20,9 @@ import {
   ActionButton,
   ActionText,
   ModalActions,
-  Dot,
   ModalContainer,
   ModalContent,
   ModalTitle,
-  AddButton,
   CancelButtonStyled,
   QtyButton,
   QtyText,
@@ -33,7 +31,6 @@ import {
   ConfirmText,
   CancelButton,
   CancelText,
-  AddText,
   WorkInProgressButtonSyled,
 } from "./styles";
 
@@ -70,19 +67,10 @@ export default function OrderCard({
 }: Props) {
   const [modalVisible, setModalVisible] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [productName, setProductName] = useState("");
   const [quantity, setQuantity] = useState("1");
-
-  const handleAddProduct = () => {
-    setEditingProduct(null);
-    setProductName("");
-    setQuantity("1");
-    setModalVisible(true);
-  };
 
   const handleEditProduct = (product: Product) => {
     setEditingProduct(product);
-    setProductName(product.product.name);
     setQuantity(product.quantity.toString());
     setModalVisible(true);
   };
@@ -96,10 +84,6 @@ export default function OrderCard({
 
   return (
     <Card>
-      <Header>
-        <Title>{order.table.name}</Title>
-      </Header>
-
       {order.products
         .filter((p) => p.status !== "CANCELED" || "COMPLETED")
         .map((p) => (
@@ -112,7 +96,7 @@ export default function OrderCard({
               <ItemName>{p.product.name}</ItemName>
               <ActionsHeader>
                 <EditButton onPress={() => handleEditProduct(p)}>
-                  <Ionicons name="create-outline" size={18} color="#3b82f6" />
+                  <Ionicons name="create-outline" size={18} color={p.product.kitchen?.color || "#3b82f6"} />
                 </EditButton>
               </ActionsHeader>
             </ItemHeader>
@@ -125,11 +109,7 @@ export default function OrderCard({
                 marginBottom: 8,
               }}
             >
-              <Dot color={p.product.kitchen?.color || "#A0AEC0"} />
-              <ItemDetails>
-                {p.product.kitchen?.name || "Sem cozinha"}
-              </ItemDetails>
-              <ItemDetails>Qtd: {p.quantity}</ItemDetails>
+              <ItemDetails>Quantidade: {p.quantity}</ItemDetails>
             </View>
             {p.observations.length > 0 && (
               <ItemObservations>
@@ -171,14 +151,14 @@ export default function OrderCard({
                 />
                 <ActionText>Concluir</ActionText>
               </ActionButton>
-<CancelButtonStyled
-    onPress={() => {
-      handleDeleteProduct?.(order.id, p.id);
-    }}
-  >
-    <Ionicons name="close-circle-outline" size={16} color="#fff" />
-    <ActionText>Cancelar</ActionText>
-  </CancelButtonStyled>
+              <CancelButtonStyled
+                onPress={() => {
+                  handleDeleteProduct?.(order.id, p.id);
+                }}
+              >
+                <Ionicons name="close-circle-outline" size={16} color="#fff" />
+                <ActionText>Cancelar</ActionText>
+              </CancelButtonStyled>
             </ProductActions>
           </ItemContainer>
         ))}

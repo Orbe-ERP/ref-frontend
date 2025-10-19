@@ -1,6 +1,5 @@
 import UserForm from "@/components/molecules/UserForm";
 import { addUserOnAccount } from "@/services/user";
-import { COLORS } from "@/theme/colors";
 import { Stack, useRouter } from "expo-router";
 import React from "react";
 import Toast from "react-native-toast-message";
@@ -28,9 +27,7 @@ const CreateUserScreen = () => {
       <Stack.Screen
         options={{
           title: "Criar Usuário",
-          headerStyle: { backgroundColor: COLORS.dark.primary },
-          headerTintColor: COLORS.dark.text.primary,
-          headerTitleStyle: { color: COLORS.dark.text.primary },
+
         }}
       />
       <UserForm onSubmit={handleCreateUser} />

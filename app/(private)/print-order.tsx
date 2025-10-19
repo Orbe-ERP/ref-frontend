@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, ActivityIndicator, Alert, FlatList } from "react-native";
+import { Text, ActivityIndicator, Alert, FlatList } from "react-native";
 import styled from "styled-components/native";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { getOrderSummaryByIdentifier } from "@/services/order";
-import { COLORS } from "@/theme/colors";
 
 export default function PrintOrderScreen() {
   const { identifier } = useLocalSearchParams<{ identifier: string }>();
@@ -66,9 +65,7 @@ export default function PrintOrderScreen() {
       <Stack.Screen
         options={{
           title: "Dados da Comanda",
-          headerStyle: { backgroundColor: COLORS.dark.primary },
-          headerTintColor: COLORS.dark.text.primary,
-          headerTitleStyle: { color: COLORS.dark.text.primary },
+
         }}
       />
       {/* Cabeçalho com info da comanda */}

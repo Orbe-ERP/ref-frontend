@@ -12,29 +12,34 @@ interface Props {
   onDelete: (restaurantId: string) => void;
 }
 
-
-
-export const RestaurantCard: React.FC<Props> = ({ restaurant, isSelected, onSelect, onFavorite, onEdit, onDelete }) =>
-  {
-
-     const starIconName = restaurant.defaultRestaurant ? "star" : "star-outline";
+export const RestaurantCard: React.FC<Props> = ({
+  restaurant,
+  isSelected,
+  onSelect,
+  onFavorite,
+  onEdit,
+  onDelete,
+}) => {
+  const starIconName = restaurant.defaultRestaurant ? "star" : "star-outline";
   const starColor = restaurant.defaultRestaurant ? "#FFD700" : "#FFFFFF";
   return (
     <Container selected={isSelected} onPress={() => onSelect(restaurant)}>
       <Content>
-        <Title>{restaurant.name}</Title>
-        {isSelected && <AppIcon name="checkmark-circle" size={24} color="green" />}
+        <Title variant="page">{restaurant.name}</Title>
+        {isSelected && (
+          <AppIcon name="checkmark-circle" size={36} color="#2BAE66" />
+        )}
       </Content>
 
       <IconsContainer>
-<IconButton onPress={() => onFavorite(restaurant)}>
-          <AppIcon name={starIconName} size={18} color={starColor} />
+        <IconButton onPress={() => onFavorite(restaurant)}>
+          <AppIcon name={starIconName} size={22} color={starColor} />
         </IconButton>
         <IconButton onPress={() => onEdit(restaurant)}>
-          <AppIcon name="create-outline" size={18} color="#FFFFFF" />
+          <AppIcon name="create-outline" size={22} color="#FFFFFF" />
         </IconButton>
         <IconButton onPress={() => onDelete(restaurant.id)}>
-          <AppIcon name="trash-outline" size={18} color="#FFFFFF" />
+          <AppIcon name="trash-outline" size={22} color="#FFFFFF" />
         </IconButton>
       </IconsContainer>
     </Container>

@@ -13,7 +13,6 @@ import {
   deleteKitchen,
 } from "@/services/kitchen";
 import Toast from "react-native-toast-message";
-import { COLORS } from "@/theme/colors";
 
 const AVAILABLE_COLORS = [
   "#FF5733", "#33A1FF", "#FF33F1", "#A0AEC0", "#038082", "#4B5563", "#FBBF24"
@@ -119,9 +118,7 @@ export default function KitchenScreen() {
       <Stack.Screen
         options={{
           title: "Cozinhas",
-          headerStyle: { backgroundColor: COLORS.dark.primary },
-          headerTintColor: COLORS.dark.text.primary,
-          headerTitleStyle: { color: COLORS.dark.text.primary },
+
         }}
       />
 

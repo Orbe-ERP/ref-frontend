@@ -2,7 +2,7 @@ import styled from "styled-components/native";
 
 export const AddButton = styled.TouchableOpacity`
   border-width: 2px;
-  border-color: ${({ theme }) => theme.colors.secondary};
+  border-color: ${({ theme }) => theme.colors.primary};
   border-style: dashed;
   width: 45%;
   aspect-ratio: 1;

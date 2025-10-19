@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { View, Text, ScrollView } from "react-native";
 import { Product } from "@/services/product";
 import useRestaurant from "@/hooks/useRestaurant";
-import Title from "@/components/atoms/Title";
 import { useRouter, useLocalSearchParams, Stack } from "expo-router";
 import AddExpertCard from "@/components/molecules/AddTableCard";
 import ExpertCard from "@/components/molecules/ExpertCard";
@@ -10,7 +9,6 @@ import { getProductsByCategoryId } from "@/services/category";
 import ProductModal from "@/components/organisms/ProductModal";
 import { getKitchens, Kitchen } from "@/services/kitchen";
 import Toast from "react-native-toast-message";
-import { COLORS } from "@/theme/colors";
 
 export default function ProductScreen() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -66,9 +64,7 @@ export default function ProductScreen() {
       <Stack.Screen
         options={{
           title: "Produtos",
-          headerStyle: { backgroundColor: COLORS.dark.primary },
-          headerTintColor: COLORS.dark.text.primary,
-          headerTitleStyle: { color: COLORS.dark.text.primary },
+
         }}
       />
       <ScrollView

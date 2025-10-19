@@ -7,7 +7,6 @@ import { Calendar } from 'react-native-calendars';
 import dayjs from 'dayjs';
 import { getCompletedOrdersByDateRange, Order } from '@/services/order';
 import useRestaurant from '@/hooks/useRestaurant';
-import { COLORS } from '@/theme/colors';
 
 export default function CompletedOrdersScreen() {
   const router = useRouter();
@@ -143,9 +142,6 @@ export default function CompletedOrdersScreen() {
       <Stack.Screen
         options={{
           title: 'Comandas Fechadas',
-          headerStyle: { backgroundColor: COLORS.dark.primary },
-          headerTintColor: COLORS.dark.text.primary,
-          headerTitleStyle: { color: COLORS.dark.text.primary },
         }}
       />
 

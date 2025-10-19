@@ -1,49 +1,49 @@
 export const COLORS = {
   light: {
-    primary: "#E8F1FF",
-    secondary: "#C5F5F6", 
-    accent: "#A8F1FA",
-    background: "#FFFFFF",
-    surface: "#F5F7FA",
+    primary: "#2BAE66",      // Verde-esmeralda moderno (principal)
+    secondary: "#264653",    // Grafite azulado (menu, botões escuros)
+    accent: "#E9C46A",       // Dourado suave (realce, ícones de ação)
+    background: "#dadadaff", // Mantido
+    surface: "#FFFFFF",      // Cartões, áreas elevadas
     text: {
-      primary: "#0A1A2F",
-      secondary: "#39465E",
-      accent: "#038082",
-      muted: "#7A8CA3",
+      primary: "#1E1E1E",    // Texto principal
+      secondary: "#4A4A4A",  // Texto secundário
+      accent: "#2BAE66",     // Ícones e links
+      muted: "#7A8A99",      // Texto desabilitado
     },
-    border: "#D9E0EB",
-    overlay: "rgba(0,0,0,0.05)",
+    border: "#DADADA",
+    overlay: "rgba(0,0,0,0.04)",
     disabled: {
-      background: "#E5E9F0",
-      text: "#9DA9B8",
+      background: "#E6E6E6",
+      text: "#5C6B7A",
     },
   },
 
   dark: {
-    primary: "#041224",
-    secondary: "#038082",
-    accent: "#04C4D9",
-    background: "#0A1A2F",
-    surface: "#13263F",
+    primary: "#2BAE66",      // Verde-água vibrante e equilibrado
+    secondary: "#264653",    // Azul-petróleo profundo
+    accent: "#E9C46A",       // Mesmo dourado — mantém identidade
+    background: "#0A1A2F",   // Mantido
+    surface: "#152A3A",      // Cartões, áreas elevadas
     text: {
-      primary: "#FFFFFF",
-      secondary: "#C6D4E1",
-      accent: "#04C4D9",
-      muted: "#8A9BB3",
+      primary: "#FFFFFF",    // Texto principal
+      secondary: "#B0BEC5",  // Texto secundário
+      accent: "#3DDC97",     // Ícones e detalhes
+      muted: "#7A8A99",      // Texto apagado
     },
-    border: "#1C2F4A",
-    overlay: "rgba(0,0,0,0.6)",
+    border: "#23394E",
+    overlay: "rgba(255,255,255,0.05)",
     disabled: {
-      background: "#1B2A41",
-      text: "#637187",
+      background: "#1E3248",
+      text: "#5C6B7A",
     },
   },
 
   feedback: {
-    success: "#00C896",
-    warning: "#F6B73C", 
-    error: "#E63946",
-    info: "#2196F3",
+    success: "#2BAE66",  // Mesmo tom do primário — consistência
+    warning: "#E9C46A",  // Amarelo-alaranjado suave
+    error: "#E76F51",    // Vermelho terroso (menos agressivo)
+    info: "#2A9D8F",     // Azul-esverdeado (para status neutro)
   },
 };
 

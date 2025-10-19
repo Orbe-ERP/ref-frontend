@@ -6,7 +6,6 @@ import { getReportData, ReportData } from '@/services/report';
 import useRestaurant from '@/hooks/useRestaurant';
 import dayjs from 'dayjs';
 import { Stack } from 'expo-router';
-import { COLORS } from '@/theme/colors';
 
 export default function ReportScreen() {
   const { selectedRestaurant } = useRestaurant();
@@ -61,9 +60,7 @@ export default function ReportScreen() {
       <Stack.Screen
         options={{
           title: "Relatório",
-          headerStyle: { backgroundColor: COLORS.dark.primary },
-          headerTintColor: COLORS.dark.text.primary,
-          headerTitleStyle: { color: COLORS.dark.text.primary },
+
         }}
       />
       <Container>

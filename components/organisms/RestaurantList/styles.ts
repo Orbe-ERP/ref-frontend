@@ -6,19 +6,21 @@ export const Container = styled.View`
 `;
 
 export const AddButton = styled.TouchableOpacity`
-  border-width: 1px;
-  border-color: #4B5563;
+  border-width: 2px;
+  border-color: ${({ theme }) => theme.colors.primary};
   border-style: dashed;
   width: 100%;
-  padding: 15px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  padding: 30px;
   justify-content: center;
   align-items: center;
   border-radius: 8px;
 `;
 
 export const AddButtonText = styled.Text`
-  color: white;
-  font-size: 16px;
+  color: ${({ theme }) => theme.colors.text.primary};
+  font-size: 20px;
   font-weight: bold;
   margin-top: 8px;
 `;

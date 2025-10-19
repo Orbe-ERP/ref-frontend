@@ -1,14 +1,12 @@
 import { api } from "./api";
 import { Kitchen } from "./kitchen";
 
-// ==============================
-// Tipos e Interfaces
-// ==============================
 export interface OrderProduct {
   id: string;
   productId: string;
   quantity: number;
   appliedPrice?: number;
+  status: string;
   observations?: { id: string; description: string }[];
   product: {
     name: string;

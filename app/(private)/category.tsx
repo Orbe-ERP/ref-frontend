@@ -12,7 +12,6 @@ import {
 } from "@/services/category";
 import ExpertCard from "@/components/molecules/ExpertCard";
 import AddExpertCard from "@/components/molecules/AddTableCard";
-import { COLORS } from "@/theme/colors";
 
 export default function CategoryScreen() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -74,9 +73,7 @@ export default function CategoryScreen() {
       <Stack.Screen 
         options={{ 
           title: "Categorias",
-          headerStyle: { backgroundColor: COLORS.dark.primary },
-          headerTintColor: COLORS.dark.text.primary,
-          headerTitleStyle: { color: COLORS.dark.text.primary }, 
+
         }} 
       />
 

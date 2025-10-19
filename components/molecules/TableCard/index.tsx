@@ -24,14 +24,15 @@ const TableCard: React.FC<TableCardProps> = ({ table, onPress, onEdit }) => {
         aspectRatio: 1,
       }}
     >
-      <Card onPress={onPress}>
-        <Ionicons
-          name="restaurant"
-          size={36}
-          color={theme.theme.colors.text.primary}
-        />
-        <CardLabel>{table.name}</CardLabel>
-      </Card>
+<Card onPress={onPress} activeOpacity={0.8}>
+  <Ionicons
+    name="restaurant"
+    size={38}
+    color={theme.theme.colors.text.accent}
+  />
+  <CardLabel>{table.name}</CardLabel>
+</Card>
+
       <View style={{ position: "absolute", top: 5, right: 5 }}>
         <IconButton icon="pencil" size={18} onPress={onEdit} />
       </View>

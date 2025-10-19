@@ -1,23 +1,26 @@
 import styled from "styled-components/native";
 
 export const Card = styled.TouchableOpacity`
-  border-radius: 12px;
+  border-radius: 10px;
   flex: 1;
   align-items: center;
   justify-content: center;
-  border-color: ${({ theme }) => theme.colors.secondary};
-  shadow-color: ${({ theme }) => theme.colors.surface};
-  border-width: 2px;
+  background-color: ${({ theme }) => theme.colors.surface};
+  border: 2px solid ${({ theme }) => theme.colors.primary};
+  padding: 16px;
+  shadow-color: ${({ theme }) => theme.colors.text.primary};
   shadow-offset: 0px 2px;
-  shadow-opacity: 0.3;
+  shadow-opacity: 0.2;
   shadow-radius: 4px;
-  elevation: 5;
+  elevation: 6;
+  transition: all 0.2s ease-in-out;
 `;
 
 export const CardLabel = styled.Text`
   color: ${({ theme }) => theme.colors.text.primary};
-  font-size: 24px;
-  margin-top: 8px;
-  font-weight: bold;
+  margin-top: 10px;
+  font-size: 20px;
+  font-weight: 700;
   text-align: center;
+  letter-spacing: 0.5px;
 `;

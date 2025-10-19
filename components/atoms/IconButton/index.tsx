@@ -14,7 +14,7 @@ const IconButton: React.FC<IconButtonProps> = ({
   icon,
   size = 20,
   color = "white",
-  backgroundColor = "#4B5563",
+  backgroundColor = "#2BAE66",
   ...rest
 }) => (
   <StyledButton backgroundColor={backgroundColor} {...rest}>
