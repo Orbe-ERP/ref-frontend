@@ -1,12 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  ScrollView,
-  View,
-  Text,
-  ActivityIndicator,
-  StyleSheet,
-  TouchableOpacity,
-} from "react-native";
+import { ScrollView, TouchableOpacity } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import useRestaurant from "@/hooks/useRestaurant";
 import { HorizontalBarChart } from "@/components/organisms/TopProductsChart/components/HorizontalBarChart";
@@ -17,34 +10,126 @@ import Button from "@/components/atoms/Button";
 import { Ionicons } from "@expo/vector-icons";
 import LogoutButton from "@/components/atoms/LogoutButton";
 import { ThemeToggle } from "@/components/molecules/ToggleTheme";
+import styled from "styled-components/native";
+import { useAppTheme } from "@/context/ThemeProvider/theme";
 
-export const COLORS = {
-  primary: "#041224", // Azul petróleo escuro — base
-  secondary: "#038082", // Verde-azulado — botões e destaques
-  accent: "#04C4D9", // Ciano vibrante — toques visuais e ícones ativos
-  background: "#0A1A2F", // Fundo principal — escuro e profundo
-  surface: "#13263F", // Cartões e modais — contraste leve sobre o fundo
-  overlay: "rgba(0,0,0,0.6)", // Overlays e sombras
+const Container = styled.View`
+  flex: 1;
+  background-color: ${({ theme }) => theme.colors.background};
+`;
 
-  text: {
-    primary: "#FFFFFF", // Texto principal
-    secondary: "#C6D4E1", // Texto secundário (descrições)
-    accent: "#04C4D9", // Links ou destaques
-    muted: "#8A9BB3", // Labels e placeholders
+const ScrollContent = styled(ScrollView).attrs({
+  contentContainerStyle: {
+    padding: 16,
+    paddingBottom: 40,
+    minHeight: "100%",
   },
+})``;
 
-  success: "#00C896",
-  warning: "#F6B73C",
-  error: "#E63946",
-  info: "#2196F3",
+const LogoutContainer = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+`;
 
-  border: "#1C2F4A",
+const ChartSection = styled.View`
+  background-color: ${({ theme }) => theme.colors.surface};
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 20px;
+  border-width: 1px;
+  border-color: rgba(255, 255, 255, 0.1);
+`;
 
-  disabled: {
-    background: "#1B2A41",
-    text: "#637187",
-  },
-};
+const SectionHeader = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+`;
+
+const SectionTitle = styled.Text`
+  font-size: 16px;
+  font-weight: bold;
+  color: ${({ theme }) => theme.colors.text.primary};
+`;
+
+const SalesCount = styled.Text`
+  font-size: 14px;
+  color: ${({ theme }) => theme.colors.text.secondary};
+`;
+
+const RefreshButton = styled.TouchableOpacity`
+  padding: 6px;
+`;
+
+const EmptyState = styled.View`
+  padding: 24px;
+  align-items: center;
+  background-color: ${({ theme }) => theme.colors.surface};
+  border-radius: 12px;
+  border-width: 1px;
+  border-color: ${({ theme }) => theme.colors.border};
+`;
+
+const EmptyText = styled.Text`
+  color: ${({ theme }) => theme.colors.text.accent};
+  text-align: center;
+  margin-bottom: 10px;
+  font-size: 14px;
+  font-weight: 500;
+`;
+
+const StatusSection = styled.View`
+  background-color: ${({ theme }) => theme.colors.surface};
+  border-radius: 16px;
+  padding: 16px;
+  flex-direction: row;
+  justify-content: space-around;
+  border-width: 1px;
+  border-color: rgba(255, 255, 255, 0.1);
+  margin-bottom: 20px;
+`;
+
+const StatusItem = styled.View`
+  align-items: center;
+`;
+
+const StatusLabel = styled.Text`
+  font-size: 11px;
+  color: ${({ theme }) => theme.colors.text.secondary};
+  margin-bottom: 4px;
+  font-weight: 500;
+`;
+
+const StatusValue = styled.Text`
+  font-size: 14px;
+  font-weight: bold;
+  color: ${({ theme }) => theme.colors.text.primary};
+`;
+
+const ActionsRow = styled.View`
+  flex-direction: row;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+`;
+
+const MenuSection = styled.View`
+  background-color: ${({ theme }) => theme.colors.surface};
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 16px;
+  border-width: 1px;
+  border-color: rgba(255, 255, 255, 0.08);
+`;
+
+const MenuColumn = styled.View`
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+`;
 
 export default function IndexScreen() {
   const [salesData, setSalesData] = useState<ProductSales[]>([]);
@@ -52,33 +137,29 @@ export default function IndexScreen() {
   const [error, setError] = useState<string | null>(null);
   const { selectedRestaurant } = useRestaurant();
   const router = useRouter();
+  const { theme } = useAppTheme();
 
   useEffect(() => {
-    if (selectedRestaurant?.id) {
-      loadSalesData();
-    } else {
-      setLoading(false);
-    }
+    if (selectedRestaurant?.id) loadSalesData();
+    else setLoading(false);
   }, [selectedRestaurant?.id]);
 
   const loadSalesData = async () => {
     try {
       setLoading(true);
       setError(null);
-
       if (!selectedRestaurant?.id) {
         setError("Nenhum restaurante selecionado");
         return;
       }
-
       const orders = await getOrdersByRestaurant(
         selectedRestaurant.id,
         "COMPLETED"
       );
       const salesData = SalesService.getSalesByTimeRange(orders);
       setSalesData(salesData.day);
-    } catch (error) {
-      console.error("Erro ao carregar dados de vendas:", error);
+    } catch (err) {
+      console.error(err);
       setError("Erro ao carregar dados de vendas");
     } finally {
       setLoading(false);
@@ -86,101 +167,75 @@ export default function IndexScreen() {
   };
 
   const refreshData = () => {
-    if (selectedRestaurant?.id) {
-      loadSalesData();
-    }
+    if (selectedRestaurant?.id) loadSalesData();
   };
 
-  const sortedSales = [...salesData].sort(
-    (a, b) => b.salesCount - a.salesCount
-  );
-  const topProduct = sortedSales[0] || null;
-  const totalSalesCount = sortedSales.reduce(
-    (sum, item) => sum + item.salesCount,
-    0
-  );
-
   return (
-    <View style={styles.container}>
+    <Container>
       <Stack.Screen
         options={{
           title: "Início",
-          headerStyle: { backgroundColor: '#041224' },
-          headerTintColor: '#FFFFFF',
-          headerTitleStyle: { color: '#FFFFFF' },
+          headerStyle: { backgroundColor: theme.colors.background },
+          headerTintColor: theme.colors.text.primary,
+          headerTitleStyle: { color: theme.colors.text.primary },
         }}
       />
-
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-        style={styles.scrollView}
-      >
-        <View style={styles.logoutContainer}>
+      <ScrollContent showsVerticalScrollIndicator={false}>
+        <LogoutContainer>
           <ThemeToggle />
-          <LogoutButton />
-        </View>
+          <LogoutButton/>
+        </LogoutContainer>
 
-        <View style={styles.chartSection}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>
-              📊 Pratos Mais Vendidos Hoje
-            </Text>
-            <View style={styles.headerRight}>
+        <ChartSection>
+          <SectionHeader>
+            <SectionTitle>📊 Pratos Mais Vendidos Hoje</SectionTitle>
+            <ActionsRow>
               {selectedRestaurant && (
-                <Text style={styles.salesCount}>
+                <SalesCount>
                   {salesData.length}{" "}
                   {salesData.length === 1 ? "produto" : "produtos"}{" "}
                   {salesData.length === 1 ? "tipo" : "diferentes"} vendidos
-                </Text>
+                </SalesCount>
               )}
-
-              <TouchableOpacity
-                onPress={refreshData}
-                style={styles.refreshButton}
-                disabled={loading}
-              >
-                <Ionicons name="refresh" size={20} color={COLORS.text.accent} />
-              </TouchableOpacity>
-            </View>
-          </View>
+              <RefreshButton onPress={refreshData} disabled={loading}>
+                <Ionicons
+                  name="refresh"
+                  size={20}
+                  color={theme.colors.accent}
+                />
+              </RefreshButton>
+            </ActionsRow>
+          </SectionHeader>
 
           {!selectedRestaurant ? (
-            <View style={styles.emptyState}>
-              <Text style={styles.emptyText}>
+            <EmptyState>
+              <EmptyText>
                 Selecione um restaurante para ver as vendas
-              </Text>
+              </EmptyText>
               <Button
                 label="🍴 Selecionar Restaurante"
                 onPress={() => router.push("/(private)/select-restaurant")}
               />
-            </View>
+            </EmptyState>
           ) : loading ? (
-            <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color={COLORS.secondary} />
-              <Text style={styles.loadingText}>Carregando vendas...</Text>
-            </View>
+            <EmptyText>Carregando vendas...</EmptyText>
           ) : error ? (
-            <View style={styles.errorContainer}>
-              <Text style={styles.errorText}>{error}</Text>
-              <Button label="🔄 Tentar Novamente" onPress={refreshData} />
-            </View>
+            <EmptyText>{error}</EmptyText>
           ) : (
             <>
               <HorizontalBarChart data={salesData} />
-              <View style={styles.actionsRow}>
+              <ActionsRow>
                 <Button
                   label="📊 Dashboard Completo"
                   onPress={() => router.push("/(private)/dashboard")}
                 />
-              </View>
+              </ActionsRow>
             </>
           )}
-        </View>
+        </ChartSection>
 
-        {/* Acesso Rápido */}
-        <View style={styles.menuSection}>
-          <View style={styles.menuColumn}>
+        <MenuSection>
+          <MenuColumn>
             <Button
               label="🍴 Selecionar Restaurante"
               onPress={() => router.push("/(private)/select-restaurant")}
@@ -197,232 +252,24 @@ export default function IndexScreen() {
               label="📱 Tutorial"
               onPress={() => router.push("/(private)/onboarding")}
             />
-          </View>
-        </View>
+          </MenuColumn>
+        </MenuSection>
 
-        {/* Status */}
         {selectedRestaurant && (
-          <View style={styles.statusSection}>
-            <View style={styles.statusItem}>
-              <Text style={styles.statusLabel}>Vendas Hoje</Text>
-              <Text style={styles.statusValue}>
+          <StatusSection>
+            <StatusItem>
+              <StatusLabel>Vendas Hoje</StatusLabel>
+              <StatusValue>
                 {salesData.reduce((sum, item) => sum + item.salesCount, 0)}
-              </Text>
-            </View>
-            <View style={styles.statusItem}>
-              <Text style={styles.statusLabel}>Produtos</Text>
-              <Text style={styles.statusValue}>{salesData.length}</Text>
-            </View>
-          </View>
+              </StatusValue>
+            </StatusItem>
+            <StatusItem>
+              <StatusLabel>Produtos</StatusLabel>
+              <StatusValue>{salesData.length}</StatusValue>
+            </StatusItem>
+          </StatusSection>
         )}
-      </ScrollView>
-    </View>
+      </ScrollContent>
+    </Container>
   );
 }
-
-const styles = StyleSheet.create({
-  headerRight: {
-    flexDirection: "row",
-    flexWrap: "wrap", // 👈 faz os itens quebrarem de linha automaticamente
-    alignItems: "center",
-    justifyContent: "flex-end",
-    gap: 8, // espaçamento entre o texto e o botão
-  },
-  salesCount: {
-    fontSize: 14,
-    color: "#333",
-    marginBottom: 4, // 👈 um pequeno espaço para quando ele quebrar de linha
-  },
-  refreshButton: {
-    padding: 6,
-  },
-
-  container: { flex: 1, backgroundColor: COLORS.primary },
-  scrollView: { flex: 1 },
-  scrollContent: {
-    padding: 16,
-    paddingBottom: 40,
-    minHeight: "100%",
-  },
-
-  logoutContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 12,
-    width: "100%",
-  },
-
-  chartSection: {
-    backgroundColor: COLORS.background,
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.1)",
-  },
-  sectionHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 12,
-  },
-
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: COLORS.text.primary,
-  },
-
-  menuSection: {
-    backgroundColor: COLORS.background,
-    borderRadius: 10,
-    padding: 10,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.08)",
-  },
-  menuColumn: {
-    flexDirection: "column",
-    gap: 6,
-    marginTop: 8,
-  },
-  menuButton: {
-    backgroundColor: "rgba(3,128,130,0.15)",
-    borderWidth: 1,
-    borderColor: COLORS.secondary,
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-    borderRadius: 8,
-    height: 36,
-    justifyContent: "center",
-  },
-  menuButtonText: {
-    color: COLORS.text.accent,
-    fontWeight: "500",
-    fontSize: 12,
-    textAlign: "center",
-  },
-  primaryButton: {
-    backgroundColor: COLORS.secondary,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-    height: 36,
-    justifyContent: "center",
-  },
-  secondaryButton: {
-    backgroundColor: "rgba(3,128,130,0.15)",
-    borderWidth: 1,
-    borderColor: COLORS.secondary,
-    paddingVertical: 8,
-    borderRadius: 8,
-    height: 36,
-    justifyContent: "center",
-    flex: 1,
-  },
-  outlineButton: {
-    backgroundColor: "transparent",
-    borderWidth: 1,
-    borderColor: COLORS.text.secondary,
-    paddingVertical: 8,
-    borderRadius: 8,
-    height: 36,
-    justifyContent: "center",
-  },
-  buttonText: {
-    color: COLORS.text.primary,
-    fontWeight: "500",
-    fontSize: 12,
-    textAlign: "center",
-  },
-  outlineButtonText: {
-    color: COLORS.text.secondary,
-    fontWeight: "500",
-    fontSize: 12,
-    textAlign: "center",
-  },
-  actionsRow: {
-    flexDirection: "row",
-    gap: 8,
-    marginTop: 12,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  loadingContainer: { padding: 30, alignItems: "center" },
-  loadingText: { marginTop: 10, color: COLORS.text.secondary, fontSize: 13 },
-
-  errorContainer: {
-    padding: 16,
-    alignItems: "center",
-    backgroundColor: "rgba(211,47,47,0.1)",
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "rgba(211,47,47,0.3)",
-  },
-  errorText: {
-    color: "#FF6B6B",
-    textAlign: "center",
-    marginBottom: 10,
-    fontSize: 13,
-  },
-
-  emptyState: {
-    padding: 24,
-    alignItems: "center",
-    backgroundColor: "rgba(3,128,130,0.1)",
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "rgba(3,128,130,0.3)",
-  },
-  emptyText: {
-    color: COLORS.text.accent,
-    textAlign: "center",
-    marginBottom: 10,
-    fontSize: 14,
-    fontWeight: "500",
-  },
-
-  insightContainer: {
-    backgroundColor: "rgba(3,128,130,0.15)",
-    padding: 12,
-    borderRadius: 10,
-    marginTop: 14,
-    borderLeftWidth: 3,
-    borderLeftColor: COLORS.secondary,
-  },
-  insightTitle: {
-    fontSize: 13,
-    fontWeight: "bold",
-    color: COLORS.text.accent,
-    marginBottom: 4,
-  },
-  insightText: { fontSize: 12, color: COLORS.text.primary, lineHeight: 18 },
-  highlight: { fontWeight: "bold", color: COLORS.text.accent },
-
-  statusSection: {
-    backgroundColor: COLORS.background,
-    borderRadius: 16,
-    padding: 16,
-    flexDirection: "row",
-    justifyContent: "space-around",
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.1)",
-    marginBottom: 20,
-  },
-  statusItem: { alignItems: "center" },
-  statusLabel: {
-    fontSize: 11,
-    color: COLORS.text.secondary,
-    marginBottom: 4,
-    fontWeight: "500",
-  },
-  statusValue: { fontSize: 14, fontWeight: "bold", color: COLORS.text.primary },
-  statusOnline: {
-    backgroundColor: "rgba(76,175,80,0.2)",
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 6,
-  },
-});

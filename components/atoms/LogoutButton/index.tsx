@@ -1,24 +1,21 @@
 import React, { useState } from "react";
-import { ActivityIndicator, Alert, TouchableOpacity } from "react-native";
+import { ActivityIndicator } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Toast from "react-native-toast-message";
 import useAuth from "@/hooks/useAuth";
 import { useRouter } from "expo-router";
+import { useAppTheme } from "@/context/ThemeProvider/theme";
+import { ButtonContainer } from "./styles";
 
-interface LogoutIconProps {
+interface LogoutButtonProps {
   size?: number;
-  color?: string;
-  confirm?: boolean;
 }
 
-const LogoutIcon: React.FC<LogoutIconProps> = ({
-  size = 24,
-  color = "#fff",
-  confirm = false,
-}) => {
+const LogoutButton: React.FC<LogoutButtonProps> = ({ size = 24 }) => {
   const { logout } = useAuth();
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { theme } = useAppTheme();
 
   const doLogout = async () => {
     setLoading(true);
@@ -37,31 +34,23 @@ const LogoutIcon: React.FC<LogoutIconProps> = ({
     }
   };
 
-  const handlePress = async () => {
-    if (confirm) {
-      Alert.alert(
-        "Sair",
-        "Tem certeza que deseja sair?",
-        [
-          { text: "Cancelar", style: "cancel" },
-          { text: "Sair", style: "destructive", onPress: doLogout },
-        ],
-        { cancelable: true }
-      );
-      return;
-    }
-    await doLogout();
-  };
-
   return (
-    <TouchableOpacity onPress={handlePress} disabled={loading} accessibilityLabel="Sair">
+    <ButtonContainer
+      onPress={doLogout}
+      disabled={loading}
+      accessibilityLabel="Sair"
+    >
       {loading ? (
-        <ActivityIndicator color={color} />
+        <ActivityIndicator color={theme.colors.background} />
       ) : (
-        <Ionicons name="log-out-outline" size={size} color={color} />
+        <Ionicons
+          name="log-out-outline"
+          size={size}
+          color={theme.colors.text.secondary}
+        />
       )}
-    </TouchableOpacity>
+    </ButtonContainer>
   );
 };
 
-export default LogoutIcon;
+export default LogoutButton;
