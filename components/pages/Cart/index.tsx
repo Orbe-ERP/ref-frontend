@@ -195,7 +195,7 @@ export default function CartPage() {
                   <TouchableOpacity
                     onPress={() => handleQuantityChange(product.cartItemId, -1)}
                   >
-                    <Ionicons name="remove-outline" size={24} color="#fff" />
+                    <Ionicons name="remove-outline" size={24} color="#2BAE66" />
                   </TouchableOpacity>
 
                   <S.Label>{product.quantity}</S.Label>
@@ -203,7 +203,7 @@ export default function CartPage() {
                   <TouchableOpacity
                     onPress={() => handleQuantityChange(product.cartItemId, 1)}
                   >
-                    <Ionicons name="add-outline" size={24} color="#fff" />
+                    <Ionicons name="add-outline" size={24} color="#2BAE66" />
                   </TouchableOpacity>
 
                   <TouchableOpacity
