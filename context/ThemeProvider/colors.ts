@@ -3,7 +3,7 @@ export const COLORS = {
     primary: "#2BAE66",      // Verde-esmeralda moderno (principal)
     secondary: "#264653",    // Grafite azulado (menu, botões escuros)
     accent: "#E9C46A",       // Dourado suave (realce, ícones de ação)
-    background: "#dadadaff", // Mantido
+    background: "#e9e9e9ff", // Mantido
     surface: "#FFFFFF",      // Cartões, áreas elevadas
     text: {
       primary: "#1E1E1E",    // Texto principal

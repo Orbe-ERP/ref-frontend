@@ -13,7 +13,7 @@ export default function OrderPage() {
   const [selectedProducts, setSelectedProducts] = useState<any>({});
   const [categories, setCategories] = useState<any[]>([]);
   const [addedProducts, setAddedProducts] = useState<any[]>([]);
-  const theme = useAppTheme()
+  const theme = useAppTheme();
   const router = useRouter();
   const { tableId } = useLocalSearchParams();
   const { selectedRestaurant } = useRestaurant();
@@ -35,7 +35,7 @@ export default function OrderPage() {
   const handleProductChange = (catId: string, prodId: string, q: number) => {
     setSelectedProducts((prev: any) => ({
       ...prev,
-      [catId]: { productId: prodId, quantity: q, productName: name },
+      [catId]: { productId: prodId, quantity: q },
     }));
   };
 

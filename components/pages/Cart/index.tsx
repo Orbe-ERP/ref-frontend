@@ -1,19 +1,18 @@
-import React, { useEffect, useState } from "react";
-import { ScrollView, TouchableOpacity, View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { Switch } from "react-native-paper";
-import { createOrder } from "@/services/order";
-import { getObservationsByProduct } from "@/services/product";
 import Button from "@/components/atoms/Button";
-import Toast from "react-native-toast-message";
-import * as S from "./styles";
 import CustomSwitch from "@/components/atoms/CustomSwitch";
 import { useAppTheme } from "@/context/ThemeProvider/theme";
+import { createOrder } from "@/services/order";
+import { getObservationsByProduct } from "@/services/product";
+import { Ionicons } from "@expo/vector-icons";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import React, { useEffect, useState } from "react";
+import { ScrollView, TouchableOpacity } from "react-native";
+import Toast from "react-native-toast-message";
+import * as S from "./styles";
 
 export default function CartPage() {
   const router = useRouter();
-  const theme = useAppTheme()
+  const theme = useAppTheme();
   const { tableId, addedProducts } = useLocalSearchParams<{
     tableId: string;
     addedProducts: string;
@@ -30,6 +29,7 @@ export default function CartPage() {
       cartItemId: `${p.productId}-${Date.now()}-${Math.random()}`,
       observations: p.observations || [],
       appliedPrice: p.appliedPrice ?? null,
+      customDescription: "",
     }))
   );
 
@@ -112,9 +112,9 @@ export default function CartPage() {
         quantity: product.quantity,
         appliedPrice: product.appliedPrice ?? null,
         observations: product.observations || [],
+        customDescription: product.customObservation,
       })),
     };
-
     try {
       await createOrder(newOrder);
       setProducts([]);
@@ -236,6 +236,22 @@ export default function CartPage() {
                 ) : (
                   <S.Label>Nenhuma observação disponível</S.Label>
                 )}
+
+                <S.Input
+                  placeholder="Observação livre (max 20 chars)"
+                  placeholderTextColor="#ccc"
+                  value={product.customDescription}
+                  maxLength={20}
+                  onChangeText={(text) => {
+                    setProducts((prev: any) =>
+                      prev.map((p: any) =>
+                        p.cartItemId === product.cartItemId
+                          ? { ...p, customDescription: text }
+                          : p
+                      )
+                    );
+                  }}
+                />
               </S.Card>
             ))}
 
@@ -247,11 +263,8 @@ export default function CartPage() {
             />
 
             <S.Row>
-              <S.Label>Para viagem?</S.Label>
-              <CustomSwitch
-                value={toTake}
-                onValueChange={setToTake}
-              />
+              <S.Label>Viagem?</S.Label>
+              <CustomSwitch value={toTake} onValueChange={setToTake} />
             </S.Row>
           </ScrollView>
 

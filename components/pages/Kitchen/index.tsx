@@ -23,12 +23,7 @@ export default function KitchenPage() {
   const [kitchens, setKitchens] = useState<Kitchen[]>([]);
   const [selectedKitchenId, setSelectedKitchenId] = useState<string>("null");
   const { selectedRestaurant } = useRestaurant();
-  const [confirmModalVisible, setConfirmModalVisible] = useState(false);
-  const [observationToDelete, setObservationToDelete] = useState<{
-    obsId: string;
-    orderId: string;
-    productId: string;
-  } | null>(null);
+
   const theme = useAppTheme()
 
   const DEFAULT_KITCHEN_COLOR = "#A0AEC0";
@@ -69,7 +64,7 @@ export default function KitchenPage() {
   };
 
   useEffect(() => {
-    const socket = io("http://localhost:3001");
+    const socket = io("http://192.168.1.7:3001");
 
     const fetchOrders = async () => {
       if (!selectedRestaurant) return;

@@ -79,6 +79,15 @@ export default function ConfigPage() {
           <S.ItemText>Gerenciar conta</S.ItemText>
         </S.ItemRow>
 
+        <S.ItemRow onPress={() => router.push("/onboarding")}>
+          <Ionicons
+            name="information-circle-sharp"
+            size={22}
+            color={theme.theme.colors.primary}
+          />
+          <S.ItemText>Ajuda</S.ItemText>
+        </S.ItemRow>
+
         <S.Footer>
           <Text>Orbe v1.0</Text>
         </S.Footer>

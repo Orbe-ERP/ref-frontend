@@ -1,4 +1,4 @@
-import styled from 'styled-components/native';
+import styled from "styled-components/native";
 
 export const ScreenContainer = styled.View`
   flex: 1;
@@ -93,8 +93,6 @@ export const TotalContainer = styled.View`
   justify-content: space-between;
   margin-top: 12px;
   padding-top: 8px;
-  border-top-width: 1px;
-  border-top-color: ${({ theme }) => theme.colors.border};
 `;
 
 export const TotalLabel = styled.Text`
@@ -134,7 +132,7 @@ export const ModalOverlay = styled.View`
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0,0,0,0.5);
+  background-color: rgba(0, 0, 0, 0.5);
   justify-content: center;
   align-items: center;
 `;

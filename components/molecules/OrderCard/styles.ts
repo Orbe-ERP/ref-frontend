@@ -1,5 +1,93 @@
 import styled from "styled-components/native";
 
+export const ModalContainer = styled.View`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
+  padding: 24px;
+  z-index: 999;
+`;
+export const ModalContent = styled.View`
+  background-color: #fff;
+  width: 90%;
+  border-radius: 16px;
+  padding: 24px;
+  align-items: center;
+  elevation: 6;
+  shadow-color: #000;
+  shadow-opacity: 0.2;
+  shadow-radius: 6px;
+`;
+
+export const AlertIconContainer = styled.View`
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(239, 68, 68, 0.1);
+  border-radius: 50px;
+  padding: 16px;
+  margin-bottom: 12px;
+`;
+
+export const ModalTitle = styled.Text`
+  font-size: 18px;
+  font-weight: bold;
+  color: #111827;
+  text-align: center;
+`;
+
+export const ItemDetailsCentered = styled.Text`
+  font-size: 15px;
+  color: #374151;
+  text-align: center;
+  margin-top: 12px;
+  line-height: 22px;
+`;
+
+export const ItemName = styled.Text`
+  font-weight: bold;
+  color: #ef4444;
+`;
+
+export const ModalActions = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  margin-top: 24px;
+  width: 100%;
+  gap: 12px;
+`;
+
+export const CancelButton = styled.TouchableOpacity`
+  flex: 1;
+  background-color: #e5e7eb;
+  padding: 12px;
+  border-radius: 10px;
+  align-items: center;
+`;
+
+export const CancelText = styled.Text`
+  color: #374151;
+  font-weight: 600;
+`;
+
+export const ConfirmButtonDestructive = styled.TouchableOpacity`
+  flex: 1;
+  background-color: #dc2626;
+  padding: 12px;
+  border-radius: 10px;
+  align-items: center;
+`;
+
+export const ConfirmText = styled.Text`
+  color: #fff;
+  font-weight: 600;
+`;
+
+
 export const Card = styled.View`
   background-color: ${({ theme }) => theme.colors.surface};
   padding: 20px;
@@ -54,11 +142,7 @@ export const ItemHeader = styled.View`
   align-items: center;
 `;
 
-export const ItemName = styled.Text`
-  color: ${({ theme }) => theme.colors.text.primary};
-  font-size: 17px;
-  font-weight: 700;
-`;
+
 
 export const ItemDetails = styled.Text`
   color: ${({ theme }) => theme.colors.text.secondary};
@@ -135,32 +219,7 @@ export const ActionText = styled.Text`
   margin-left: 6px;
 `;
 
-export const ModalContainer = styled.View`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: ${({ theme }) => theme.colors.overlay};
-  justify-content: center;
-  align-items: center;
-  padding: 16px;
-`;
 
-export const ModalContent = styled.View`
-  background-color: ${({ theme }) => theme.colors.surface};
-  padding: 24px;
-  border-radius: 16px;
-  width: 90%;
-  elevation: 5;
-`;
-
-export const ModalTitle = styled.Text`
-  color: ${({ theme }) => theme.colors.text.primary};
-  font-size: 19px;
-  font-weight: 700;
-  margin-bottom: 20px;
-`;
 
 export const QuantityContainer = styled.View`
   flex-direction: row;
@@ -182,22 +241,6 @@ export const QtyText = styled.Text`
   text-align: center;
 `;
 
-export const ModalActions = styled.View`
-  flex-direction: row;
-  justify-content: flex-end;
-`;
-
-export const CancelButton = styled.TouchableOpacity`
-  margin-right: 14px;
-  padding: 8px 12px;
-  border-radius: 8px;
-  background-color: ${({ theme }) => theme.colors.disabled.background};
-`;
-
-export const CancelText = styled.Text`
-  color: ${({ theme }) => theme.colors.feedback.error};
-  font-weight: 700;
-`;
 
 export const ConfirmButton = styled.TouchableOpacity`
   background-color: ${({ theme }) => theme.colors.feedback.success};
@@ -205,7 +248,3 @@ export const ConfirmButton = styled.TouchableOpacity`
   border-radius: 10px;
 `;
 
-export const ConfirmText = styled.Text`
-  color: ${({ theme }) => theme.colors.text.primary};
-  font-weight: 700;
-`;

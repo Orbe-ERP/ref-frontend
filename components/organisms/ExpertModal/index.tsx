@@ -108,14 +108,14 @@ const ExpertModal: React.FC<ExpertModalProps> = ({
 
         <Actions>
           {showDelete && onDelete && (
-            <ActionButton backgroundColor="#ff0000" onPress={onDelete}>
+            <ActionButton backgroundColor="#E76F51" onPress={onDelete}>
               <ActionText>Excluir</ActionText>
             </ActionButton>
           )}
           <ActionButton backgroundColor="#4B5563" onPress={onClose}>
             <ActionText>Cancelar</ActionText>
           </ActionButton>
-          <ActionButton backgroundColor="#038082" onPress={onConfirm}>
+          <ActionButton backgroundColor="#2BAE66" onPress={onConfirm}>
             <ActionText>{confirmLabel}</ActionText>
           </ActionButton>
         </Actions>

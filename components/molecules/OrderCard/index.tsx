@@ -4,8 +4,6 @@ import { View } from "react-native";
 
 import {
   Card,
-  Header,
-  Title,
   ItemContainer,
   ItemDetails,
   ItemHeader,
@@ -32,6 +30,9 @@ import {
   CancelButton,
   CancelText,
   WorkInProgressButtonSyled,
+  AlertIconContainer,
+  ItemDetailsCentered,
+  ConfirmButtonDestructive,
 } from "./styles";
 
 interface Product {
@@ -66,7 +67,9 @@ export default function OrderCard({
   handleDeleteProduct,
 }: Props) {
   const [modalVisible, setModalVisible] = useState(false);
+  const [cancelModalVisible, setCancelModalVisible] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [productToCancel, setProductToCancel] = useState<Product | null>(null);
   const [quantity, setQuantity] = useState("1");
 
   const handleEditProduct = (product: Product) => {
@@ -80,6 +83,18 @@ export default function OrderCard({
       onUpdateQuantity?.(editingProduct.id, Number(quantity));
       setModalVisible(false);
     }
+  };
+
+  const handleCancelRequest = (product: Product) => {
+    setProductToCancel(product);
+    setCancelModalVisible(true);
+  };
+
+  const confirmCancel = () => {
+    if (!productToCancel) return;
+    handleDeleteProduct?.(order.id, productToCancel.id);
+    setCancelModalVisible(false);
+    setProductToCancel(null);
   };
 
   return (
@@ -96,7 +111,11 @@ export default function OrderCard({
               <ItemName>{p.product.name}</ItemName>
               <ActionsHeader>
                 <EditButton onPress={() => handleEditProduct(p)}>
-                  <Ionicons name="create-outline" size={18} color={p.product.kitchen?.color || "#3b82f6"} />
+                  <Ionicons
+                    name="create-outline"
+                    size={18}
+                    color={p.product.kitchen?.color || "#3b82f6"}
+                  />
                 </EditButton>
               </ActionsHeader>
             </ItemHeader>
@@ -111,6 +130,7 @@ export default function OrderCard({
             >
               <ItemDetails>Quantidade: {p.quantity}</ItemDetails>
             </View>
+
             {p.observations.length > 0 && (
               <ItemObservations>
                 Observaçoes:
@@ -122,11 +142,7 @@ export default function OrderCard({
                     <ObservationDeleteButton
                       onPress={() => confirmDeleteObservation?.(p.id, obs.id)}
                     >
-                      <Ionicons
-                        name="trash-outline"
-                        size={16}
-                        color="#ef4444"
-                      />
+                      <Ionicons name="trash-outline" size={16} color="#ef4444" />
                     </ObservationDeleteButton>
                   </ObservationRow>
                 ))}
@@ -151,11 +167,8 @@ export default function OrderCard({
                 />
                 <ActionText>Concluir</ActionText>
               </ActionButton>
-              <CancelButtonStyled
-                onPress={() => {
-                  handleDeleteProduct?.(order.id, p.id);
-                }}
-              >
+
+              <CancelButtonStyled onPress={() => handleCancelRequest(p)}>
                 <Ionicons name="close-circle-outline" size={16} color="#fff" />
                 <ActionText>Cancelar</ActionText>
               </CancelButtonStyled>
@@ -174,11 +187,7 @@ export default function OrderCard({
                   setQuantity((prev) => String(Math.max(1, Number(prev) - 1)))
                 }
               >
-                <Ionicons
-                  name="remove-circle-outline"
-                  size={28}
-                  color="#ef4444"
-                />
+                <Ionicons name="remove-circle-outline" size={28} color="#ef4444" />
               </QtyButton>
 
               <QtyText>{quantity}</QtyText>
@@ -206,6 +215,37 @@ export default function OrderCard({
           </ModalContent>
         </ModalContainer>
       )}
+
+{cancelModalVisible && productToCancel && (
+  <ModalContainer>
+    <ModalContent>
+      <AlertIconContainer>
+        <Ionicons name="alert-circle-outline" size={56} color="#ef4444" />
+      </AlertIconContainer>
+
+      <ModalTitle>Confirmar cancelamento</ModalTitle>
+
+      <ItemDetailsCentered>
+        Deseja realmente cancelar o produto{" "}
+        <ItemName>{productToCancel.product.name}</ItemName>?
+      </ItemDetailsCentered>
+
+      <ModalActions>
+        <CancelButton onPress={() => {
+          setCancelModalVisible(false);
+          setProductToCancel(null);
+        }}>
+          <CancelText>Não</CancelText>
+        </CancelButton>
+
+        <ConfirmButtonDestructive onPress={confirmCancel}>
+          <ConfirmText>Sim, cancelar</ConfirmText>
+        </ConfirmButtonDestructive>
+      </ModalActions>
+    </ModalContent>
+  </ModalContainer>
+)}
+
     </Card>
   );
 }

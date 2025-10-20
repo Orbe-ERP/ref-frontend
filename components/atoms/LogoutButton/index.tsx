@@ -46,7 +46,7 @@ const LogoutButton: React.FC<LogoutButtonProps> = ({ size = 24 }) => {
         <Ionicons
           name="log-out-outline"
           size={size}
-          color={theme.colors.text.secondary}
+          color={theme.colors.text.primary}
         />
       )}
     </ButtonContainer>

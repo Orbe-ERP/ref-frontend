@@ -1,7 +1,6 @@
 import { api } from "./api";
 import { Kitchen } from "./kitchen";
 
-
 export interface Observation {
   id: string;
   description: string;
@@ -14,7 +13,7 @@ export interface Product {
   price: number;
   active: boolean;
   kitchen: Kitchen;
-  observations: Observation
+  observations: Observation;
   categoryId: string;
   restaurantId: string | undefined;
 }
@@ -27,7 +26,6 @@ export interface ProductInput {
   restaurantId: string | undefined;
 }
 
-
 export interface AddObservationInput {
   productId: string;
   description: string;
@@ -39,31 +37,27 @@ export interface UpdateProductInput {
   price?: number;
   active?: boolean;
   kitchen?: string;
-  observation?: any
+  observation?: any;
   restaurantId: string | undefined;
 }
 export interface UpdateObservationInput {
   id: string;
-  observation?: any
+  observation?: any;
   restaurantId: string | undefined;
 }
 
-
 export async function createProduct(product: ProductInput) {
-
   if (!product) {
     throw new Error("Need's a data to create");
   }
 
   try {
     const response = await api.post("products", product);
-    console.log(response.data)
     return response.data;
   } catch (error) {
     throw new Error(`Error: ${error}`);
   }
 }
-
 
 export async function addObservation(i: AddObservationInput) {
   if (!i) {
@@ -98,13 +92,11 @@ export async function updateProduct(productData: UpdateProductInput) {
   }
 }
 
-
 export async function updateObservations(productData: UpdateObservationInput) {
-
   try {
     const response = await api.patch(`/products/${productData.id}`, {
       observation: productData.observation,
-      restaurantId: productData.restaurantId
+      restaurantId: productData.restaurantId,
     });
 
     return response.data;
@@ -126,14 +118,11 @@ export async function deleteProduct(
   }
 }
 
-export async function deleteObservation(
-  observationId: string
-) {
+export async function deleteObservation(observationId: string) {
   try {
     await api.delete(`/products/observations/${observationId}`);
     return;
   } catch (error) {
-    console.log(error)
     throw new Error(`Error to delete observation: ${error}`);
   }
 }
@@ -156,8 +145,6 @@ export async function getById(
   }
 }
 
-
-
 export async function getAllByRestaurant(restaurantId: string | undefined) {
   if (!restaurantId) {
     throw new Error("Restaurant ID is required");
@@ -171,22 +158,20 @@ export async function getAllByRestaurant(restaurantId: string | undefined) {
   }
 }
 
-
 export async function getObservationsByProduct(productId: string | undefined) {
   if (!productId) {
     throw new Error("Product ID is required");
   }
 
   try {
-    const response = await api.get<Product[]>(`products/observations/${productId}`);
-
-    console.log(response.data)
+    const response = await api.get<Product[]>(
+      `products/observations/${productId}`
+    );
     return response.data;
   } catch (error) {
     throw new Error(`Error: ${error}`);
   }
 }
-
 
 export async function getAllByCategory(categoryId: string) {
   if (!categoryId) {

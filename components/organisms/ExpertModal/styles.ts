@@ -12,13 +12,13 @@ export const ModalContent = styled.View`
   background-color: #1e293b;
   background-color: ${({ theme }) => theme.colors.surface};
   padding: 20px;
-  border-radius: 12px;
+  border-radius: 10px;
   align-items: center;
 `;
 
 export const ModalTitle = styled.Text`
   color: ${({ theme }) => theme.colors.text.primary};
-  font-size: 20px;
+  font-size: 24px;
   margin-bottom: 20px;
   font-weight: bold;
 `;

@@ -5,7 +5,7 @@ import {
   RefreshControl,
   Alert,
 } from "react-native";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { getCompletedOrdersByTable, Order } from "@/services/order";
 import { useAppTheme } from "@/context/ThemeProvider/theme";
@@ -185,6 +185,14 @@ export default function ClosedOrdersPage() {
 
   return (
     <S.ScreenContainer>
+      <Stack.Screen
+        options={{
+          title: "Comandas Fechadas",
+          headerStyle: { backgroundColor: theme.colors.background },
+          headerTintColor: theme.colors.text.primary,
+        }}
+      />
+
       <FlatList
         data={orders}
         renderItem={renderOrderItem}

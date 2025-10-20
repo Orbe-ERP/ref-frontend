@@ -1,12 +1,13 @@
 import { useAppTheme } from "@/context/ThemeProvider/theme";
 import React from "react";
 import { Text, TouchableOpacity } from "react-native";
+import { ButtonContainer } from "./styles";
 
 export const ThemeToggle = () => {
   const { isDark, toggleTheme, theme } = useAppTheme();
 
   return (
-    <TouchableOpacity
+    <ButtonContainer
       onPress={toggleTheme}
       style={{
         paddingVertical: 8,
@@ -21,6 +22,6 @@ export const ThemeToggle = () => {
       >
         {isDark ? "☀️" : "🌙"}
       </Text>
-    </TouchableOpacity>
+    </ButtonContainer>
   );
 };

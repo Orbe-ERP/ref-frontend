@@ -248,10 +248,6 @@ export default function IndexScreen() {
               label="📈 Relatórios"
               onPress={() => router.push("/(private)/report")}
             />
-            <Button
-              label="📱 Tutorial"
-              onPress={() => router.push("/(private)/onboarding")}
-            />
           </MenuColumn>
         </MenuSection>
 
