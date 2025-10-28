@@ -50,7 +50,7 @@ export default function SelectRestaurantScreen() {
   };
 
   const handleEditRestaurant = (restaurant: any) => {
-    router.push(`/(private)/edit-restaurant?restaurantId=${restaurant.id}`);
+    router.push(`/(private)/edit-restaurant?id=${restaurant.id}`);
     return;
   };
 

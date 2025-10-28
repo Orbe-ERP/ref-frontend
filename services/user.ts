@@ -19,7 +19,6 @@ export interface AddUserOnAccount {
   name: string;
   email: string;
   password: string;
-  // userAdminId: string
 }
 
 export interface UpdateUser {
@@ -27,6 +26,7 @@ export interface UpdateUser {
   name?: string;
   email?: string;
   password?: string;
+  currentPassword: string
 }
 
 export async function createUser(data: CreateUser) {
@@ -50,6 +50,7 @@ export async function getUserById(id: string) {
 }
 
 export async function updateUser(data: UpdateUser) {
+  console.log(data)
   const response = await api.patch<User>("/users/update", data);
   return response.data;
 }

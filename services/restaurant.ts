@@ -26,7 +26,6 @@ export async function getRestaurants() {
 
 export async function getRestaurantById(restaurantId: string): Promise<Restaurant> {
   if(!restaurantId) throw new Error("restaurantId is required");
-  console.log("getRestaurantById called with id:", restaurantId);
   try {
       const response = await api.get<Restaurant>(`/restaurants/${restaurantId}`);
       return response.data;

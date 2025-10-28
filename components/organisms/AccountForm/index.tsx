@@ -34,24 +34,50 @@ export default function AccountForm({
 }: Props) {
   return (
     <Form>
-      <InputGroup label="Nome" value={name} onChangeText={setName} placeholder="Digite seu nome" />
-      <InputGroup label="Email" value={email} onChangeText={setEmail} placeholder="Digite seu email" autoCapitalize="none" />
-      
+      <InputGroup
+        label="Nome"
+        value={name}
+        onChangeText={setName}
+        placeholder="Digite seu nome"
+      />
+      <InputGroup
+        label="Email"
+        value={email}
+        onChangeText={setEmail}
+        placeholder="Digite seu email"
+        autoCapitalize="none"
+      />
+
       <Section>
         <SectionTitle>Alterar Senha</SectionTitle>
-        <InputGroup label="Senha Atual" value={currentPassword} onChangeText={setCurrentPassword} secureTextEntry />
-        <InputGroup label="Nova Senha" value={newPassword} onChangeText={setNewPassword} secureTextEntry />
-        <InputGroup label="Confirmar Senha" value={confirmPassword} onChangeText={setConfirmPassword} secureTextEntry />
+        <InputGroup
+          label="Senha Atual *"
+          value={currentPassword}
+          onChangeText={setCurrentPassword}
+          secureTextEntry
+        />
+        <InputGroup
+          label="Nova Senha"
+          value={newPassword}
+          onChangeText={setNewPassword}
+          secureTextEntry
+        />
+        <InputGroup
+          label="Confirmar Nova Senha"
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
+          secureTextEntry
+        />
       </Section>
 
-      <Button label="Salvar Alterações" onPress={onSave} />
+      <Button label="Salvar Alterações" onPress={onSave}/>
     </Form>
   );
 }
 
 const Form = styled.View`
-padding: 1rem;
-  width: 100vw;
+  padding: 16px;
+  width: 100%;
 `;
 
 const Section = styled.View`

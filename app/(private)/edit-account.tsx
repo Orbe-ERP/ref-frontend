@@ -5,6 +5,7 @@ import {
   ScrollView,
   View,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import { User, UpdateUser, getUserById, updateUser } from "@/services/user";
 import styled from "styled-components/native";
@@ -36,6 +37,7 @@ export default function AccountEditScreen({ userId }: AccountEditScreenProps) {
         setEmail(userData.email);
       } catch (err) {
         console.error("Erro ao carregar usuário:", err);
+        Alert.alert("Erro", "Não foi possível carregar os dados do usuário.");
       } finally {
         setLoading(false);
       }
@@ -44,21 +46,34 @@ export default function AccountEditScreen({ userId }: AccountEditScreenProps) {
   }, [userId]);
 
   const handleSave = async () => {
-    if (newPassword !== confirmPassword) {
-      alert("As senhas não coincidem");
+    if (!currentPassword) {
+      Alert.alert("Erro", "Informe sua senha atual para atualizar os dados.");
       return;
     }
+
+    if (newPassword && newPassword !== confirmPassword) {
+      Alert.alert("Erro", "As senhas não coincidem.");
+      return;
+    }
+
     try {
       setLoading(true);
+
       const updateData: UpdateUser = {
         id: userId,
+        currentPassword,
         ...(name !== user?.name && { name }),
         ...(email !== user?.email && { email }),
+        ...(newPassword && { newPassword }),
       };
+
       await updateUser(updateData);
+      
+      Alert.alert("Sucesso", "Dados atualizados com sucesso!");
       navigation.back();
-    } catch (err) {
+    } catch (err: any) {
       console.error("Erro ao atualizar usuário:", err);
+      Alert.alert("Erro", err?.message || "Não foi possível atualizar os dados.");
     } finally {
       setLoading(false);
     }
@@ -74,23 +89,8 @@ export default function AccountEditScreen({ userId }: AccountEditScreenProps) {
 
   return (
     <>
-      <Stack.Screen 
-        options={{ 
-          title: "Editar conta",
-
-        }}
-      />
-      <View
-        style={{
-          flexDirection: "column",
-          alignItems: "center",
-          backgroundColor: "#041224",
-          paddingVertical: 20,
-          paddingHorizontal: 15,
-          borderBottomWidth: 1,
-          borderBottomColor: "#038082",
-        }}
-      >
+      <Stack.Screen options={{ title: "Editar Conta" }} />
+      <Container>
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={{ flex: 1 }}
@@ -115,7 +115,7 @@ export default function AccountEditScreen({ userId }: AccountEditScreenProps) {
             />
           </ScrollView>
         </KeyboardAvoidingView>
-      </View>
+      </Container>
     </>
   );
 }
@@ -125,4 +125,10 @@ const LoadingContainer = styled.View`
   justify-content: center;
   align-items: center;
   background-color: #041224;
+`;
+
+const Container = styled.View`
+  flex: 1;
+  background-color: #041224;
+  padding: 20px 15px;
 `;

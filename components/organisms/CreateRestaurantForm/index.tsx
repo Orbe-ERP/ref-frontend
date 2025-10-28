@@ -1,4 +1,3 @@
-// components/organisms/RestaurantForm.tsx
 import React from "react";
 import { ScrollView, ActivityIndicator } from "react-native";
 import { Formik } from "formik";
@@ -57,7 +56,7 @@ const ErrorText = styled.Text`
   margin-bottom: 8px;
 `;
 
-export const RestaurantForm: React.FC<Props> = ({
+export const CreateRestaurantForm: React.FC<Props> = ({
   initialValues,
   onSubmit,
   loading,
@@ -70,15 +69,17 @@ export const RestaurantForm: React.FC<Props> = ({
       .test("is-valid-cnpj", "CNPJ inválido", (value) =>
         cnpj.isValid(value || "")
       ),
-    inscricaoEstadual: Yup.string()
+    stateRegistration: Yup.string()
       .matches(/^\d{3,14}$/, "Inscrição Estadual inválida")
       .optional(),
-    address: Yup.object().shape({
-      street: Yup.string().required("Rua é obrigatória"),
-      houseNumber: Yup.string().required("Número é obrigatório"),
-      city: Yup.string().required("Cidade é obrigatória"),
-      neighborhood: Yup.string().required("Bairro é obrigatório"),
-    }),
+    address: Yup.object()
+      .shape({
+        street: Yup.string().required("Rua é obrigatória"),
+        houseNumber: Yup.string().required("Número é obrigatório"),
+        city: Yup.string().required("Cidade é obrigatória"),
+        neighborhood: Yup.string().required("Bairro é obrigatório"),
+      })
+      .default({}),
   });
 
   return (
@@ -88,7 +89,14 @@ export const RestaurantForm: React.FC<Props> = ({
         validationSchema={validationSchema}
         onSubmit={onSubmit}
       >
-        {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+        {({
+          handleChange,
+          handleBlur,
+          handleSubmit,
+          values,
+          errors,
+          touched,
+        }) => (
           <>
             <Card>
               <SectionTitle>Dados Gerais do Restaurante</SectionTitle>
@@ -99,7 +107,9 @@ export const RestaurantForm: React.FC<Props> = ({
                 onChangeText={handleChange("name")}
                 onBlur={handleBlur("name")}
               />
-              {errors.name && touched.name && <ErrorText>{errors.name}</ErrorText>}
+              {errors.name && touched.name && (
+                <ErrorText>{errors.name}</ErrorText>
+              )}
 
               <Spacer />
 
@@ -109,7 +119,9 @@ export const RestaurantForm: React.FC<Props> = ({
                 onChangeText={handleChange("tradeName")}
                 onBlur={handleBlur("tradeName")}
               />
-              {errors.tradeName && touched.tradeName && <ErrorText>{errors.tradeName}</ErrorText>}
+              {errors.tradeName && touched.tradeName && (
+                <ErrorText>{errors.tradeName}</ErrorText>
+              )}
 
               <Spacer />
 
@@ -120,13 +132,15 @@ export const RestaurantForm: React.FC<Props> = ({
                 onBlur={handleBlur("cnpj")}
                 keyboardType="numeric"
               />
-              {errors.cnpj && touched.cnpj && <ErrorText>{errors.cnpj}</ErrorText>}
+              {errors.cnpj && touched.cnpj && (
+                <ErrorText>{errors.cnpj}</ErrorText>
+              )}
 
               <Spacer />
 
               <Input
                 placeholder="Inscrição Estadual"
-                value={values.inscricaoEstadual}
+                value={values.stateRegistration}
                 onChangeText={handleChange("stateRegistration")}
                 onBlur={handleBlur("stateRegistration")}
                 keyboardType="numeric"
@@ -143,7 +157,7 @@ export const RestaurantForm: React.FC<Props> = ({
                 <Col>
                   <Input
                     placeholder="Rua"
-                    value={values.address.street}
+                    value={values.address?.street || ""}
                     onChangeText={handleChange("address.street")}
                     onBlur={handleBlur("address.street")}
                   />
@@ -155,14 +169,15 @@ export const RestaurantForm: React.FC<Props> = ({
                 <Col style={{ flexBasis: 80 }}>
                   <Input
                     placeholder="Número"
-                    value={values.address.houseNumber}
+                    value={values.address?.houseNumber || ""}
                     onChangeText={handleChange("address.houseNumber")}
                     onBlur={handleBlur("address.houseNumber")}
                     keyboardType="numeric"
                   />
-                  {errors.address?.houseNumber && touched.address?.houseNumber && (
-                    <ErrorText>{errors.address.houseNumber}</ErrorText>
-                  )}
+                  {errors.address?.houseNumber &&
+                    touched.address?.houseNumber && (
+                      <ErrorText>{errors.address.houseNumber}</ErrorText>
+                    )}
                 </Col>
               </Row>
 
@@ -170,7 +185,7 @@ export const RestaurantForm: React.FC<Props> = ({
 
               <Input
                 placeholder="Cidade"
-                value={values.address.city}
+                value={values.address?.city || ""}
                 onChangeText={handleChange("address.city")}
                 onBlur={handleBlur("address.city")}
               />
@@ -182,20 +197,21 @@ export const RestaurantForm: React.FC<Props> = ({
 
               <Input
                 placeholder="Bairro"
-                value={values.address.neighborhood}
+                value={values.address?.neighborhood || ""}
                 onChangeText={handleChange("address.neighborhood")}
                 onBlur={handleBlur("address.neighborhood")}
               />
-              {errors.address?.neighborhood && touched.address?.neighborhood && (
-                <ErrorText>{errors.address.neighborhood}</ErrorText>
-              )}
+              {errors.address?.neighborhood &&
+                touched.address?.neighborhood && (
+                  <ErrorText>{errors.address.neighborhood}</ErrorText>
+                )}
             </Card>
 
             <Button
-              onPress={() => handleSubmit()}
-              label={loading ? <ActivityIndicator color="#fff" /> : "Salvar"}
+              onPress={handleSubmit}
               variant="primary"
-            />
+              label="Salvar"
+            ></Button>
           </>
         )}
       </Formik>

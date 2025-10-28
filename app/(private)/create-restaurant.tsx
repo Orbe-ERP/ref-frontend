@@ -1,14 +1,15 @@
-// app/(protected)/restaurant/RestaurantScreen.tsx
 import React, { useState } from "react";
 import { View } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import Toast from "react-native-toast-message";
-import { RestaurantForm } from "@/components/organisms/RestaurantForm";
+import { CreateRestaurantForm } from "@/components/organisms/CreateRestaurantForm";
 import { createRestaurant } from "@/services/restaurant";
+import { useAppTheme } from "@/context/ThemeProvider/theme";
 
 export default function RestaurantScreen() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const {theme} = useAppTheme()
 
   const initialValues = {
     name: "",
@@ -25,15 +26,12 @@ export default function RestaurantScreen() {
 
   const handleSubmit = async (values: typeof initialValues) => {
     setLoading(true);
-
     try {
       await createRestaurant(values);
-
       Toast.show({
         type: "success",
         text1: "Restaurante criado com sucesso!",
       });
-
       router.push("/(tabs)");
     } catch (error) {
       console.error("Erro ao criar restaurante:", error);
@@ -51,11 +49,12 @@ export default function RestaurantScreen() {
       <Stack.Screen
         options={{
           title: "Criar Restaurante",
-
+          headerStyle: { backgroundColor: theme.colors.background },
+          headerTintColor: theme.colors.text.primary,
         }}
       />
       <View style={{ flex: 1, backgroundColor: "#041224" }}>
-        <RestaurantForm
+        <CreateRestaurantForm
           initialValues={initialValues}
           onSubmit={handleSubmit}
           loading={loading}
