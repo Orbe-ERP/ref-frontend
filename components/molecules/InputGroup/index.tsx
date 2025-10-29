@@ -18,5 +18,5 @@ export default function InputGroup({ label, ...rest }: InputGroupProps) {
 }
 
 const Container = styled.View`
-  margin-bottom: 20px;
+
 `;

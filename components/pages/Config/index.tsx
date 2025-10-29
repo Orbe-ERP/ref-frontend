@@ -49,7 +49,7 @@ export default function ConfigPage() {
             size={22}
             color={theme.theme.colors.primary}
           />
-          <S.ItemText>Criar usuários</S.ItemText>
+          <S.ItemText>Criar Usuários</S.ItemText>
         </S.ItemRow>
 
         <S.ItemRow onPress={() => router.push("/users-list")}>
@@ -58,7 +58,7 @@ export default function ConfigPage() {
             size={22}
             color={theme.theme.colors.primary}
           />
-          <S.ItemText>Listar usuários</S.ItemText>
+          <S.ItemText>Listar Usuários</S.ItemText>
         </S.ItemRow>
 
         <S.ItemRow onPress={() => router.push("/completed-orders")}>
@@ -67,7 +67,7 @@ export default function ConfigPage() {
             size={22}
             color={theme.theme.colors.primary}
           />
-          <S.ItemText>Comandas finalizadas</S.ItemText>
+          <S.ItemText>Comandas Finalizadas</S.ItemText>
         </S.ItemRow>
 
         <S.ItemRow onPress={() => router.push("/edit-account")}>
@@ -76,7 +76,7 @@ export default function ConfigPage() {
             size={22}
             color={theme.theme.colors.primary}
           />
-          <S.ItemText>Gerenciar conta</S.ItemText>
+          <S.ItemText>Gerenciar Conta</S.ItemText>
         </S.ItemRow>
 
         <S.ItemRow onPress={() => router.push("/onboarding")}>

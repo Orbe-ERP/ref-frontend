@@ -3,6 +3,7 @@ import { Text, ActivityIndicator, Alert, FlatList } from "react-native";
 import styled from "styled-components/native";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { getOrderSummaryByIdentifier } from "@/services/order";
+import Toast from "react-native-toast-message";
 
 export default function PrintOrderScreen() {
   const { identifier } = useLocalSearchParams<{ identifier: string }>();
@@ -21,7 +22,14 @@ export default function PrintOrderScreen() {
       const data = await getOrderSummaryByIdentifier(identifier, false);
       setOrderSummary(data);
     } catch (err: any) {
-      Alert.alert("Erro", err.message || "Falha ao carregar comanda");
+
+      Toast.show({
+        type: "error",
+        text1: "Erro",
+        text2: "Falha ao carregar comanda.",
+        position: "top",
+        visibilityTime: 3000,
+      });
       router.back();
     } finally {
       setLoading(false);

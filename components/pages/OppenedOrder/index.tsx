@@ -88,7 +88,14 @@ export default function OppenedOrderPage() {
 
   const handleConcludeSelectedOrders = async () => {
     if (selectedOrders.length === 0) {
-      Alert.alert("Aviso", "Selecione pelo menos uma comanda para concluir.");
+      Toast.show({
+        type: "info",
+        text1: "Aviso",
+        text2: "Selecione pelo menos uma comanda para concluir.",
+        position: "top",
+        visibilityTime: 3000,
+      });
+
       return;
     }
 

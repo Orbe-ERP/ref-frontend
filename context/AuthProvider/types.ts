@@ -1,8 +1,10 @@
 import { ReactNode } from "react";
 
 export interface IUser {
+  id?: string;
   email?: string;
   role?: string;
+  name?: string;
   token?: string;
   hasAuthenticatedUser?: boolean;
   defaultRestaurantId?: string;

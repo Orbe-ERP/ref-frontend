@@ -9,7 +9,7 @@ export const ModalOverlay = styled.View`
 
 export const ModalContent = styled.View`
   width: 80%;
-  background-color: #1e293b;
+  
   background-color: ${({ theme }) => theme.colors.surface};
   padding: 20px;
   border-radius: 10px;

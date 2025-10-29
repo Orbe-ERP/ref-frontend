@@ -13,21 +13,13 @@ import useAuth from "@/hooks/useAuth";
 import styled from "styled-components/native";
 
 const COLORS = {
-  primary: "#038082",
-  secondary: "#00B894",
-  background: "#041224",
+  primary: "#2BAE66",
+  secondary: "#264653",
+  background: "#0A1A2F",
   text: "#FFFFFF",
-  error: "#FF4C4C",
-  border: "#2D3748",
+  error: "#E76F51",
+  border: "#23394E",
 };
-
-const Container = styled.View`
-  flex: 1;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  background-color: ${COLORS.background};
-`;
 
 const Title = styled.Text`
   font-size: 28px;
@@ -40,7 +32,7 @@ const Title = styled.Text`
 const Subtitle = styled.Text`
   font-size: 14px;
   text-align: center;
-  color: #a0aec0;
+  color: #ffffff;
   margin-bottom: 24px;
 `;
 
@@ -62,7 +54,8 @@ const ErrorText = styled.Text`
 `;
 
 const Button = styled.TouchableOpacity<{ disabled?: boolean }>`
-  background-color: ${(props: { disabled?: boolean }) => (props.disabled ? "#4B5563" : COLORS.background)};
+  background-color: ${(props: { disabled?: boolean }) =>
+    props.disabled ? "#4B5563" : COLORS.background};
   padding: 16px;
   border-radius: 10px;
   align-items: center;
@@ -85,7 +78,9 @@ const Logo = styled.Image`
 
 const LoginSchema = Yup.object().shape({
   email: Yup.string().email("E-mail inválido").required("E-mail obrigatório"),
-  password: Yup.string().min(6, "Mínimo 6 caracteres").required("Senha obrigatória"),
+  password: Yup.string()
+    .min(6, "Mínimo 6 caracteres")
+    .required("Senha obrigatória"),
 });
 
 export default function Login() {
@@ -124,7 +119,12 @@ export default function Login() {
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       <ScrollView
-        contentContainerStyle={{ flexGrow: 1, justifyContent: "center", alignItems: "center", padding: 24 }}
+        contentContainerStyle={{
+          flexGrow: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          padding: 24,
+        }}
         keyboardShouldPersistTaps="handled"
       >
         <Stack.Screen options={{ title: "Login" }} />
@@ -139,7 +139,14 @@ export default function Login() {
           validationSchema={LoginSchema}
           onSubmit={handleLogin}
         >
-          {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+          {({
+            handleChange,
+            handleBlur,
+            handleSubmit,
+            values,
+            errors,
+            touched,
+          }) => (
             <>
               <Input
                 placeholder="E-mail"
@@ -150,7 +157,9 @@ export default function Login() {
                 onBlur={handleBlur("email")}
                 value={values.email}
               />
-              {errors.email && touched.email && <ErrorText>{errors.email}</ErrorText>}
+              {errors.email && touched.email && (
+                <ErrorText>{errors.email}</ErrorText>
+              )}
 
               <Input
                 placeholder="Senha"
@@ -160,10 +169,16 @@ export default function Login() {
                 onBlur={handleBlur("password")}
                 value={values.password}
               />
-              {errors.password && touched.password && <ErrorText>{errors.password}</ErrorText>}
+              {errors.password && touched.password && (
+                <ErrorText>{errors.password}</ErrorText>
+              )}
 
               <Button onPress={handleSubmit as any} disabled={loading}>
-                {loading ? <ActivityIndicator color="#fff" /> : <ButtonText>Entrar</ButtonText>}
+                {loading ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <ButtonText>Entrar</ButtonText>
+                )}
               </Button>
             </>
           )}

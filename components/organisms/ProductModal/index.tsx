@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Modal, TouchableOpacity, FlatList, Text, View, Switch } from "react-native";
+import {
+  Modal,
+  TouchableOpacity,
+  FlatList,
+  Text,
+  View,
+  Switch,
+} from "react-native";
 import Input from "@/components/atoms/Input";
 import {
   ModalOverlay,
@@ -8,6 +15,10 @@ import {
   Actions,
   ActionButton,
   ActionText,
+  SectionLabel,
+  KitchenSelector,
+  KitchenText,
+  Divider,
 } from "./styles";
 import {
   createProduct,
@@ -25,7 +36,7 @@ interface ProductModalProps {
   categoryId: string;
   restaurantId: string;
   onSaved: () => void;
-  kitchens: Kitchen[]; 
+  kitchens: Kitchen[];
 }
 
 const ProductModal: React.FC<ProductModalProps> = ({
@@ -43,7 +54,6 @@ const ProductModal: React.FC<ProductModalProps> = ({
   const [active, setActive] = useState(true);
   const [isKitchenModalVisible, setIsKitchenModalVisible] = useState(false);
 
-  // Atualiza os estados sempre que o produto mudar
   useEffect(() => {
     setName(product?.name ?? "");
     setPrice(product?.price?.toString() ?? "");
@@ -92,12 +102,12 @@ const ProductModal: React.FC<ProductModalProps> = ({
   }
 
   return (
-    <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
+    <Modal visible={visible} animationType="fade" transparent onRequestClose={onClose}>
       <ModalOverlay>
         <ModalContent>
           <ModalTitle>{product ? "Editar Produto" : "Novo Produto"}</ModalTitle>
 
-          <Input placeholder="Nome" value={name} onChangeText={setName} />
+          <Input placeholder="Nome do produto" value={name} onChangeText={setName} />
           <Input
             placeholder="Preço"
             value={price}
@@ -105,42 +115,37 @@ const ProductModal: React.FC<ProductModalProps> = ({
             keyboardType="numeric"
           />
 
-          {/* Switch para Ativo/Inativo */}
-          <View style={{ flexDirection: "row", alignItems: "center", marginTop: 12 }}>
-            <Text style={{ color: "white", marginRight: 10 }}>Ativo</Text>
+          <Divider />
+
+          <SectionLabel>Cozinha</SectionLabel>
+          <KitchenSelector onPress={() => setIsKitchenModalVisible(true)}>
+            <KitchenText>
+              {kitchens.find((k) => k.id === kitchen)?.name || "Selecionar cozinha"}
+            </KitchenText>
+          </KitchenSelector>
+
+          <Divider />
+
+          <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 12 }}>
+            <Text style={{ color: "#ccc", fontSize: 16, flex: 1 }}>Ativo</Text>
             <Switch
               value={active}
               onValueChange={setActive}
-              trackColor={{ false: "#767577", true: "#038082" }}
-              thumbColor={active ? "#f4f3f4" : "#f4f3f4"}
+              trackColor={{ false: "#374151", true: "#047857" }}
+              thumbColor={active ? "#f9fafb" : "#9ca3af"}
             />
           </View>
 
-          {/* Seleção de cozinha */}
-          <TouchableOpacity
-            onPress={() => setIsKitchenModalVisible(true)}
-            style={{
-              backgroundColor: "#1f2937",
-              padding: 12,
-              borderRadius: 8,
-              marginTop: 12,
-            }}
-          >
-            <Text style={{ color: "white" }}>
-              {kitchens.find((k) => k.id === kitchen)?.name || "Selecionar cozinha"}
-            </Text>
-          </TouchableOpacity>
-
           <Actions>
             {product && (
-              <ActionButton backgroundColor="#ff0000" onPress={handleDelete}>
+              <ActionButton backgroundColor="#dc2626" onPress={handleDelete}>
                 <ActionText>Excluir</ActionText>
               </ActionButton>
             )}
-            <ActionButton backgroundColor="#4B5563" onPress={onClose}>
+            <ActionButton backgroundColor="#6b7280" onPress={onClose}>
               <ActionText>Cancelar</ActionText>
             </ActionButton>
-            <ActionButton backgroundColor="#038082" onPress={handleSave}>
+            <ActionButton backgroundColor="#059669" onPress={handleSave}>
               <ActionText>{product ? "Salvar" : "Criar"}</ActionText>
             </ActionButton>
           </Actions>
@@ -163,7 +168,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
               renderItem={({ item }) => (
                 <TouchableOpacity
                   style={{
-                    padding: 12,
+                    paddingVertical: 14,
                     borderBottomWidth: 1,
                     borderBottomColor: "#333",
                   }}
@@ -172,12 +177,12 @@ const ProductModal: React.FC<ProductModalProps> = ({
                     setIsKitchenModalVisible(false);
                   }}
                 >
-                  <Text style={{ color: "white" }}>{item.name}</Text>
+                  <Text style={{ color: "white", fontSize: 16 }}>{item.name}</Text>
                 </TouchableOpacity>
               )}
             />
             <ActionButton
-              backgroundColor="#4B5563"
+              backgroundColor="#6b7280"
               onPress={() => setIsKitchenModalVisible(false)}
             >
               <ActionText>Fechar</ActionText>

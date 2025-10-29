@@ -11,6 +11,7 @@ import {
 } from "./styles";
 import Label from "@/components/atoms/Label";
 import { Text } from "react-native";
+import CustomSwitch from "@/components/atoms/CustomSwitch";
 interface ExpertModalProps {
   visible: boolean;
   title: string;
@@ -76,7 +77,7 @@ const ExpertModal: React.FC<ExpertModalProps> = ({
             }}
           >
             <Label>{switchLabel}</Label>
-            <Switch value={switchValue} onValueChange={onSwitchChange} />
+            <CustomSwitch value={switchValue} onValueChange={onSwitchChange}/>
           </View>
         )}
 

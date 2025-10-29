@@ -2,10 +2,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { api } from "@/services/api";
 import { IUser } from "./types";
 
-// Chave para AsyncStorage
 const STORAGE_KEY = "u";
 
-// Salva ou remove usuário do AsyncStorage
 export async function setUserAsyncStorage(user: IUser | null) {
   try {
     if (user?.hasAuthenticatedUser) {
@@ -18,7 +16,6 @@ export async function setUserAsyncStorage(user: IUser | null) {
   }
 }
 
-// Recupera usuário do AsyncStorage
 export async function getUserAsyncStorage(): Promise<IUser | null> {
   try {
     const json = await AsyncStorage.getItem(STORAGE_KEY);
@@ -29,11 +26,10 @@ export async function getUserAsyncStorage(): Promise<IUser | null> {
   }
 }
 
-// Requisição de login
 export async function LoginRequest(
   email: string,
   password: string
-): Promise<{ payload: { token: string; role: string, defaultRestaurantId: string, restaurantName: string } } | null> {
+): Promise<{ payload: {id: string; token: string; role: string, defaultRestaurantId: string, restaurantName: string, name: string, email: string; } } | null> {
   try {
     const request = await api.post("signin", { email, password });
     return request.data;
@@ -43,7 +39,6 @@ export async function LoginRequest(
   }
 }
 
-// Valida token do usuário
 export async function ValidateToken(): Promise<{ hasAuthenticatedUser: boolean } | null> {
   try {
     const request = await api.post("validateToken");

@@ -17,6 +17,7 @@ import { Ionicons } from "@expo/vector-icons";
 import * as S from "./styles";
 import Button from "@/components/atoms/Button";
 import { useAppTheme } from "@/context/ThemeProvider/theme";
+import Toast from "react-native-toast-message";
 
 export default function PaymengConfigPage() {
   const { selectedRestaurant } = useRestaurant();
@@ -24,7 +25,7 @@ export default function PaymengConfigPage() {
   const [brand, setBrand] = useState<CardBrand | "">("");
   const [feePercent, setFeePercent] = useState("");
   const [configs, setConfigs] = useState<PaymentConfig[]>([]);
-  const theme = useAppTheme()
+  const theme = useAppTheme();
 
   const loadConfigs = useCallback(async () => {
     try {
@@ -34,24 +35,51 @@ export default function PaymengConfigPage() {
       const data = await getPaymentConfigs(selectedRestaurant.id);
       setConfigs(data);
     } catch (err: any) {
-      Alert.alert("Erro", err.message);
+      Toast.show({
+        type: "error",
+        text1: "Erro",
+        text2: "Erro ao carregar configurações de pagamento.",
+        position: "top",
+        visibilityTime: 3000,
+      });
     }
   }, [selectedRestaurant?.id]);
 
   async function handleAdd() {
     if (!method || !feePercent || !brand) {
-      Alert.alert("Atenção", "Preencha todos os campos!");
+      Toast.show({
+        type: "info",
+        text1: "Erro",
+        text2: "Preencha todos os campos!",
+        position: "top",
+        visibilityTime: 3000,
+      });
+
       return;
     }
 
     if (!selectedRestaurant?.id) {
-      Alert.alert("Erro", "Nenhum restaurante selecionado!");
+      Toast.show({
+        type: "error",
+        text1: "Erro",
+        text2: "Nenhum restaurante selecionado!",
+        position: "top",
+        visibilityTime: 3000,
+      });
+
       return;
     }
 
     const fee = parseFloat(feePercent);
     if (isNaN(fee) || fee < 0) {
-      Alert.alert("Erro", "Taxa deve ser um número válido!");
+      Toast.show({
+        type: "error",
+        text1: "Erro",
+        text2: "Taxa deve ser um número válido!",
+        position: "top",
+        visibilityTime: 3000,
+      });
+
       return;
     }
 
@@ -68,20 +96,39 @@ export default function PaymengConfigPage() {
 
       await loadConfigs();
     } catch (err: any) {
-      Alert.alert("Erro", err.message);
+      Toast.show({
+        type: "error",
+        text1: "Erro",
+        text2: "Erro ao adicionar taxa.",
+        position: "top",
+        visibilityTime: 3000,
+      });
     }
   }
 
   async function handleDelete(item: PaymentConfig) {
     try {
       if (!selectedRestaurant?.id) {
-        Alert.alert("Erro", "Nenhum restaurante selecionado!");
+        Toast.show({
+          type: "error",
+          text1: "Erro",
+          text2: "Nenhum restaurante selecionado!",
+          position: "top",
+          visibilityTime: 3000,
+        });
+
         return;
       }
       await deletePaymentConfig(selectedRestaurant.id, item.method, item.brand);
       await loadConfigs();
     } catch (err: any) {
-      Alert.alert("Erro", err.message);
+      Toast.show({
+        type: "error",
+        text1: "Erro",
+        text2: "Erro ao deletar taxa.",
+        position: "top",
+        visibilityTime: 3000,
+      });
     }
   }
 

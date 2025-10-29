@@ -1,4 +1,5 @@
 import { UserListTemplate } from "@/components/template/UserListTemplate";
+import { useAppTheme } from "@/context/ThemeProvider/theme";
 import { deleteUser, getAll, User } from "@/services/user";
 import { Stack, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -7,6 +8,7 @@ import Toast from "react-native-toast-message";
 const UserListScreen = () => {
   const [users, setUsers] = useState<User[]>([]);
   const router = useRouter();
+  const {theme} = useAppTheme()
 
   const fetchUsers = async () => {
     try {
@@ -44,10 +46,12 @@ const UserListScreen = () => {
 
   return (
     <>
-      <Stack.Screen 
+      <Stack.Screen
         options={{
-          title: "Lista de Usuários",
-        }} 
+          title: "Usuários",
+          headerStyle: { backgroundColor: theme.colors.background },
+          headerTintColor: theme.colors.text.primary,
+        }}
       />
       <UserListTemplate
         users={users}

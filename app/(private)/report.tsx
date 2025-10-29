@@ -6,6 +6,7 @@ import { getReportData, ReportData } from '@/services/report';
 import useRestaurant from '@/hooks/useRestaurant';
 import dayjs from 'dayjs';
 import { Stack } from 'expo-router';
+import { useAppTheme } from '@/context/ThemeProvider/theme';
 
 export default function ReportScreen() {
   const { selectedRestaurant } = useRestaurant();
@@ -14,6 +15,7 @@ export default function ReportScreen() {
   const [showCalendarFor, setShowCalendarFor] = useState<'start' | 'end' | null>(null);
   const [reportData, setReportData] = useState<ReportData[]>([]);
   const [loading, setLoading] = useState(false);
+  const {theme} = useAppTheme();
 
   useEffect(() => {
     if (selectedRestaurant?.id) {
@@ -60,7 +62,8 @@ export default function ReportScreen() {
       <Stack.Screen
         options={{
           title: "Relatório",
-
+          headerStyle: { backgroundColor: theme.colors.background },
+          headerTintColor: theme.colors.text.primary,
         }}
       />
       <Container>
@@ -91,12 +94,12 @@ export default function ReportScreen() {
                 <Calendar
                     onDayPress={handleDateSelect}
                     theme={{
-                    backgroundColor: '#041224',
-                    calendarBackground: '#041224',
+                    backgroundColor: '#0A1A2F',
+                    calendarBackground: '#0A1A2F',
                     textSectionTitleColor: '#ffffff',
                     dayTextColor: '#ffffff',
-                    todayTextColor: '#ffd700',
-                    selectedDayBackgroundColor: '#038082',
+                    todayTextColor: '#E9C46A',
+                    selectedDayBackgroundColor: '#2BAE66',
                     selectedDayTextColor: '#ffffff',
                     monthTextColor: '#ffffff',
                     arrowColor: '#ffffff',
@@ -164,7 +167,7 @@ export default function ReportScreen() {
 
 const Container = styled.View`
   flex: 1;
-  background-color: #041224;
+  background-color: ${({ theme }) => theme.colors.background};
   padding: 16px;
 `;
 
@@ -185,23 +188,23 @@ const DateInput = styled.TouchableOpacity`
   border-color: #2d2d42;
   border-radius: 8px;
   margin: 0 6px;
-  background-color: #1a1a2e;
+  background-color: ${({ theme }) => theme.colors.background};
 `;
 
 const LabelText = styled.Text`
-  color: #ffffff;
+  color: ${({ theme }) => theme.colors.text.primary};
   text-align: center;
 `;
 
 const SearchButton = styled.TouchableOpacity<{ disabled?: boolean }>`
-  background-color: ${(props) => (props.disabled ? '#083c44' : '#038082')};
+  background-color: ${(props) => (props.disabled ? '#2BAE66' : '#2BAE66')};
   padding: 14px;
   border-radius: 8px;
   align-items: center;
 `;
 
 const SearchButtonText = styled.Text`
-  color: #ffffff;
+  color: ${({ theme }) => theme.colors.text.primary};
   font-size: 16px;
   font-weight: bold;
 `;
@@ -214,7 +217,7 @@ const ModalContainer = styled.View`
 `;
 
 const CalendarWrapper = styled.View`
-  background-color: #041224;
+  background-color: ${({ theme }) => theme.colors.background};
   border-radius: 10px;
   padding: 10px;
   elevation: 5;
@@ -231,7 +234,8 @@ const RowHeader = styled.View`
   flex-direction: row;
   padding-vertical: 12px;
   padding-horizontal: 8px;
-  background-color: #0d1b2a;
+  background-color: ${({ theme }) => theme.colors.background};
+
 `;
 
 const Row = styled.View<{ background?: string }>`
@@ -242,38 +246,38 @@ const Row = styled.View<{ background?: string }>`
 `;
 
 const RowFooter = styled(Row)`
-  background-color: #041224;
+  background-color: ${({ theme }) => theme.colors.background};
   border-top-width: 2px;
   border-top-color: #2d2d42;
 `;
 
 const CellHeader = styled.Text`
   flex: 1;
-  color: #ffffff;
+  color: ${({ theme }) => theme.colors.text.primary};
   text-align: center;
   font-weight: bold;
 `;
 
 const Cell = styled.Text`
   flex: 1;
-  color: #ffffff;
+  color: ${({ theme }) => theme.colors.text.primary};
   text-align: center;
   font-size: 14px;
 `;
 
 const RowDivider = styled.View`
   height: 1px;
-  background-color: #2d2d42;
+  background-color: ${({ theme }) => theme.colors.background};
 `;
 
 const LoadingText = styled.Text`
-  color: #ffffff;
+  color: ${({ theme }) => theme.colors.text.primary};
   text-align: center;
   margin-top: 20px;
 `;
 
 const EmptyText = styled.Text`
-  color: #ffffff;
+  color: ${({ theme }) => theme.colors.text.primary};
   text-align: center;
   margin-top: 20px;
   font-size: 16px;

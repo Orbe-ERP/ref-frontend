@@ -11,16 +11,26 @@ interface Props {
 
 const Container = styled.View`
   flex: 1;
-  background-color: #061a35;
+  background-color: ${({ theme }) => theme.colors.background};
   padding: 20px;
 `;
 
+const EmptyMessage = styled.Text`
+  color: ${({ theme }) => theme.colors.text.muted};
+  font-size: 16px;
+  text-align: center;
+  font-style: italic;
+  margin-top: 40px;
+`;
 
 export const UserListTemplate: React.FC<Props> = ({ users, onDelete, onCreateUser }) => (
   <Container>
-    {/* <Title>Lista de Usuários</Title> */}
-    <UserList users={users} onDelete={onDelete} />
-    <Button label="Adicionar Usuário" onPress={onCreateUser}>
-    </Button>
+     {users.length > 0 ? (
+      <UserList users={users} onDelete={onDelete} />
+    ) : (
+      <EmptyMessage>Nenhum usuário encontrado.</EmptyMessage>
+    )}
+    <Button label="Adicionar Usuário" onPress={onCreateUser}/>
+
   </Container>
 );

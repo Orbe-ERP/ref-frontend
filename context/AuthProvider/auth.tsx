@@ -19,7 +19,6 @@ export const AuthProvider = ({ children }: IAuthProvider) => {
   } as IUser);
   const [loading, setLoading] = useState(true);
 
-  // Inicializa usuário do AsyncStorage e valida token
   useEffect(() => {
     const loadUser = async () => {
       setLoading(true);
@@ -58,9 +57,11 @@ export const AuthProvider = ({ children }: IAuthProvider) => {
       const payload: IUser = {
         role: response.payload.role,
         hasAuthenticatedUser: true,
+        name: response.payload.name,
+        email: response.payload.email,
+        id: response.payload.id,
         token: response.payload.token,
         defaultRestaurantId: response.payload.defaultRestaurantId,
-        restaurantName: response.payload.restaurantName,
       };
 
       setUser(payload);

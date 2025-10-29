@@ -17,6 +17,7 @@ import { getCompletedOrdersByDateRange, Order } from "@/services/order";
 import useRestaurant from "@/hooks/useRestaurant";
 import { useAppTheme } from "@/context/ThemeProvider/theme";
 import * as S from "./styles";
+import Toast from "react-native-toast-message";
 
 export default function CompletedOrdersPage() {
   const router = useRouter();
@@ -53,7 +54,14 @@ export default function CompletedOrdersPage() {
           ? err.message
           : "Erro ao carregar comandas fechadas";
       setError(errorMessage);
-      Alert.alert("Erro", errorMessage);
+
+      Toast.show({
+        type: "error",
+        text1: "Erro",
+        text2: "Erro ao carregar comandas fechadas.",
+        position: "top",
+        visibilityTime: 3000,
+      });
     } finally {
       setLoading(false);
       setRefreshing(false);

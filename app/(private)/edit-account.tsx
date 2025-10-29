@@ -3,56 +3,57 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  View,
   ActivityIndicator,
   Alert,
 } from "react-native";
-import { User, UpdateUser, getUserById, updateUser } from "@/services/user";
 import styled from "styled-components/native";
-import AccountForm from "@/components/organisms/AccountForm";
 import { Stack, useRouter } from "expo-router";
+import { UpdateUser, updateUser } from "@/services/user";
+import AccountForm from "@/components/organisms/AccountForm";
+import useAuth from "@/hooks/useAuth";
+import { useAppTheme } from "@/context/ThemeProvider/theme";
+import Toast from "react-native-toast-message";
 
-interface AccountEditScreenProps {
-  userId: string;
-}
-
-export default function AccountEditScreen({ userId }: AccountEditScreenProps) {
-  const [user, setUser] = useState<User | null>(null);
+export default function AccountEditScreen() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
-
+  const { theme } = useAppTheme();
   const navigation = useRouter();
+  const { user, logout } = useAuth();
 
   useEffect(() => {
-    const loadUser = async () => {
-      try {
-        setLoading(true);
-        const userData = await getUserById(userId);
-        setUser(userData);
-        setName(userData.name);
-        setEmail(userData.email);
-      } catch (err) {
-        console.error("Erro ao carregar usuário:", err);
-        Alert.alert("Erro", "Não foi possível carregar os dados do usuário.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadUser();
-  }, [userId]);
+    if (user) {
+      setName(user.name || "");
+      setEmail(user.email || "");
+    }
+  }, [user]);
 
   const handleSave = async () => {
     if (!currentPassword) {
-      Alert.alert("Erro", "Informe sua senha atual para atualizar os dados.");
+        Toast.show({
+        type: "error",
+        text1: "Erro",
+        text2: "Informe sua senha atual para atualizar os dados.",
+        position: "top",
+        visibilityTime: 3000,
+      });
       return;
     }
 
     if (newPassword && newPassword !== confirmPassword) {
-      Alert.alert("Erro", "As senhas não coincidem.");
+
+            Toast.show({
+        type: "error",
+        text1: "Erro",
+        text2: "As senhas não coincidem.",
+        position: "top",
+        visibilityTime: 3000,
+      });
+
       return;
     }
 
@@ -60,7 +61,7 @@ export default function AccountEditScreen({ userId }: AccountEditScreenProps) {
       setLoading(true);
 
       const updateData: UpdateUser = {
-        id: userId,
+        id: user?.id,
         currentPassword,
         ...(name !== user?.name && { name }),
         ...(email !== user?.email && { email }),
@@ -68,18 +69,33 @@ export default function AccountEditScreen({ userId }: AccountEditScreenProps) {
       };
 
       await updateUser(updateData);
-      
-      Alert.alert("Sucesso", "Dados atualizados com sucesso!");
+      Toast.show({
+        type: "success",
+        text1: "Sucesso",
+        text2: "Para a atualização ser efetivada, por favor, faça login novamente.",
+        position: "top",
+        visibilityTime: 2000,
+      });
+
+      logout();
+
       navigation.back();
     } catch (err: any) {
       console.error("Erro ao atualizar usuário:", err);
-      Alert.alert("Erro", err?.message || "Não foi possível atualizar os dados.");
+
+            Toast.show({
+        type: "error",
+        text1: "Erro",
+        text2: "Não foi possível atualizar os dados.",
+        position: "top",
+        visibilityTime: 3000,
+      });
     } finally {
       setLoading(false);
     }
   };
 
-  if (loading && !user) {
+  if (!user) {
     return (
       <LoadingContainer>
         <ActivityIndicator size="large" color="#038082" />
@@ -89,7 +105,13 @@ export default function AccountEditScreen({ userId }: AccountEditScreenProps) {
 
   return (
     <>
-      <Stack.Screen options={{ title: "Editar Conta" }} />
+      <Stack.Screen
+        options={{
+          title: "Gerenciar Conta",
+          headerStyle: { backgroundColor: theme.colors.background },
+          headerTintColor: theme.colors.text.primary,
+        }}
+      />
       <Container>
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -124,11 +146,11 @@ const LoadingContainer = styled.View`
   flex: 1;
   justify-content: center;
   align-items: center;
-  background-color: #041224;
+  background-color: ${({ theme }) => theme.colors.background};
 `;
 
 const Container = styled.View`
   flex: 1;
-  background-color: #041224;
+  background-color: ${({ theme }) => theme.colors.background};
   padding: 20px 15px;
 `;

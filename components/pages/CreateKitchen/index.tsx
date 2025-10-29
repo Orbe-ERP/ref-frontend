@@ -202,7 +202,6 @@ export default function KitchenPage() {
         onColorChange={setSelectedColor}
       />
 
-      {/* Editar */}
       <ExpertModal
         visible={isEditVisible}
         title="Editar Cozinha"

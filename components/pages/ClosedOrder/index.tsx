@@ -39,7 +39,12 @@ export default function ClosedOrdersPage() {
           ? err.message
           : "Erro ao carregar comandas fechadas";
       setError(message);
-      Alert.alert("Erro", message);
+      Toast.show({
+        type: "error",
+        text1: "Erro ao carregar comandas",
+        position: "top",
+        visibilityTime: 3000,
+      });
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -68,7 +73,14 @@ export default function ClosedOrdersPage() {
     setPrinting(true);
     try {
       await printOrder(selectedOrder);
-      Alert.alert("Sucesso", "Comanda enviada para impressão!");
+
+      Toast.show({
+        type: "success",
+        text1: "Sucesso",
+        text2: "Comanda enviada para impressão!",
+        position: "top",
+        visibilityTime: 2000,
+      });
       setShowPrintModal(false);
       setSelectedOrder(null);
     } catch {
@@ -77,8 +89,8 @@ export default function ClosedOrdersPage() {
         text1: "Falha ao imprimir comanda. Tente novamente.",
       });
 
-      Alert.alert("Erro", "Falha ao imprimir comanda. Tente novamente.");
-    } finally {
+
+        } finally {
       setPrinting(false);
     }
   };

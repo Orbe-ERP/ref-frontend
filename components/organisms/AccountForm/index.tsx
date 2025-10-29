@@ -34,6 +34,8 @@ export default function AccountForm({
 }: Props) {
   return (
     <Form>
+        <SectionTitle>Alterar Nome/E-mail</SectionTitle>
+
       <InputGroup
         label="Nome"
         value={name}
@@ -70,7 +72,10 @@ export default function AccountForm({
         />
       </Section>
 
-      <Button label="Salvar Alterações" onPress={onSave}/>
+      <Button
+        label={loading ? "Salvando..." : "Salvar Alterações"}
+        onPress={onSave}
+      />
     </Form>
   );
 }
@@ -81,13 +86,13 @@ const Form = styled.View`
 `;
 
 const Section = styled.View`
-  margin-top: 30px;
+  margin-top: 30px;  
   margin-bottom: 20px;
 `;
 
 const SectionTitle = styled.Text`
-  color: white;
   font-size: 18px;
+  color: ${({ theme }) => theme.colors.text.primary};
   font-weight: bold;
   margin-bottom: 20px;
 `;

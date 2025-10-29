@@ -1,15 +1,15 @@
 export const COLORS = {
   light: {
-    primary: "#2BAE66",      // Verde-esmeralda moderno (principal)
-    secondary: "#264653",    // Grafite azulado (menu, botões escuros)
-    accent: "#E9C46A",       // Dourado suave (realce, ícones de ação)
-    background: "#e9e9e9ff", // Mantido
-    surface: "#FFFFFF",      // Cartões, áreas elevadas
+    primary: "#2BAE66",      
+    secondary: "#264653",    
+    accent: "#E9C46A",     
+    background: "#e9e9e9ff",
+    surface: "#FFFFFF",  
     text: {
-      primary: "#1E1E1E",    // Texto principal
-      secondary: "#4A4A4A",  // Texto secundário
-      accent: "#2BAE66",     // Ícones e links
-      muted: "#7A8A99",      // Texto desabilitado
+      primary: "#1E1E1E",   
+      secondary: "#4A4A4A",  
+      accent: "#2BAE66",  
+      muted: "#7A8A99",    
     },
     border: "#DADADA",
     overlay: "rgba(0,0,0,0.04)",
@@ -20,16 +20,16 @@ export const COLORS = {
   },
 
   dark: {
-    primary: "#2BAE66",      // Verde-água vibrante e equilibrado
-    secondary: "#264653",    // Azul-petróleo profundo
-    accent: "#E9C46A",       // Mesmo dourado — mantém identidade
-    background: "#0A1A2F",   // Mantido
-    surface: "#152A3A",      // Cartões, áreas elevadas
+    primary: "#2BAE66",  
+    secondary: "#264653",  
+    accent: "#E9C46A",      
+    background: "#0A1A2F",   
+    surface: "#152A3A",      
     text: {
-      primary: "#FFFFFF",    // Texto principal
-      secondary: "#B0BEC5",  // Texto secundário
-      accent: "#3DDC97",     // Ícones e detalhes
-      muted: "#7A8A99",      // Texto apagado
+      primary: "#FFFFFF", 
+      secondary: "#B0BEC5", 
+      accent: "#3DDC97",     
+      muted: "#7A8A99",   
     },
     border: "#23394E",
     overlay: "rgba(255,255,255,0.05)",
@@ -40,10 +40,10 @@ export const COLORS = {
   },
 
   feedback: {
-    success: "#2BAE66",  // Mesmo tom do primário — consistência
-    warning: "#E9C46A",  // Amarelo-alaranjado suave
-    error: "#E76F51",    // Vermelho terroso (menos agressivo)
-    info: "#2A9D8F",     // Azul-esverdeado (para status neutro)
+    success: "#2BAE66", 
+    warning: "#E9C46A",
+    error: "#E76F51",
+    info: "#2A9D8F",  
   },
 };
 

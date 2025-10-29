@@ -22,11 +22,11 @@ export interface AddUserOnAccount {
 }
 
 export interface UpdateUser {
-  id: string;
+  id?: string;
   name?: string;
   email?: string;
-  password?: string;
-  currentPassword: string
+  newPassword?: string;
+  currentPassword: string;
 }
 
 export async function createUser(data: CreateUser) {
@@ -50,26 +50,22 @@ export async function getUserById(id: string) {
 }
 
 export async function updateUser(data: UpdateUser) {
-  console.log(data)
   const response = await api.patch<User>("/users/update", data);
   return response.data;
 }
 
 export async function defineFavoriteRestaurant(restaurant: Restaurant) {
-
   try {
+    const response = await api.patch<User>(`users/favorite/${restaurant.id}`);
 
-      const response = await api.patch<User>(`users/favorite/${restaurant.id}`);
-
-  return response.data;
+    return response.data;
   } catch (error: any) {
-        console.error(
+    console.error(
       "Erro ao deletar no service:",
       error.response?.data || error.message
     );
     throw error;
   }
-
 }
 
 export async function deleteUser(id: string) {
