@@ -6,6 +6,11 @@ export const ModalOverlay = styled.View`
   justify-content: center;
   align-items: center;
 `;
+export const Text = styled.Text`
+  flex: 1;
+  font-size: 16px;
+  color: ${({ theme }) => theme.colors.text.primary};
+`;
 
 export const ModalContent = styled.View`
   width: 88%;
@@ -34,14 +39,15 @@ export const SectionLabel = styled.Text`
 `;
 
 export const KitchenSelector = styled.TouchableOpacity`
-  background-color: #1f2937;
+  background-color: ${({ theme }) => theme.colors.secondary};
   padding: 12px;
   border-radius: 8px;
   margin-bottom: 16px;
 `;
 
 export const KitchenText = styled.Text`
-  color: white;
+  color: ${({ theme }) => theme.colors.text.primary};
+  font-weight: bold;
   font-size: 15px;
 `;
 
@@ -58,20 +64,23 @@ export const Actions = styled.View`
 `;
 
 interface ActionButtonProps {
+  
   backgroundColor?: string;
 }
 
 export const ActionButton = styled.TouchableOpacity<ActionButtonProps>`
   flex: 1;
   padding: 12px;
-  background-color: ${({ backgroundColor }) => backgroundColor ?? "#4B5563"};
+  background-color: ${({ theme }) => theme.colors.primary};
   border-radius: 10px;
-  margin: 0 6px;
+  height: 100%;
+  width: 100%;
   align-items: center;
 `;
 
 export const ActionText = styled.Text`
-  color: #fff;
+  color: ${({ theme }) => theme.colors.text.primary};
+
   font-weight: 600;
   font-size: 15px;
 `;

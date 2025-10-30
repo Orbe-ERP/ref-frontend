@@ -9,6 +9,7 @@ import {
 import { defineFavoriteRestaurant } from "@/services/user";
 import { Stack, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
+import Toast from "react-native-toast-message";
 import styled from "styled-components/native";
 
 const Container = styled.View`
@@ -69,7 +70,11 @@ export default function SelectRestaurantScreen() {
       setRestaurants((prev) => prev.filter((r) => r.id !== restaurant));
       router.push("/");
     } catch (error) {
-      console.error(error);
+      Toast.show({
+        type: "error",
+        text1: "Erro ao definir restaurante favorito",
+        text2: `${error}`,
+      });
     }
   };
 

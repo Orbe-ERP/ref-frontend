@@ -1,12 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Modal,
-  TouchableOpacity,
-  FlatList,
-  Text,
-  View,
-  Switch,
-} from "react-native";
+import { Modal, TouchableOpacity, FlatList, View } from "react-native";
 import Input from "@/components/atoms/Input";
 import {
   ModalOverlay,
@@ -18,6 +11,7 @@ import {
   SectionLabel,
   KitchenSelector,
   KitchenText,
+  Text,
   Divider,
 } from "./styles";
 import {
@@ -28,6 +22,8 @@ import {
   ProductInput,
 } from "@/services/product";
 import { Kitchen } from "@/services/kitchen";
+import CustomSwitch from "@/components/atoms/CustomSwitch";
+import Toast from "react-native-toast-message";
 
 interface ProductModalProps {
   visible: boolean;
@@ -86,7 +82,11 @@ const ProductModal: React.FC<ProductModalProps> = ({
       onSaved();
       onClose();
     } catch (err) {
-      console.error("Erro ao salvar produto:", err);
+      Toast.show({
+        type: "error",
+        text1: "Erro ao salvar produto",
+        text2: "Por favor, tente novamente.",
+      });
     }
   }
 
@@ -97,17 +97,29 @@ const ProductModal: React.FC<ProductModalProps> = ({
       onSaved();
       onClose();
     } catch (err) {
-      console.error("Erro ao excluir produto:", err);
-    }
+      Toast.show({
+        type: "error",
+        text1: "Erro ao excluir produto",
+        text2: "Por favor, tente novamente.",
+      });    }
   }
 
   return (
-    <Modal visible={visible} animationType="fade" transparent onRequestClose={onClose}>
+    <Modal
+      visible={visible}
+      animationType="fade"
+      transparent
+      onRequestClose={onClose}
+    >
       <ModalOverlay>
         <ModalContent>
           <ModalTitle>{product ? "Editar Produto" : "Novo Produto"}</ModalTitle>
 
-          <Input placeholder="Nome do produto" value={name} onChangeText={setName} />
+          <Input
+            placeholder="Nome do produto"
+            value={name}
+            onChangeText={setName}
+          />
           <Input
             placeholder="Preço"
             value={price}
@@ -120,20 +132,23 @@ const ProductModal: React.FC<ProductModalProps> = ({
           <SectionLabel>Cozinha</SectionLabel>
           <KitchenSelector onPress={() => setIsKitchenModalVisible(true)}>
             <KitchenText>
-              {kitchens.find((k) => k.id === kitchen)?.name || "Selecionar cozinha"}
+              {kitchens.find((k) => k.id === kitchen)?.name ||
+                "Selecionar cozinha"}
             </KitchenText>
           </KitchenSelector>
 
           <Divider />
 
-          <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 12 }}>
-            <Text style={{ color: "#ccc", fontSize: 16, flex: 1 }}>Ativo</Text>
-            <Switch
-              value={active}
-              onValueChange={setActive}
-              trackColor={{ false: "#374151", true: "#047857" }}
-              thumbColor={active ? "#f9fafb" : "#9ca3af"}
-            />
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              marginBottom: 12,
+            }}
+          >
+            <Text>Ativo</Text>
+
+            <CustomSwitch value={active} onValueChange={setActive} />
           </View>
 
           <Actions>
@@ -152,7 +167,6 @@ const ProductModal: React.FC<ProductModalProps> = ({
         </ModalContent>
       </ModalOverlay>
 
-      {/* Modal de seleção de cozinha */}
       <Modal
         visible={isKitchenModalVisible}
         animationType="fade"
@@ -177,12 +191,13 @@ const ProductModal: React.FC<ProductModalProps> = ({
                     setIsKitchenModalVisible(false);
                   }}
                 >
-                  <Text style={{ color: "white", fontSize: 16 }}>{item.name}</Text>
+                  <Text style={{ color: "white", fontSize: 16 }}>
+                    {item.name}
+                  </Text>
                 </TouchableOpacity>
               )}
             />
             <ActionButton
-              backgroundColor="#6b7280"
               onPress={() => setIsKitchenModalVisible(false)}
             >
               <ActionText>Fechar</ActionText>

@@ -30,7 +30,10 @@ export default function ProductScreen() {
       setProducts(data);
     } catch (error: any) {
       if (error.response?.status === 404) {
-        console.log("Nenhum produto encontrado para essa categoria");
+        Toast.show({
+          type: "info",
+          text1: "Nenhum produto encontrado para essa categoria",
+        });
         setProducts([]);
       } else {
         console.error("Erro ao buscar produtos:", error);

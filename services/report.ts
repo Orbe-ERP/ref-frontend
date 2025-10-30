@@ -65,8 +65,6 @@ export async function getReportData({ restaurantId, initialDate, finalDate }: Ge
     throw new Error("Todos os parâmetros são obrigatórios");
   }
 
-  console.log(initialDate, finalDate)
-
   try {
     const response = await api.get<ReportData>(`/reports/?restaurantId=${restaurantId}&initialDate=${initialDate}&finalDate=${finalDate}`, {
     });

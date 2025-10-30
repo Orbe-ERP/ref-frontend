@@ -87,7 +87,6 @@ export async function updateProduct(productData: UpdateProductInput) {
 
     return response.data;
   } catch (error) {
-    console.log(error);
     throw new Error(`Erro ao atualizar produto: ${error}`);
   }
 }
@@ -101,7 +100,6 @@ export async function updateObservations(productData: UpdateObservationInput) {
 
     return response.data;
   } catch (error) {
-    console.log(error);
     throw new Error(`Erro ao atualizar produto: ${error}`);
   }
 }

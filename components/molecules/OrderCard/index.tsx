@@ -33,6 +33,7 @@ import {
   AlertIconContainer,
   ItemDetailsCentered,
   ConfirmButtonDestructive,
+  Title,
 } from "./styles";
 
 interface Product {
@@ -41,6 +42,7 @@ interface Product {
   quantity: number;
   status: string;
   observations: any[];
+  customObservation?: string;
 }
 
 interface Order {
@@ -52,10 +54,11 @@ interface Order {
 }
 
 interface Props {
-  order: Order;
+  order: Order | any;
   handleProductStatus: (id: string, status: string) => void;
   onUpdateQuantity?: (productId: string, quantity: number) => void;
   confirmDeleteObservation?: (productId: string, observationId: string) => void;
+  confirmDeleteCustomObservation?: (orderProductId: string) => void;
   handleDeleteProduct?: (orderId: string, productId: string) => void;
 }
 
@@ -64,6 +67,7 @@ export default function OrderCard({
   handleProductStatus,
   onUpdateQuantity,
   confirmDeleteObservation,
+  confirmDeleteCustomObservation,
   handleDeleteProduct,
 }: Props) {
   const [modalVisible, setModalVisible] = useState(false);
@@ -131,21 +135,44 @@ export default function OrderCard({
               <ItemDetails>Quantidade: {p.quantity}</ItemDetails>
             </View>
 
-            {p.observations.length > 0 && (
+            {(p.observations.length > 0 || p.customObservation) && (
               <ItemObservations>
-                Observaçoes:
+                <Title>Observações:</Title>
+
                 {p.observations.map((obs) => (
                   <ObservationRow key={obs.id}>
                     <ObservationText>
-                      {obs.observation?.description || obs.description}
+                      • {obs.observation?.description || obs.description}
                     </ObservationText>
+
                     <ObservationDeleteButton
                       onPress={() => confirmDeleteObservation?.(p.id, obs.id)}
                     >
-                      <Ionicons name="trash-outline" size={16} color="#ef4444" />
+                      <Ionicons
+                        name="trash-outline"
+                        size={16}
+                        color="#ef4444"
+                      />
                     </ObservationDeleteButton>
                   </ObservationRow>
                 ))}
+
+                {p.customObservation && (
+                  <ObservationRow>
+                    <ObservationText>• {p.customObservation}</ObservationText>
+                    <ObservationDeleteButton
+                      onPress={() => {
+                        confirmDeleteCustomObservation?.(p.id);
+                      }}
+                    >
+                      <Ionicons
+                        name="trash-outline"
+                        size={16}
+                        color="#ef4444"
+                      />
+                    </ObservationDeleteButton>
+                  </ObservationRow>
+                )}
               </ItemObservations>
             )}
 
@@ -187,7 +214,11 @@ export default function OrderCard({
                   setQuantity((prev) => String(Math.max(1, Number(prev) - 1)))
                 }
               >
-                <Ionicons name="remove-circle-outline" size={28} color="#ef4444" />
+                <Ionicons
+                  name="remove-circle-outline"
+                  size={28}
+                  color="#ef4444"
+                />
               </QtyButton>
 
               <QtyText>{quantity}</QtyText>
@@ -216,36 +247,37 @@ export default function OrderCard({
         </ModalContainer>
       )}
 
-{cancelModalVisible && productToCancel && (
-  <ModalContainer>
-    <ModalContent>
-      <AlertIconContainer>
-        <Ionicons name="alert-circle-outline" size={56} color="#ef4444" />
-      </AlertIconContainer>
+      {cancelModalVisible && productToCancel && (
+        <ModalContainer>
+          <ModalContent>
+            <AlertIconContainer>
+              <Ionicons name="alert-circle-outline" size={56} color="#ef4444" />
+            </AlertIconContainer>
 
-      <ModalTitle>Confirmar cancelamento</ModalTitle>
+            <ModalTitle>Confirmar cancelamento</ModalTitle>
 
-      <ItemDetailsCentered>
-        Deseja realmente cancelar o produto{" "}
-        <ItemName>{productToCancel.product.name}</ItemName>?
-      </ItemDetailsCentered>
+            <ItemDetailsCentered>
+              Deseja realmente cancelar o produto{" "}
+              <ItemName>{productToCancel.product.name}</ItemName>?
+            </ItemDetailsCentered>
 
-      <ModalActions>
-        <CancelButton onPress={() => {
-          setCancelModalVisible(false);
-          setProductToCancel(null);
-        }}>
-          <CancelText>Não</CancelText>
-        </CancelButton>
+            <ModalActions>
+              <CancelButton
+                onPress={() => {
+                  setCancelModalVisible(false);
+                  setProductToCancel(null);
+                }}
+              >
+                <CancelText>Não</CancelText>
+              </CancelButton>
 
-        <ConfirmButtonDestructive onPress={confirmCancel}>
-          <ConfirmText>Sim, cancelar</ConfirmText>
-        </ConfirmButtonDestructive>
-      </ModalActions>
-    </ModalContent>
-  </ModalContainer>
-)}
-
+              <ConfirmButtonDestructive onPress={confirmCancel}>
+                <ConfirmText>Sim, cancelar</ConfirmText>
+              </ConfirmButtonDestructive>
+            </ModalActions>
+          </ModalContent>
+        </ModalContainer>
+      )}
     </Card>
   );
 }

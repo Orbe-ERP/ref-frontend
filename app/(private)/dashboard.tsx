@@ -38,8 +38,6 @@ export default function DashboardScreen() {
 
       const processed = SalesService.getSalesByTimeRange(orders);
 
-      console.log("processed", processed);
-
       setSalesData(processed);
 
       const endDate = new Date();

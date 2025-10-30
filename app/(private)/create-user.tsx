@@ -15,11 +15,10 @@ const CreateUserScreen = () => {
       await addUserOnAccount(values);
       router.navigate("/(tabs)/config");
     } catch (error) {
-      console.error(error);
       Toast.show({
         type: "error",
         text1: "Erro ao criar usuário",
-        text2: "Tente novamente mais tarde.",
+        text2: `${error}`,
       });
     }
   };

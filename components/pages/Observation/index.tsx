@@ -77,7 +77,7 @@ export default function Observation() {
     <>
       <Stack.Screen
         options={{
-          title: "Cozinhas",
+          title: "Observações",
           headerStyle: { backgroundColor: theme.colors.background },
           headerTintColor: theme.colors.text.primary,
         }}

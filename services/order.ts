@@ -41,6 +41,7 @@ export type NewOrder = {
     quantity: number;
     appliedPrice?: number;
     observations?: string[];
+    customObservation?: string;
   }[];
 };
 
@@ -83,6 +84,7 @@ export interface ConcludeSingleOrderInput {
 
 export async function createOrder(order: NewOrder) {
   if (!order) throw new Error("Dados faltantes");
+
   try {
     const response = await api.post("/orders", order);
     return response.data;
@@ -203,15 +205,7 @@ export async function concludeOrders({
   if (!tableId || !restaurantId)
     throw new Error("TableId e RestaurantId são obrigatórios");
 
-  console.log(
-    tableId,
-    restaurantId,
-    paymentMethod,
-    paymentConfigId,
-    sumIndividually,
-    additional,
-    ordersArray
-  );
+
 
   try {
     const response = await api.put(`/orders/restaurant/conclude-orders`, {
@@ -223,8 +217,6 @@ export async function concludeOrders({
       additional,
       ordersArray,
     });
-
-    console.log(response.data);
 
     return response.data;
   } catch (error) {

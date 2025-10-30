@@ -91,7 +91,6 @@ export async function patchKitchen(i: PatchKitchen) {
     const response = await api.patch<PatchKitchen>(`/kitchen`, i);
     return response.data;
   } catch (error) {
-    console.log(error);
     throw new Error(`Erro ao editar cozinha: ${error}`);
   }
 }

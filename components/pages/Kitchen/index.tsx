@@ -11,6 +11,7 @@ import io from "socket.io-client";
 import * as S from "./styles";
 import {
   deleteProductFromOrder,
+  updateCustomObservation,
   updateQuantityOnProduct,
   updateStatusOnProduct,
 } from "@/services/order-product";
@@ -24,7 +25,8 @@ export default function KitchenPage() {
   const [selectedKitchenId, setSelectedKitchenId] = useState<string>("null");
   const { selectedRestaurant } = useRestaurant();
 
-  const theme = useAppTheme()
+  const SOCKET_URL = process.env.SOCKET_URL
+  const theme = useAppTheme();
 
   const DEFAULT_KITCHEN_COLOR = "#A0AEC0";
 
@@ -64,7 +66,7 @@ export default function KitchenPage() {
   };
 
   useEffect(() => {
-    const socket = io("http://192.168.1.7:3001");
+    const socket = io("http://localhost:3001");
 
     const fetchOrders = async () => {
       if (!selectedRestaurant) return;
@@ -182,6 +184,38 @@ export default function KitchenPage() {
     }
   };
 
+  const handleDeleteObservationCustomObs = async (
+    orderId: string,
+    productId: string
+  ) => {
+    try {
+      await updateCustomObservation(productId);
+
+      setOrders((prevOrders) =>
+        prevOrders.map((order) =>
+          order.id === orderId
+            ? {
+                ...order,
+                products: order.products.map((p) =>
+                  p.id === productId ? { ...p, customObservation: null } : p
+                ),
+              }
+            : order
+        )
+      );
+
+      Toast.show({
+        type: "success",
+        text1: "Observação livre removida com sucesso",
+      });
+    } catch {
+      Toast.show({
+        type: "error",
+        text1: "Erro ao remover observação livre",
+      });
+    }
+  };
+
   const handleDeleteObservation = async (
     orderId: string,
     productId: string,
@@ -199,9 +233,9 @@ export default function KitchenPage() {
                   p.id === productId
                     ? {
                         ...p,
-                        observations: p.observations.filter(
-                          (obs) => obs.id !== obsId
-                        ),
+                        observations:
+                          p.observations?.filter((obs) => obs.id !== obsId) ??
+                          [],
                       }
                     : p
                 ),
@@ -279,7 +313,6 @@ export default function KitchenPage() {
 
                 return (
                   <View key={kitchenId} style={{ marginBottom: 16 }}>
-
                     <OrderCard
                       order={{ ...order, products }}
                       handleProductStatus={handleProductStatus}
@@ -289,6 +322,9 @@ export default function KitchenPage() {
                       confirmDeleteObservation={(productId, obsId) =>
                         handleDeleteObservation(order.id, productId, obsId)
                       }
+                      confirmDeleteCustomObservation={(productId: string) => {
+                        handleDeleteObservationCustomObs(order.id, productId);
+                      }}
                       handleDeleteProduct={(
                         orderId: string,
                         productId: string

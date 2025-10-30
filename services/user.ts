@@ -71,11 +71,7 @@ export async function defineFavoriteRestaurant(restaurant: Restaurant) {
 export async function deleteUser(id: string) {
   try {
     const response = await api.delete(`/users/${id}`);
-    console.log(
-      "Usuário deletado com sucesso:",
-      response.status,
-      response.data
-    );
+
     return response.data;
   } catch (error: any) {
     console.error(

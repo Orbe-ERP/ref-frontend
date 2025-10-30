@@ -2,7 +2,7 @@ import styled from "styled-components/native";
 
 export const ScreenContainer = styled.View`
   flex: 1;
-  background-color: #041224;
+  background-color: ${({ theme }) => theme.colors.background};
   padding: 24px;
 `;
 
@@ -21,7 +21,7 @@ export const AddButtonWrapper = styled.View`
 `;
 
 export const ObservationItem = styled.View`
-  background-color: #1e293b;
+  background-color: ${({ theme }) => theme.colors.surface};
   border-radius: 10px;
   padding: 12px;
   margin-bottom: 10px;
@@ -31,13 +31,14 @@ export const ObservationItem = styled.View`
 `;
 
 export const ObservationText = styled.Text`
-  color: #f8fafc;
+  color: ${({ theme }) => theme.colors.text.primary};
   font-size: 16px;
+  font-weight: bold;
 `;
 
 export const ListEmptyText = styled.Text`
   text-align: center;
-  color: #94a3b8;
+  color: ${({ theme }) => theme.colors.text.secondary};
   margin-top: 20px;
   font-size: 14px;
 `;

@@ -33,12 +33,21 @@ export async function updateQuantityOnProduct(data: UpdateOrderProductQuantity) 
   }
 }
 
+export async function updateCustomObservation(productId: string) {
+
+  try {
+    const response = await api.patch(`/order-product/custom/${productId}`);
+    return response.data;
+  } catch (error: any) {
+    console.error("Erro ao atualizar observação do produto:", error?.response?.data || error.message);
+    throw error;
+  }
+}
+
 export async function deleteProductFromOrder(productId: string) {
 
   try {
     const response = await api.delete(`/order-product/${productId}`);
-
-    console.log(response)
 
     return response.data;
   } catch (error: any) {

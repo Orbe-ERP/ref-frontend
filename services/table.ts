@@ -75,7 +75,6 @@ export async function patchTable(i: PatchTable) {
     const response = await api.patch<PatchTable>(`/tables`, i);
     return response.data;
   } catch (error) {
-    console.log(error);
     throw new Error(`Erro ao editar mesa: ${error}`);
   }
 }

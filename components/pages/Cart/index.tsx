@@ -1,7 +1,7 @@
 import Button from "@/components/atoms/Button";
 import CustomSwitch from "@/components/atoms/CustomSwitch";
 import { useAppTheme } from "@/context/ThemeProvider/theme";
-import { createOrder } from "@/services/order";
+import { createOrder, NewOrder } from "@/services/order";
 import { getObservationsByProduct } from "@/services/product";
 import { Ionicons } from "@expo/vector-icons";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
@@ -103,7 +103,7 @@ export default function CartPage() {
       return;
     }
 
-    const newOrder = {
+    const newOrder: NewOrder = {
       tableId,
       toTake,
       responsible: responsible || "Genérico",
@@ -112,7 +112,7 @@ export default function CartPage() {
         quantity: product.quantity,
         appliedPrice: product.appliedPrice ?? null,
         observations: product.observations || [],
-        customDescription: product.customObservation,
+        customObservation: product.customDescription || "",
       })),
     };
     try {
