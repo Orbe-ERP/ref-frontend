@@ -15,7 +15,7 @@ import styled from "styled-components/native";
 const COLORS = {
   primary: "#2BAE66",
   secondary: "#264653",
-  background: "#0A1A2F",
+  background: "#041224",
   text: "#FFFFFF",
   error: "#E76F51",
   border: "#23394E",

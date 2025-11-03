@@ -12,6 +12,7 @@ import { SalesService } from "@/services/salesService";
 import { SalesTimeRange } from "@/services/types";
 import { TopProductsChart } from "@/components/organisms/TopProductsChart";
 import useRestaurant from "@/hooks/useRestaurant";
+import { useAppTheme } from "@/context/ThemeProvider/theme";
 
 export default function DashboardScreen() {
   const { selectedRestaurant } = useRestaurant();
@@ -20,6 +21,8 @@ export default function DashboardScreen() {
   const [totalProducts, setTotalProducts] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const theme = useAppTheme();
 
   const loadSalesData = async () => {
     try {
@@ -74,7 +77,8 @@ export default function DashboardScreen() {
       <Stack.Screen
         options={{
           title: "Dashboard",
-
+          headerStyle: { backgroundColor: theme.theme.colors.background },
+          headerTintColor: theme.theme.colors.text.primary,
         }}
       />
 

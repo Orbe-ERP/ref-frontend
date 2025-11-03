@@ -75,7 +75,7 @@ export default function CategoryPage() {
     <ScreenContainer>
       <Stack.Screen
         options={{
-          title: "Cozinhas",
+          title: "Categorias",
           headerStyle: { backgroundColor: theme.colors.background },
           headerTintColor: theme.colors.text.primary,
         }}

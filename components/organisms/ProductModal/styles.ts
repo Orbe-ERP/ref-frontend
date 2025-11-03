@@ -76,6 +76,7 @@ export const ActionButton = styled.TouchableOpacity<ActionButtonProps>`
   height: 100%;
   width: 100%;
   align-items: center;
+  margin-right: 10px;
 `;
 
 export const ActionText = styled.Text`

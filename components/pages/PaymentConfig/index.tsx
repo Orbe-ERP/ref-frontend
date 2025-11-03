@@ -146,8 +146,6 @@ export default function PaymengConfigPage() {
         }}
       />
       <S.Container>
-        <S.Subtitle>Cadastre e gerencie as taxas dos cartões</S.Subtitle>
-
         <S.Label>Tipo de Cartão</S.Label>
         <S.PickerContainer>
           <S.StyledPicker
