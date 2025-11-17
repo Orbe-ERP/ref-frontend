@@ -185,3 +185,37 @@ export const ButtonText = styled.Text`
   color: ${({ theme }) => theme.colors.surface};
   font-weight: 500;
 `;
+
+
+export const PaginationContainer = styled.View`
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  margin-top: 12px;
+  padding: 10px 0;
+  background-color: ${({ theme }) => theme.colors.surface};
+  border-radius: 12px;
+  elevation: 2;
+`;
+
+export const PageButton = styled.TouchableOpacity<{ disabled?: boolean }>`
+  padding: 10px 14px;
+  border-radius: 10px;
+  margin: 0 10px;
+  background-color: ${({ theme, disabled }) =>
+    disabled ? theme.colors.disabled : theme.colors.primary};
+  opacity: ${({ disabled }) => (disabled ? 0.5 : 1)};
+`;
+
+export const PageButtonText = styled.Text<{ disabled?: boolean }>`
+  color: ${({ theme }) => theme.colors.surface};
+  font-size: 14px;
+  font-weight: bold;
+  opacity: ${({ disabled }) => (disabled ? 0.6 : 1)};
+`;
+
+export const PageIndicator = styled.Text`
+  font-size: 14px;
+  font-weight: bold;
+  color: ${({ theme }) => theme.colors.text.primary};
+`;

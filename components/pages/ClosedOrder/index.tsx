@@ -1,10 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  FlatList,
-  ActivityIndicator,
-  RefreshControl,
-  Alert,
-} from "react-native";
+import { FlatList, ActivityIndicator, RefreshControl } from "react-native";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { getCompletedOrdersByTable, Order } from "@/services/order";
@@ -18,26 +13,36 @@ export default function ClosedOrdersPage() {
   const { theme } = useAppTheme();
 
   const [orders, setOrders] = useState<Order[]>([]);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [showPrintModal, setShowPrintModal] = useState(false);
   const [printing, setPrinting] = useState(false);
 
-  const loadCompletedOrders = async () => {
+  const loadOrders = async (page = 1) => {
     try {
       if (!tableId || typeof tableId !== "string")
         throw new Error("ID da mesa não encontrado");
 
       setError(null);
-      const completedOrders = await getCompletedOrdersByTable(tableId);
-      setOrders(completedOrders);
+      setLoading(true);
+
+      const response = await getCompletedOrdersByTable(tableId, page);
+      console.log(response);
+
+      setOrders(response.data);
+      setPage(response.page);
+      setTotalPages(response.totalPages);
     } catch (err) {
       const message =
         err instanceof Error
           ? err.message
           : "Erro ao carregar comandas fechadas";
+
       setError(message);
       Toast.show({
         type: "error",
@@ -52,12 +57,12 @@ export default function ClosedOrdersPage() {
   };
 
   useEffect(() => {
-    if (tableId) loadCompletedOrders();
+    if (tableId) loadOrders(1);
   }, [tableId]);
 
   const onRefresh = () => {
     setRefreshing(true);
-    loadCompletedOrders();
+    loadOrders(1);
   };
 
   const handlePrintOrder = (order: Order) => {
@@ -88,9 +93,7 @@ export default function ClosedOrdersPage() {
         type: "error",
         text1: "Falha ao imprimir comanda. Tente novamente.",
       });
-
-
-        } finally {
+    } finally {
       setPrinting(false);
     }
   };
@@ -234,6 +237,25 @@ export default function ClosedOrdersPage() {
           orders.length === 0 ? { flex: 1 } : { paddingBottom: 20 }
         }
       />
+
+      <S.PaginationContainer>
+        <S.PageButton disabled={page <= 1} onPress={() => loadOrders(page - 1)}>
+          <S.PageButtonText disabled={page <= 1}>Anterior</S.PageButtonText>
+        </S.PageButton>
+
+        <S.PageIndicator>
+          Página {page} de {totalPages}
+        </S.PageIndicator>
+
+        <S.PageButton
+          disabled={page >= totalPages}
+          onPress={() => loadOrders(page + 1)}
+        >
+          <S.PageButtonText disabled={page >= totalPages}>
+            Próxima
+          </S.PageButtonText>
+        </S.PageButton>
+      </S.PaginationContainer>
 
       {showPrintModal && selectedOrder && (
         <S.ModalOverlay>

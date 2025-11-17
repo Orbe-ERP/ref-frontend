@@ -3,17 +3,21 @@ import {
   View,
   Text,
   FlatList,
-  Alert,
   ActivityIndicator,
   RefreshControl,
   Modal,
   Button,
+  TouchableOpacity,
 } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { Calendar } from "react-native-calendars";
 import dayjs from "dayjs";
-import { getCompletedOrdersByDateRange, Order } from "@/services/order";
+import {
+  getCompletedOrdersByDateRange,
+  Order,
+  PaginatedResponse,
+} from "@/services/order";
 import useRestaurant from "@/hooks/useRestaurant";
 import { useAppTheme } from "@/context/ThemeProvider/theme";
 import * as S from "./styles";
@@ -23,44 +27,50 @@ export default function CompletedOrdersPage() {
   const router = useRouter();
   const { selectedRestaurant } = useRestaurant();
   const { theme } = useAppTheme();
+
   const [orders, setOrders] = useState<Order[]>([]);
+  const [pagination, setPagination] = useState<PaginatedResponse<Order> | null>(null);
+
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  const [startDate, setStartDate] = useState<string | null>(null);
-  const [endDate, setEndDate] = useState<string | null>(null);
-  const [showCalendarFor, setShowCalendarFor] = useState<
-    "start" | "end" | null
-  >(null);
+  const [startDate, setStartDate] = useState<string>(
+    dayjs().subtract(30, "day").format("YYYY-MM-DD")
+  );
+  const [endDate, setEndDate] = useState<string>(
+    dayjs().format("YYYY-MM-DD")
+  );
 
-  const loadOrders = async (initial?: string, end?: string) => {
+  const [showCalendarFor, setShowCalendarFor] = useState<"start" | "end" | null>(null);
+
+  const loadOrders = async (
+    page: number = 1,
+    sd: string = startDate,
+    ed: string = endDate
+  ) => {
     try {
       if (!selectedRestaurant?.id) return;
 
       setLoading(true);
-      setError(null);
 
-      const completedOrders = await getCompletedOrdersByDateRange(
+      const response = await getCompletedOrdersByDateRange(
         selectedRestaurant.id,
-        initial || dayjs().startOf("month").format("YYYY-MM-DD"),
-        end || dayjs().endOf("month").format("YYYY-MM-DD")
+        page,
+        20,
+        sd,
+        ed,
       );
 
-      setOrders(completedOrders);
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error
-          ? err.message
-          : "Erro ao carregar comandas fechadas";
-      setError(errorMessage);
+      console.log(response);
 
+      setOrders(response.data);
+      setPagination(response);
+    } catch (err) {
       Toast.show({
         type: "error",
         text1: "Erro",
-        text2: "Erro ao carregar comandas fechadas.",
+        text2: "Falha ao carregar comandas.",
         position: "top",
-        visibilityTime: 3000,
       });
     } finally {
       setLoading(false);
@@ -70,17 +80,17 @@ export default function CompletedOrdersPage() {
 
   useEffect(() => {
     if (selectedRestaurant?.id) {
-      loadOrders();
+      loadOrders(1);
     }
   }, [selectedRestaurant]);
 
   const onRefresh = () => {
     setRefreshing(true);
-    loadOrders(startDate || undefined, endDate || undefined);
+    loadOrders(1);
   };
 
   const handleSearch = () => {
-    loadOrders(startDate || undefined, endDate || undefined);
+    loadOrders(1, startDate, endDate);
   };
 
   const handleDateSelect = (day: { dateString: string }) => {
@@ -91,6 +101,7 @@ export default function CompletedOrdersPage() {
     }
     setShowCalendarFor(null);
   };
+
 
   const formatCurrency = (value: number): string =>
     new Intl.NumberFormat("pt-BR", {
@@ -116,21 +127,6 @@ export default function CompletedOrdersPage() {
       0
     ) + (order.additional || 0);
 
-  const renderProductItem = ({ item }: { item: Order["products"][0] }) => {
-    const price = item.appliedPrice || item.product.price;
-    const total = price * item.quantity;
-
-    return (
-      <S.ProductItem>
-        <View style={{ flexDirection: "row" }}>
-          <S.ProductName>{item.product.name}</S.ProductName>
-          <S.ProductQuantity>(x{item.quantity})</S.ProductQuantity>
-        </View>
-        <S.ProductPrice>{formatCurrency(total)}</S.ProductPrice>
-      </S.ProductItem>
-    );
-  };
-
   const renderOrderItem = ({ item }: { item: Order }) => {
     const orderTotal = calculateOrderTotal(item);
 
@@ -145,10 +141,9 @@ export default function CompletedOrdersPage() {
 
         <S.OrderInfo>
           <S.OrderText>Mesa: {item.table.name}</S.OrderText>
-          <S.OrderText>
-            Responsável: {item.responsible || "Não informado"}
-          </S.OrderText>
+          <S.OrderText>Responsável: {item.responsible || "Não informado"}</S.OrderText>
           <S.OrderText>Pagamento: {item.paymentMethod}</S.OrderText>
+
           {item.additional && item.additional > 0 && (
             <S.OrderText>
               Taxa adicional: {formatCurrency(item.additional)}
@@ -156,12 +151,20 @@ export default function CompletedOrdersPage() {
           )}
         </S.OrderInfo>
 
-        <FlatList
-          data={item.products}
-          renderItem={renderProductItem}
-          keyExtractor={(p) => p.id}
-          scrollEnabled={false}
-        />
+        {item.products.map((p) => {
+          const price = p.appliedPrice || p.product.price;
+          const total = price * p.quantity;
+
+          return (
+            <S.ProductItem key={p.id}>
+              <View style={{ flexDirection: "row" }}>
+                <S.ProductName>{p.product.name}</S.ProductName>
+                <S.ProductQuantity>(x{p.quantity})</S.ProductQuantity>
+              </View>
+              <S.ProductPrice>{formatCurrency(total)}</S.ProductPrice>
+            </S.ProductItem>
+          );
+        })}
 
         <S.TotalContainer>
           <S.TotalLabel>Total:</S.TotalLabel>
@@ -186,17 +189,13 @@ export default function CompletedOrdersPage() {
           <S.DateRow>
             <S.DateInput onPress={() => setShowCalendarFor("start")}>
               <S.LabelText>
-                De:{" "}
-                {startDate
-                  ? dayjs(startDate).format("DD/MM/YYYY")
-                  : "--/--/----"}
+                De: {dayjs(startDate).format("DD/MM/YYYY")}
               </S.LabelText>
             </S.DateInput>
 
             <S.DateInput onPress={() => setShowCalendarFor("end")}>
               <S.LabelText>
-                Até:{" "}
-                {endDate ? dayjs(endDate).format("DD/MM/YYYY") : "--/--/----"}
+                Até: {dayjs(endDate).format("DD/MM/YYYY")}
               </S.LabelText>
             </S.DateInput>
           </S.DateRow>
@@ -213,13 +212,27 @@ export default function CompletedOrdersPage() {
             <S.CalendarWrapper>
               <Calendar
                 onDayPress={handleDateSelect}
+                markingType="period"
+                markedDates={{
+                  [startDate]: {
+                    startingDay: true,
+                    selected: true,
+                    color: "#2BAE66",
+                    textColor: "white",
+                  },
+                  [endDate]: {
+                    endingDay: true,
+                    selected: true,
+                    color: "#2BAE66",
+                    textColor: "white",
+                  },
+                }}
                 theme={{
                   backgroundColor: "#041224",
                   calendarBackground: "#041224",
                   textSectionTitleColor: "#ffffff",
                   dayTextColor: "#ffffff",
                   todayTextColor: "#ffd700",
-                  selectedDayBackgroundColor: "#2BAE66",
                   selectedDayTextColor: "#ffffff",
                   monthTextColor: "#ffffff",
                   arrowColor: "#ffffff",
@@ -241,11 +254,7 @@ export default function CompletedOrdersPage() {
             renderItem={renderOrderItem}
             keyExtractor={(item) => item.id}
             refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={onRefresh}
-                colors={["#2BAE66"]}
-              />
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
             }
             ListEmptyComponent={
               <S.EmptyState>
@@ -255,8 +264,32 @@ export default function CompletedOrdersPage() {
                 </S.EmptyText>
               </S.EmptyState>
             }
-            contentContainerStyle={
-              orders.length === 0 ? { flex: 1 } : { paddingBottom: 20 }
+            ListFooterComponent={
+              pagination && pagination.totalPages > 1 ? (
+                <S.PaginationContainer>
+                  <TouchableOpacity
+                    disabled={pagination.page <= 1}
+                    onPress={() => loadOrders(pagination.page - 1)}
+                  >
+                    <S.PageButton disabled={pagination.page <= 1}>
+                      <S.PageButtonText>← Anterior</S.PageButtonText>
+                    </S.PageButton>
+                  </TouchableOpacity>
+
+                  <S.PageNumber>
+                    Página {pagination.page} de {pagination.totalPages}
+                  </S.PageNumber>
+
+                  <TouchableOpacity
+                    disabled={pagination.page >= pagination.totalPages}
+                    onPress={() => loadOrders(pagination.page + 1)}
+                  >
+                    <S.PageButton disabled={pagination.page >= pagination.totalPages}>
+                      <S.PageButtonText>Próxima →</S.PageButtonText>
+                    </S.PageButton>
+                  </TouchableOpacity>
+                </S.PaginationContainer>
+              ) : null
             }
           />
         )}

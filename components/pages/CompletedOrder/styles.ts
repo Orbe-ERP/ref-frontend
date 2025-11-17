@@ -163,3 +163,27 @@ export const LoadingContainer = styled.View`
   justify-content: center;
   align-items: center;
 `;
+
+export const PaginationContainer = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 10px;
+`;
+
+export const PageButton = styled.View<{ disabled?: boolean }>`
+  padding: 10px 15px;
+  border-radius: 6px;
+  background-color: ${({ disabled }) => (disabled ? "#555" : "#2BAE66")};
+`;
+
+export const PageButtonText = styled.Text`
+  color: white;
+  font-weight: bold;
+`;
+
+export const PageNumber = styled.Text`
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+`;

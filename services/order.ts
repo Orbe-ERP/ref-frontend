@@ -15,6 +15,14 @@ export interface OrderProduct {
   };
 }
 
+export interface PaginatedResponse<T> {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+  data: T[];
+}
+
 export interface Order {
   id: string;
   identifier: string;
@@ -81,6 +89,43 @@ export interface ConcludeSingleOrderInput {
   paymentMethod: "CASH" | "PIX" | "CREDIT_CARD" | "DEBIT_CARD" | "OTHER";
   paymentConfigId?: string | null;
 }
+
+
+export async function getCompletedOrdersByTable(
+  tableId: string,
+  page = 1,
+  limit = 20,
+  startDate?: string,
+  endDate?: string
+) {
+  if (!tableId) throw new Error("Table Id not defined");
+
+  console.log("Fetching completed orders for table:", tableId, {
+    page,
+    limit,
+    startDate,
+    endDate,
+  });
+
+  try {
+    const response = await api.get(`/orders/table/completed/${tableId}`, {
+      params: {
+        page,
+        limit,
+        startDate,
+        endDate,
+      },
+    });
+
+    console.log("Received response:", response.data);
+
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw new Error(`Error fetching completed orders: ${error}`);
+  }
+}
+
 
 export async function createOrder(order: NewOrder) {
   if (!order) throw new Error("Dados faltantes");
@@ -149,18 +194,6 @@ export async function addProductToOrder(productData: AddProductInput) {
   }
 }
 
-export async function getCompletedOrdersByTable(tableId: string) {
-  if (!tableId) throw new Error("Table Id not defined");
-  try {
-    const response = await api.get(`/orders/completed`, {
-      params: { tableId },
-    });
-    return response.data;
-  } catch (error) {
-    console.error(error);
-    throw new Error(`Error fetching completed orders: ${error}`);
-  }
-}
 
 export async function updateStatus(orderData: UpdateOrderStatus) {
   try {
@@ -270,11 +303,27 @@ export async function getOrderSummaryByIdentifier(
 
 export async function getCompletedOrdersByDateRange(
   restaurantId: string,
-  initialDate: string,
-  endDate: string
-) {
-  const response = await api.get(`/orders/completed`, {
-    params: { restaurantId, initialDate, endDate },
-  });
-  return response.data;
+  page = 1,
+  limit = 20,
+  startDate?: string,
+  endDate?: string
+): Promise<PaginatedResponse<Order>> {
+  if (!restaurantId) throw new Error("Restaurant Id not defined");
+
+  try {
+    const response = await api.get(`/orders/completed`, {
+      params: {
+        restaurantId,
+        page,
+        limit,
+        startDate,
+        endDate,
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw new Error(`Error fetching completed orders by date range: ${error}`);
+  }
 }
