@@ -82,7 +82,7 @@ export async function updateProduct(productData: UpdateProductInput) {
       price: productData.price,
       active: productData.active,
       restaurantId: productData.restaurantId,
-      kitchen: productData.kitchen,
+      kitchenId: productData.kitchen,
     });
 
     return response.data;

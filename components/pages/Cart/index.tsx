@@ -106,7 +106,7 @@ export default function CartPage() {
     const newOrder: NewOrder = {
       tableId,
       toTake,
-      responsible: responsible || "Genérico",
+      responsible: responsible || "Não informado",
       products: products.map((product: any) => ({
         productId: product.productId,
         quantity: product.quantity,

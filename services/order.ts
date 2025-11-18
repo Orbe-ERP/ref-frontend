@@ -94,7 +94,7 @@ export interface ConcludeSingleOrderInput {
 export async function getCompletedOrdersByTable(
   tableId: string,
   page = 1,
-  limit = 20,
+  limit = 10,
   startDate?: string,
   endDate?: string
 ) {
@@ -304,7 +304,7 @@ export async function getOrderSummaryByIdentifier(
 export async function getCompletedOrdersByDateRange(
   restaurantId: string,
   page = 1,
-  limit = 20,
+  limit = 10,
   startDate?: string,
   endDate?: string
 ): Promise<PaginatedResponse<Order>> {
