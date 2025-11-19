@@ -186,27 +186,6 @@ export const ButtonText = styled.Text`
   font-weight: 500;
 `;
 
-
-export const PaginationContainer = styled.View`
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  margin-top: 12px;
-  padding: 10px 0;
-  background-color: ${({ theme }) => theme.colors.surface};
-  border-radius: 12px;
-  elevation: 2;
-`;
-
-export const PageButton = styled.TouchableOpacity<{ disabled?: boolean }>`
-  padding: 10px 14px;
-  border-radius: 10px;
-  margin: 0 10px;
-  background-color: ${({ theme, disabled }) =>
-    disabled ? theme.colors.disabled : theme.colors.primary};
-  opacity: ${({ disabled }) => (disabled ? 0.5 : 1)};
-`;
-
 export const PageButtonText = styled.Text<{ disabled?: boolean }>`
   color: ${({ theme }) => theme.colors.surface};
   font-size: 14px;
@@ -218,4 +197,53 @@ export const PageIndicator = styled.Text`
   font-size: 14px;
   font-weight: bold;
   color: ${({ theme }) => theme.colors.text.primary};
+`;
+
+// Adicione estas styled components ao seu arquivo de estilos existente
+
+export const FilterContainer = styled.View`
+  margin-bottom: 20px;
+`;
+
+export const DateRow = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  margin-bottom: 12px;
+`;
+
+export const DateInput = styled.TouchableOpacity`
+  flex: 1;
+  padding: 12px;
+  border-width: 1px;
+  border-color: ${({ theme }) => theme.colors.border};
+  border-radius: 8px;
+  margin: 0 6px;
+  background-color: ${({ theme }) => theme.colors.surface};
+`;
+
+export const LabelText = styled.Text`
+  color: ${({ theme }) => theme.colors.text.primary};
+  text-align: center;
+`;
+
+export const SearchButton = styled.TouchableOpacity<{ disabled?: boolean }>`
+  background-color: ${({ theme, disabled }) => 
+    disabled ? theme.colors.text.secondary : theme.colors.primary};
+  padding: 14px;
+  border-radius: 8px;
+  align-items: center;
+`;
+
+export const SearchButtonText = styled.Text`
+  color: ${({ theme }) => theme.colors.surface};
+  font-size: 16px;
+  font-weight: bold;
+`;
+
+export const CalendarWrapper = styled.View`
+  background-color: ${({ theme }) => theme.colors.surface};
+  border-radius: 10px;
+  padding: 10px;
+  elevation: 5;
+  margin: 20px;
 `;

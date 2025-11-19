@@ -1,11 +1,20 @@
-import React, { useState, useEffect } from "react";
-import { FlatList, ActivityIndicator, RefreshControl } from "react-native";
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
-import { getCompletedOrdersByTable, Order } from "@/services/order";
+import { Pagination } from "@/components/organisms/Pagination";
 import { useAppTheme } from "@/context/ThemeProvider/theme";
-import * as S from "./styles";
+import { getCompletedOrdersByTable, Order } from "@/services/order";
+import { Ionicons } from "@expo/vector-icons";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import React, { useEffect, useState } from "react";
+import { 
+  ActivityIndicator, 
+  FlatList, 
+  RefreshControl, 
+  Modal, 
+  Button 
+} from "react-native";
 import Toast from "react-native-toast-message";
+import * as S from "./styles";
+import { Calendar } from "react-native-calendars";
+import dayjs from "dayjs";
 
 export default function ClosedOrdersPage() {
   const { tableId } = useLocalSearchParams();
@@ -19,11 +28,15 @@ export default function ClosedOrdersPage() {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const [startDate, setStartDate] = useState<string>(dayjs().subtract(30, "day").format("YYYY-MM-DD"));
+  const [endDate, setEndDate] = useState<string>(dayjs().format("YYYY-MM-DD"));
+  const [showCalendarFor, setShowCalendarFor] = useState<"start" | "end" | null>(null);
+
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [showPrintModal, setShowPrintModal] = useState(false);
   const [printing, setPrinting] = useState(false);
 
-  const loadOrders = async (page = 1) => {
+  const loadOrders = async (pageNum = 1, sd: string = startDate, ed: string = endDate) => {
     try {
       if (!tableId || typeof tableId !== "string")
         throw new Error("ID da mesa não encontrado");
@@ -31,7 +44,7 @@ export default function ClosedOrdersPage() {
       setError(null);
       setLoading(true);
 
-      const response = await getCompletedOrdersByTable(tableId, page);
+      const response = await getCompletedOrdersByTable(tableId, pageNum, sd, ed);
       console.log(response);
 
       setOrders(response.data);
@@ -63,6 +76,19 @@ export default function ClosedOrdersPage() {
   const onRefresh = () => {
     setRefreshing(true);
     loadOrders(1);
+  };
+
+  const handleSearch = () => {
+    loadOrders(1, startDate, endDate);
+  };
+
+  const handleDateSelect = (day: { dateString: string }) => {
+    if (showCalendarFor === "start") {
+      setStartDate(day.dateString);
+    } else if (showCalendarFor === "end") {
+      setEndDate(day.dateString);
+    }
+    setShowCalendarFor(null);
   };
 
   const handlePrintOrder = (order: Order) => {
@@ -190,7 +216,7 @@ export default function ClosedOrdersPage() {
     );
   };
 
-  if (loading) {
+  if (loading && orders.length === 0) {
     return (
       <S.LoadingContainer>
         <ActivityIndicator size="large" color={theme.colors.primary} />
@@ -207,6 +233,70 @@ export default function ClosedOrdersPage() {
           headerTintColor: theme.colors.text.primary,
         }}
       />
+
+      {/* Filtro de Data */}
+      <S.FilterContainer>
+        <S.DateRow>
+          <S.DateInput onPress={() => setShowCalendarFor("start")}>
+            <S.LabelText>
+              De: {dayjs(startDate).format("DD/MM/YYYY")}
+            </S.LabelText>
+          </S.DateInput>
+
+          <S.DateInput onPress={() => setShowCalendarFor("end")}>
+            <S.LabelText>
+              Até: {dayjs(endDate).format("DD/MM/YYYY")}
+            </S.LabelText>
+          </S.DateInput>
+        </S.DateRow>
+
+        <S.SearchButton onPress={handleSearch} disabled={loading}>
+          <S.SearchButtonText>
+            {loading ? "Carregando..." : "Buscar"}
+          </S.SearchButtonText>
+        </S.SearchButton>
+      </S.FilterContainer>
+
+      {/* Modal do Calendário */}
+      <Modal visible={!!showCalendarFor} transparent animationType="fade">
+        <S.ModalOverlay>
+          <S.CalendarWrapper>
+            <Calendar
+              onDayPress={handleDateSelect}
+              markingType="period"
+              markedDates={{
+                [startDate]: {
+                  startingDay: true,
+                  selected: true,
+                  color: theme.colors.primary,
+                  textColor: "white",
+                },
+                [endDate]: {
+                  endingDay: true,
+                  selected: true,
+                  color: theme.colors.primary,
+                  textColor: "white",
+                },
+              }}
+              theme={{
+                backgroundColor: theme.colors.background,
+                calendarBackground: theme.colors.background,
+                textSectionTitleColor: theme.colors.text.primary,
+                dayTextColor: theme.colors.text.primary,
+                todayTextColor: theme.colors.primary,
+                selectedDayTextColor: "white",
+                monthTextColor: theme.colors.text.primary,
+                arrowColor: theme.colors.text.primary,
+              }}
+            />
+            <Button 
+              title="Fechar" 
+              onPress={() => setShowCalendarFor(null)} 
+              color={theme.colors.primary}
+            />
+          </S.CalendarWrapper>
+        </S.ModalOverlay>
+      </Modal>
 
       <FlatList
         data={orders}
@@ -229,7 +319,7 @@ export default function ClosedOrdersPage() {
               color={theme.colors.text.secondary}
             />
             <S.EmptyText>
-              Nenhuma comanda fechada encontrada{"\n"}para esta mesa.
+              {loading ? "Carregando..." : "Nenhuma comanda fechada encontrada\npara esta mesa no período selecionado."}
             </S.EmptyText>
           </S.EmptyState>
         }
@@ -238,24 +328,13 @@ export default function ClosedOrdersPage() {
         }
       />
 
-      <S.PaginationContainer>
-        <S.PageButton disabled={page <= 1} onPress={() => loadOrders(page - 1)}>
-          <S.PageButtonText disabled={page <= 1}>Anterior</S.PageButtonText>
-        </S.PageButton>
-
-        <S.PageIndicator>
-          Página {page} de {totalPages}
-        </S.PageIndicator>
-
-        <S.PageButton
-          disabled={page >= totalPages}
-          onPress={() => loadOrders(page + 1)}
-        >
-          <S.PageButtonText disabled={page >= totalPages}>
-            Próxima
-          </S.PageButtonText>
-        </S.PageButton>
-      </S.PaginationContainer>
+      <Pagination
+        page={page}
+        totalPages={totalPages}
+        onPrev={() => loadOrders(page - 1, startDate, endDate)}
+        onNext={() => loadOrders(page + 1, startDate, endDate)}
+        isLoading={loading}
+      />
 
       {showPrintModal && selectedOrder && (
         <S.ModalOverlay>

@@ -22,6 +22,7 @@ import useRestaurant from "@/hooks/useRestaurant";
 import { useAppTheme } from "@/context/ThemeProvider/theme";
 import * as S from "./styles";
 import Toast from "react-native-toast-message";
+import { Pagination } from "@/components/organisms/Pagination";
 
 export default function CompletedOrdersPage() {
   const router = useRouter();
@@ -132,6 +133,19 @@ export default function CompletedOrdersPage() {
 
     return (
       <S.OrderCard>
+        <TouchableOpacity
+          onPress={() => router.push({
+            pathname: "/print-order",
+            params: { identifier: item.identifier }
+          })}
+          style={{position: "absolute", top: 10, right: 10, zIndex: 10, }}
+        >
+          <Ionicons
+            name="print-outline"
+            size={24}
+            color={theme.colors.primary}
+          />
+        </TouchableOpacity>
         <S.OrderHeader>
           <S.OrderInfoContainer>
             <S.OrderId>Comanda #{item.id.slice(-6)}</S.OrderId>
@@ -264,33 +278,15 @@ export default function CompletedOrdersPage() {
                 </S.EmptyText>
               </S.EmptyState>
             }
-            ListFooterComponent={
-              pagination && pagination.totalPages > 1 ? (
-                <S.PaginationContainer>
-                  <TouchableOpacity
-                    disabled={pagination.page <= 1}
-                    onPress={() => loadOrders(pagination.page - 1)}
-                  >
-                    <S.PageButton disabled={pagination.page <= 1}>
-                      <S.PageButtonText>← Anterior</S.PageButtonText>
-                    </S.PageButton>
-                  </TouchableOpacity>
-
-                  <S.PageNumber>
-                    Página {pagination.page} de {pagination.totalPages}
-                  </S.PageNumber>
-
-                  <TouchableOpacity
-                    disabled={pagination.page >= pagination.totalPages}
-                    onPress={() => loadOrders(pagination.page + 1)}
-                  >
-                    <S.PageButton disabled={pagination.page >= pagination.totalPages}>
-                      <S.PageButtonText>Próxima →</S.PageButtonText>
-                    </S.PageButton>
-                  </TouchableOpacity>
-                </S.PaginationContainer>
-              ) : null
-            }
+            {...pagination && pagination.totalPages > 1 && (
+              <Pagination
+                page={pagination.page}
+                totalPages={pagination.totalPages}
+                onPrev={() => loadOrders(pagination.page - 1)}
+                onNext={() => loadOrders(pagination.page + 1)}
+                isLoading={loading || refreshing}
+              />
+            )}
           />
         )}
       </S.Container>
