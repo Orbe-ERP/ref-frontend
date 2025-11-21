@@ -23,6 +23,7 @@ import { useAppTheme } from "@/context/ThemeProvider/theme";
 import * as S from "./styles";
 import Toast from "react-native-toast-message";
 import { Pagination } from "@/components/organisms/Pagination";
+import { Loader } from "@/components/atoms/Loader";
 
 export default function CompletedOrdersPage() {
   const router = useRouter();
@@ -216,7 +217,7 @@ export default function CompletedOrdersPage() {
 
           <S.SearchButton onPress={handleSearch} disabled={loading}>
             <S.SearchButtonText>
-              {loading ? "Carregando..." : "Buscar"}
+              {"Buscar"}
             </S.SearchButtonText>
           </S.SearchButton>
         </S.FilterContainer>
@@ -257,38 +258,46 @@ export default function CompletedOrdersPage() {
           </S.ModalContainer>
         </Modal>
 
-        {loading ? (
-          <S.LoadingContainer>
-            <ActivityIndicator size="large" color="#2BAE66" />
-            <Text style={{ color: "white" }}>Carregando comandas...</Text>
-          </S.LoadingContainer>
-        ) : (
-          <FlatList
-            data={orders}
-            renderItem={renderOrderItem}
-            keyExtractor={(item) => item.id}
-            refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-            }
-            ListEmptyComponent={
-              <S.EmptyState>
-                <Ionicons name="receipt-outline" size={48} color="#666" />
-                <S.EmptyText>
-                  Nenhuma comanda encontrada no período.
-                </S.EmptyText>
-              </S.EmptyState>
-            }
-            {...pagination && pagination.totalPages > 1 && (
-              <Pagination
-                page={pagination.page}
-                totalPages={pagination.totalPages}
-                onPrev={() => loadOrders(pagination.page - 1)}
-                onNext={() => loadOrders(pagination.page + 1)}
-                isLoading={loading || refreshing}
+        <FlatList
+          data={orders}
+          renderItem={renderOrderItem}
+          keyExtractor={(item) => item.id}
+          refreshControl={
+            <RefreshControl 
+              refreshing={refreshing} 
+              onRefresh={onRefresh} 
+              colors={[theme.colors.primary]}
+              tintColor={theme.colors.primary}
+            />
+          }
+          ListEmptyComponent={
+            <S.EmptyState>
+              <Ionicons 
+                name="receipt-outline" 
+                size={48} 
+                color={theme.colors.text.secondary}
               />
-            )}
+              <S.EmptyText>
+                {loading ? "Carregando..." : "Nenhuma comanda encontrada no período."}
+              </S.EmptyText>
+            </S.EmptyState>
+          }
+          contentContainerStyle={
+            orders.length === 0 ? { flex: 1 } : { paddingBottom: 20 }
+          }
+        />
+        
+        {pagination && pagination.totalPages > 1 && (
+          <Pagination
+            page={pagination.page}
+            totalPages={pagination.totalPages}
+            onPrev={() => loadOrders(pagination.page - 1)}
+            onNext={() => loadOrders(pagination.page + 1)}
+            isLoading={loading || refreshing}
           />
         )}
+        
+        {loading && <Loader size="large" />}
       </S.Container>
     </>
   );

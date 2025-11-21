@@ -1,15 +1,27 @@
-import React from "react";
-import { ActivityIndicator, View } from "react-native";
+import React from 'react';
+import { ActivityIndicator } from 'react-native';
+import { useAppTheme } from '@/context/ThemeProvider/theme';
+import * as S from './styles';
 
 interface LoaderProps {
-  size?: "small" | "large";
-  color?: string;
+  size?: 'small' | 'large';
 }
 
-export default function Loader({ size = "large", color = "#029269" }: LoaderProps) {
+export function Loader({ size = 'large' }: LoaderProps) {
+  const { theme } = useAppTheme();
+  const color = theme.colors.primary;
+
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <ActivityIndicator size={size} color={color} />
-    </View>
+    <S.LoadingOverlay>
+      <S.LoaderBox>
+        <ActivityIndicator 
+          size={size} 
+          color={color} 
+        />
+        <S.LoaderText>
+          Carregando...
+        </S.LoaderText>
+      </S.LoaderBox>
+    </S.LoadingOverlay>
   );
 }

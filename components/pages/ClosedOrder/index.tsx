@@ -15,6 +15,7 @@ import Toast from "react-native-toast-message";
 import * as S from "./styles";
 import { Calendar } from "react-native-calendars";
 import dayjs from "dayjs";
+import { Loader } from "@/components/atoms/Loader";
 
 export default function ClosedOrdersPage() {
   const { tableId } = useLocalSearchParams();
@@ -218,9 +219,7 @@ export default function ClosedOrdersPage() {
 
   if (loading && orders.length === 0) {
     return (
-      <S.LoadingContainer>
-        <ActivityIndicator size="large" color={theme.colors.primary} />
-      </S.LoadingContainer>
+      <Loader size="large" />
     );
   }
 
@@ -252,7 +251,7 @@ export default function ClosedOrdersPage() {
 
         <S.SearchButton onPress={handleSearch} disabled={loading}>
           <S.SearchButtonText>
-            {loading ? "Carregando..." : "Buscar"}
+            {"Buscar"}
           </S.SearchButtonText>
         </S.SearchButton>
       </S.FilterContainer>
@@ -336,6 +335,10 @@ export default function ClosedOrdersPage() {
         isLoading={loading}
       />
 
+      {loading && orders.length > 0 && (
+        <Loader size="small" /> 
+      )}
+
       {showPrintModal && selectedOrder && (
         <S.ModalOverlay>
           <S.PrintModal>
@@ -363,7 +366,6 @@ export default function ClosedOrdersPage() {
                 {printing ? (
                   <ActivityIndicator
                     size="small"
-                    color={theme.colors.surface}
                   />
                 ) : (
                   <S.ButtonText>Imprimir</S.ButtonText>

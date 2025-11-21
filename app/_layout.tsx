@@ -5,10 +5,10 @@ import useAuth from "@/hooks/useAuth";
 import { Stack, usePathname, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React from "react";
-import { ActivityIndicator, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
+import { Loader } from "@/components/atoms/Loader";
 
 function AuthGuard({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -17,11 +17,7 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
   const isPrivateRoute = pathname.includes("(private)");
 
   if (loading) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
+    return <Loader size="large" />;
   }
 
   if (isPrivateRoute && !user?.hasAuthenticatedUser) {
