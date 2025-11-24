@@ -13,6 +13,8 @@ export default function TabLayout() {
   const { user } = useAuth();
   const { theme } = useAppTheme();
 
+  const isAdmin = user?.role === "ADMIN";
+
   return (
     <Tabs
       screenOptions={{
@@ -60,16 +62,27 @@ export default function TabLayout() {
           ),
         }}
       />
-      {user?.role === "ADMIN" && (
-        <Tabs.Screen
-          name="config"
-          options={{
-            title: "Opções",
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="settings" size={size} color={color} />
-            ),
-          }}
-        />
+      {isAdmin && (
+        <>
+          <Tabs.Screen
+            name="dashboard"
+            options={{
+              title: "Dashboard",
+              tabBarIcon: ({ color, size }) => (
+                <Ionicons name="stats-chart" size={size} color={color} />
+              ),
+            }}
+          />
+          <Tabs.Screen
+            name="config"
+            options={{
+              title: "Opções",
+              tabBarIcon: ({ color, size }) => (
+                <Ionicons name="settings" size={size} color={color} />
+              ),
+            }}
+          />
+        </>
       )}
     </Tabs>
   );

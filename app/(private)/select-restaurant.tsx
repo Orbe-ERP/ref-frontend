@@ -1,6 +1,7 @@
 import { RestaurantList } from "@/components/organisms/RestaurantList";
 import { useAppTheme } from "@/context/ThemeProvider/theme";
 import useRestaurant from "@/hooks/useRestaurant";
+import { usePermissions } from "@/hooks/usePermissions";
 import {
   deleteRestaurant,
   getRestaurants,
@@ -30,6 +31,7 @@ const Subtitle = styled.Text`
 export default function SelectRestaurantScreen() {
   const [restaurants, setRestaurants] = useState<any[]>([]);
   const { selectRestaurant, selectedRestaurant } = useRestaurant();
+  const { isAdmin } = usePermissions();
   const router = useRouter();
   const { theme } = useAppTheme(); 
 
@@ -59,8 +61,18 @@ export default function SelectRestaurantScreen() {
     try {
       deleteRestaurant(restaurantId);
       setRestaurants((prev) => prev.filter((r) => r.id !== restaurantId));
+      Toast.show({
+        type: "success",
+        text1: "Sucesso",
+        text2: "Restaurante excluído com sucesso",
+      });
     } catch (error) {
       console.error(error);
+      Toast.show({
+        type: "error",
+        text1: "Erro",
+        text2: "Não foi possível excluir o restaurante",
+      });
     }
   };
 
@@ -69,6 +81,11 @@ export default function SelectRestaurantScreen() {
       defineFavoriteRestaurant(restaurant);
       setRestaurants((prev) => prev.filter((r) => r.id !== restaurant));
       router.push("/");
+      Toast.show({
+        type: "success",
+        text1: "Sucesso",
+        text2: "Restaurante definido como favorito.",
+      });
     } catch (error) {
       Toast.show({
         type: "error",
@@ -97,10 +114,11 @@ export default function SelectRestaurantScreen() {
           restaurants={restaurants}
           selectedRestaurant={selectedRestaurant}
           onSelectRestaurant={handleSelectRestaurant}
-          onEditRestaurant={handleEditRestaurant}
-          onFavoriteRestaurant={handleFavoriteRestaurant}
-          onDeleteRestaurant={handleDeleteRestaurant}
-          onCreateRestaurant={handleCreateRestaurant}
+          onEditRestaurant={isAdmin ? handleEditRestaurant : undefined}
+          onFavoriteRestaurant={isAdmin ? handleFavoriteRestaurant : undefined}
+          onDeleteRestaurant={isAdmin ? handleDeleteRestaurant : undefined}
+          onCreateRestaurant={isAdmin ? handleCreateRestaurant : undefined}
+          showActions={isAdmin}
         />
       </Container>
     </>

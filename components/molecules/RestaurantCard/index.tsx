@@ -7,9 +7,10 @@ interface Props {
   restaurant: any;
   isSelected?: boolean;
   onSelect: (restaurant: any) => void;
-  onEdit: (restaurant: any) => void;
-  onFavorite: (restaurant: any) => void;
-  onDelete: (restaurantId: string) => void;
+  onEdit?: (restaurant: any) => void;
+  onFavorite?: (restaurant: any) => void;
+  onDelete?: (restaurantId: string) => void;
+  showActions?: boolean;
 }
 
 export const RestaurantCard: React.FC<Props> = ({
@@ -19,6 +20,7 @@ export const RestaurantCard: React.FC<Props> = ({
   onFavorite,
   onEdit,
   onDelete,
+  showActions = true,
 }) => {
   const starIconName = restaurant.defaultRestaurant ? "star" : "star-outline";
   const starColor = restaurant.defaultRestaurant ? "#FFD700" : "#FFFFFF";
@@ -31,17 +33,25 @@ export const RestaurantCard: React.FC<Props> = ({
         )}
       </Content>
 
-      <IconsContainer>
-        <IconButton onPress={() => onFavorite(restaurant)}>
-          <AppIcon name={starIconName} size={22} color={starColor} />
-        </IconButton>
-        <IconButton onPress={() => onEdit(restaurant)}>
-          <AppIcon name="create-outline" size={22} color="#FFFFFF" />
-        </IconButton>
-        <IconButton onPress={() => onDelete(restaurant.id)}>
-          <AppIcon name="trash-outline" size={22} color="#FFFFFF" />
-        </IconButton>
-      </IconsContainer>
+      {showActions && (
+        <IconsContainer>
+          {onFavorite && (
+            <IconButton onPress={() => onFavorite(restaurant)}>
+              <AppIcon name={starIconName} size={22} color={starColor} />
+            </IconButton>
+          )}
+          {onEdit && (
+            <IconButton onPress={() => onEdit(restaurant)}>
+              <AppIcon name="create-outline" size={22} color="#FFFFFF" />
+            </IconButton>
+          )}
+          {onDelete && (
+            <IconButton onPress={() => onDelete(restaurant.id)}>
+              <AppIcon name="trash-outline" size={22} color="#FFFFFF" />
+            </IconButton>
+          )}
+        </IconsContainer>
+      )}
     </Container>
   );
 };

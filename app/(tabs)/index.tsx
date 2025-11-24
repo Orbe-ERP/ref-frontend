@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { ScrollView, TouchableOpacity } from "react-native";
+import { ScrollView } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import useRestaurant from "@/hooks/useRestaurant";
 import { HorizontalBarChart } from "@/components/organisms/TopProductsChart/components/HorizontalBarChart";
+import { usePermissions } from "@/hooks/usePermissions";
 import { SalesService } from "@/services/salesService";
 import { getOrdersByRestaurant } from "@/services/order";
 import { ProductSales } from "@/services/types";
@@ -136,6 +137,12 @@ export default function IndexScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { selectedRestaurant } = useRestaurant();
+  const { 
+    canAccessDashboard, 
+    canAccessReports, 
+    canAccessKitchen,
+    canViewAdvancedCharts 
+  } = usePermissions();
   const router = useRouter();
   const { theme } = useAppTheme();
 
@@ -186,53 +193,57 @@ export default function IndexScreen() {
           <LogoutButton/>
         </LogoutContainer>
 
-        <ChartSection>
-          <SectionHeader>
-            <SectionTitle>📊 Pratos Mais Vendidos Hoje</SectionTitle>
-            <ActionsRow>
-              {selectedRestaurant && (
-                <SalesCount>
-                  {salesData.length}{" "}
-                  {salesData.length === 1 ? "produto" : "produtos"}{" "}
-                  {salesData.length === 1 ? "tipo" : "diferentes"} vendidos
-                </SalesCount>
-              )}
-              <RefreshButton onPress={refreshData} disabled={loading}>
-                <Ionicons
-                  name="refresh"
-                  size={20}
-                  color={theme.colors.accent}
-                />
-              </RefreshButton>
-            </ActionsRow>
-          </SectionHeader>
-
-          {!selectedRestaurant ? (
-            <EmptyState>
-              <EmptyText>
-                Selecione um restaurante para ver as vendas
-              </EmptyText>
-              <Button
-                label="🍴 Selecionar Restaurante"
-                onPress={() => router.push("/(private)/select-restaurant")}
-              />
-            </EmptyState>
-          ) : loading ? (
-            <EmptyText>Carregando vendas...</EmptyText>
-          ) : error ? (
-            <EmptyText>{error}</EmptyText>
-          ) : (
-            <>
-              <HorizontalBarChart data={salesData} />
+        {canViewAdvancedCharts && (
+          <ChartSection>
+            <SectionHeader>
+              <SectionTitle>📊 Pratos Mais Vendidos Hoje</SectionTitle>
               <ActionsRow>
-                <Button
-                  label="📊 Dashboard Completo"
-                  onPress={() => router.push("/(private)/dashboard")}
-                />
+                {selectedRestaurant && (
+                  <SalesCount>
+                    {salesData.length}{" "}
+                    {salesData.length === 1 ? "produto" : "produtos"} diferentes vendidos
+                  </SalesCount>
+                )}
+                <RefreshButton onPress={refreshData} disabled={loading}>
+                  <Ionicons
+                    name="refresh"
+                    size={20}
+                    color={theme.colors.accent}
+                  />
+                </RefreshButton>
               </ActionsRow>
-            </>
-          )}
-        </ChartSection>
+            </SectionHeader>
+
+            {!selectedRestaurant ? (
+              <EmptyState>
+                <EmptyText>
+                  Selecione um restaurante para ver as vendas
+                </EmptyText>
+                <Button
+                  label="🍴 Selecionar Restaurante"
+                  onPress={() => router.push("/(private)/select-restaurant")}
+                />
+              </EmptyState>
+            ) : loading ? (
+              <EmptyText>Carregando vendas...</EmptyText>
+            ) : error ? (
+              <EmptyText>{error}</EmptyText>
+            ) : (
+              <>
+                <HorizontalBarChart data={salesData} />
+                
+                {canAccessDashboard && (
+                  <ActionsRow>
+                    <Button
+                      label="📊 Dashboard Completo"
+                      onPress={() => router.push("/(private)/dashboard")}
+                    />
+                  </ActionsRow>
+                )}
+              </>
+            )}
+          </ChartSection>
+        )}
 
         <MenuSection>
           <MenuColumn>
@@ -240,18 +251,22 @@ export default function IndexScreen() {
               label="🍴 Selecionar Restaurante"
               onPress={() => router.push("/(private)/select-restaurant")}
             />
-            <Button
-              label="👨‍🍳 Cozinha"
-              onPress={() => router.push("/(private)/kitchen")}
-            />
-            <Button
-              label="📈 Relatórios"
-              onPress={() => router.push("/(private)/report")}
-            />
+            {canAccessKitchen && (
+              <Button
+                label="👨‍🍳 Cozinha"
+                onPress={() => router.push("/(private)/kitchen")}
+              />
+            )}
+            {canAccessReports && (
+              <Button
+                label="📈 Relatórios"
+                onPress={() => router.push("/(private)/report")}
+              />
+            )}
           </MenuColumn>
         </MenuSection>
 
-        {selectedRestaurant && (
+        {canViewAdvancedCharts && selectedRestaurant && (
           <StatusSection>
             <StatusItem>
               <StatusLabel>Vendas Hoje</StatusLabel>

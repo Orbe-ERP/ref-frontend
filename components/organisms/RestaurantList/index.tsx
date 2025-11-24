@@ -10,10 +10,11 @@ interface Props {
   restaurants: any[];
   selectedRestaurant?: any;
   onSelectRestaurant: (restaurant: any) => void;
-  onEditRestaurant: (restaurant: any) => void;
-  onDeleteRestaurant: (restaurantId: string) => void;
-  onFavoriteRestaurant: (restaurant: Restaurant) => void;
-  onCreateRestaurant: () => void;
+  onEditRestaurant?: (restaurant: any) => void;
+  onDeleteRestaurant?: (restaurantId: string) => void;
+  onFavoriteRestaurant?: (restaurant: Restaurant) => void;
+  onCreateRestaurant?: () => void;
+  showActions?: boolean;
 }
 
 export const RestaurantList: React.FC<Props> = ({
@@ -24,6 +25,7 @@ export const RestaurantList: React.FC<Props> = ({
   onDeleteRestaurant,
   onCreateRestaurant,
   onFavoriteRestaurant,
+  showActions = true,
 }) => {
   const renderItem: ListRenderItem<any> = ({ item }) => (
     <RestaurantCard
@@ -33,6 +35,7 @@ export const RestaurantList: React.FC<Props> = ({
       onFavorite={onFavoriteRestaurant}
       onEdit={onEditRestaurant}
       onDelete={onDeleteRestaurant}
+      showActions={showActions}
     />
   );
 
@@ -47,10 +50,12 @@ export const RestaurantList: React.FC<Props> = ({
         numColumns={2}
         columnWrapperStyle={{ justifyContent: "space-between" }}
         ListFooterComponent={
-          <AddButton onPress={onCreateRestaurant}>
-            <AppIcon name="add" size={30} color={theme.theme.colors.primary} />
-            <AddButtonText>Criar Restaurante</AddButtonText>
-          </AddButton>
+          onCreateRestaurant && showActions ? (
+            <AddButton onPress={onCreateRestaurant}>
+              <AppIcon name="add" size={30} color={theme.theme.colors.primary} />
+              <AddButtonText>Criar Restaurante</AddButtonText>
+            </AddButton>
+          ) : null
         }
       />
     </Container>
