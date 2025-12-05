@@ -74,7 +74,7 @@ export interface UpdatePaymentMethod {
 
 export interface ConcludeOrderInput {
   tableId: string;
-  ordersArray: Array<string>;
+  ordersArray: string[];
   restaurantId: string;
   sumIndividually?: boolean;
   additional?: number;
@@ -90,6 +90,33 @@ export interface ConcludeSingleOrderInput {
   paymentConfigId?: string | null;
 }
 
+export interface ReportDataProduct {
+  id: string;
+  productId: string;
+  productName: string;
+  quantity: number;
+  price: number;
+}
+
+export interface ReportData {
+  id: string;
+  identifier: string;
+  restaurantId: string;
+  totalValue: number;
+  additional: number;
+  paymentMethod: string;
+  paymentConfigId?: string | null;
+
+  operator?: string | null;
+  responsibles?: string[];
+  tableId?: string | null;
+  tableName?: string | null;
+
+  products: ReportDataProduct[];
+
+  createdAt: string;
+  updatedAt: string;
+}
 
 export async function getCompletedOrdersByTable(
   tableId: string,
@@ -307,7 +334,7 @@ export async function getCompletedOrdersByDateRange(
   limit = 10,
   startDate?: string,
   endDate?: string
-): Promise<PaginatedResponse<Order>> {
+): Promise<PaginatedResponse<ReportData>> {
   if (!restaurantId) throw new Error("Restaurant Id not defined");
 
   try {

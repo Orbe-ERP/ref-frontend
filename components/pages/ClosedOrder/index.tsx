@@ -45,7 +45,7 @@ export default function ClosedOrdersPage() {
       setError(null);
       setLoading(true);
 
-      const response = await getCompletedOrdersByTable(tableId, pageNum, sd, ed);
+      const response = await getCompletedOrdersByTable(tableId, pageNum, 10, sd, ed);
       console.log(response);
 
       setOrders(response.data);
