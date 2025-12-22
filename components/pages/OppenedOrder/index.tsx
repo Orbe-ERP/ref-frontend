@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { ScrollView, TextInput, Dimensions, Alert, Modal } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
@@ -20,12 +20,14 @@ export default function OppenedOrderPage() {
   const router = useRouter();
   const { selectedRestaurant } = useRestaurant();
   const [orders, setOrders] = useState<Order[]>([]);
+  const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
   const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [additional, setAdditional] = useState<number>(10);
   const [paymentConfigs, setPaymentConfigs] = useState<PaymentConfig[]>([]);
+  const [searchText, setSearchText] = useState(""); // Estado para o filtro
   const screenWidth = Dimensions.get("window").width;
   const theme = useAppTheme();
 
@@ -33,6 +35,7 @@ export default function OppenedOrderPage() {
     try {
       const data = await getOrders(tableId as string);
       setOrders(data);
+      setFilteredOrders(data); // Inicializa com todas as comandas
     } catch {
       setError("Erro ao carregar os pedidos");
     } finally {
@@ -43,6 +46,18 @@ export default function OppenedOrderPage() {
   useEffect(() => {
     if (tableId) fetchOrders();
   }, [tableId]);
+
+  // Filtra as comandas quando o texto de busca muda
+  useEffect(() => {
+    if (searchText.trim() === "") {
+      setFilteredOrders(orders);
+    } else {
+      const filtered = orders.filter(order =>
+        order.responsible.toLowerCase().includes(searchText.toLowerCase())
+      );
+      setFilteredOrders(filtered);
+    }
+  }, [searchText, orders]);
 
   useEffect(() => {
     async function loadConfigs() {
@@ -60,6 +75,18 @@ export default function OppenedOrderPage() {
         ? prev.filter((id) => id !== orderId)
         : [...prev, orderId]
     );
+  };
+
+  // Seleciona todas as comandas visíveis (filtradas)
+  const toggleSelectAllVisible = () => {
+    if (selectedOrders.length === filteredOrders.length) {
+      // Se todas já estão selecionadas, deseleciona todas
+      setSelectedOrders([]);
+    } else {
+      // Seleciona todas as comandas visíveis
+      const allVisibleIds = filteredOrders.map(order => order.id);
+      setSelectedOrders(allVisibleIds);
+    }
   };
 
   const handlePaymentMethodSelect = (orderId: string, method: string) => {
@@ -95,7 +122,6 @@ export default function OppenedOrderPage() {
         position: "top",
         visibilityTime: 3000,
       });
-
       return;
     }
 
@@ -193,6 +219,36 @@ export default function OppenedOrderPage() {
       />
 
       <TopBar ordersCount={orders.length} />
+      
+      {/* Filtro de pesquisa */}
+      <S.SearchContainer>
+        <Ionicons name="search" size={20} color="#666" style={{ marginRight: 8 }} />
+        <S.SearchInput
+          placeholder="Filtrar por nome do responsável"
+          value={searchText}
+          onChangeText={setSearchText}
+          placeholderTextColor="#999"
+        />
+      </S.SearchContainer>
+
+      {/* Checkbox "Selecionar todas" - aparece apenas quando há resultados */}
+      {filteredOrders.length > 0 && (
+        <S.SelectAllContainer>
+          <Checkbox
+            status={
+              selectedOrders.length === filteredOrders.length && filteredOrders.length > 0
+                ? "checked"
+                : "unchecked"
+            }
+            onPress={toggleSelectAllVisible}
+            color="#16a34a"
+          />
+          <S.SelectAllText>
+            Selecionar todas ({filteredOrders.length} comandas)
+          </S.SelectAllText>
+        </S.SelectAllContainer>
+      )}
+
       {loading && <S.LoadingText>Carregando pedidos...</S.LoadingText>}
       {error && <S.ErrorText>{error}</S.ErrorText>}
       {!loading && !error && orders.length === 0 && (
@@ -201,8 +257,15 @@ export default function OppenedOrderPage() {
         </S.NoOrdersText>
       )}
 
+      {/* Mensagem quando não há resultados na pesquisa */}
+      {!loading && !error && orders.length > 0 && filteredOrders.length === 0 && (
+        <S.NoOrdersText>
+          Nenhuma comanda encontrada para &quot;{searchText}&quot;.
+        </S.NoOrdersText>
+      )}
+
       <ScrollView style={{ width: "100%" }}>
-        {orders.map((order) => {
+        {filteredOrders.map((order) => {
           const total = order.products.reduce(
             (sum, item) =>
               sum +

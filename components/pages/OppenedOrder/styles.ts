@@ -230,3 +230,49 @@ export const TaxText = styled.Text<{ selected?: boolean }>`
   color: ${({ selected, theme }) =>
     selected ? theme.colors.surface : theme.colors.text.secondary};
 `;
+
+// Adicione esses estilos ao seu arquivo styles.ts
+export const SearchContainer = styled.View`
+  flex-direction: row;
+  align-items: center;
+  background-color: ${({ theme }) => theme.colors.surface};
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin: 12px 0;
+  width: 100%;
+  shadow-color: #000;
+  shadow-opacity: 0.1;
+  shadow-radius: 4px;
+  shadow-offset: 0px 2px;
+  elevation: 2;
+`;
+
+export const SearchInput = styled.TextInput`
+  flex: 1;
+  color: ${({ theme }) => theme.colors.text.primary};
+  font-size: 16px;
+  padding: 0;
+  margin: 0;
+`;
+
+export const SelectAllContainer = styled.View`
+  flex-direction: row;
+  align-items: center;
+  background-color: ${({ theme }) => theme.colors.surface};
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+  width: 100%;
+  shadow-color: #000;
+  shadow-opacity: 0.1;
+  shadow-radius: 4px;
+  shadow-offset: 0px 2px;
+  elevation: 2;
+`;
+
+export const SelectAllText = styled.Text`
+  color: ${({ theme }) => theme.colors.text.primary};
+  font-size: 16px;
+  font-weight: 600;
+  margin-left: 8px;
+`;

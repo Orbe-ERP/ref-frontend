@@ -52,15 +52,6 @@ export default function ConfigPage() {
           <S.ItemText>Criar Usuários</S.ItemText>
         </S.ItemRow>
 
-        <S.ItemRow onPress={() => router.push("/users-list")}>
-          <Ionicons
-            name="list-outline"
-            size={22}
-            color={theme.theme.colors.primary}
-          />
-          <S.ItemText>Listar Usuários</S.ItemText>
-        </S.ItemRow>
-
         <S.ItemRow onPress={() => router.push("/completed-orders")}>
           <Ionicons
             name="print-outline"
@@ -68,6 +59,15 @@ export default function ConfigPage() {
             color={theme.theme.colors.primary}
           />
           <S.ItemText>Comandas Finalizadas</S.ItemText>
+        </S.ItemRow>
+
+        <S.ItemRow onPress={() => router.push("/(private)/stock")}>
+          <Ionicons
+            name="server-outline"
+            size={22}
+            color={theme.theme.colors.primary}
+          />
+          <S.ItemText>Gerenciar estoque</S.ItemText>
         </S.ItemRow>
 
         <S.ItemRow onPress={() => router.push("/edit-account")}>
@@ -85,7 +85,7 @@ export default function ConfigPage() {
             size={22}
             color={theme.theme.colors.primary}
           />
-          <S.ItemText>Ajuda</S.ItemText>
+          <S.ItemText>Tutorial</S.ItemText>
         </S.ItemRow>
 
         <S.Footer>

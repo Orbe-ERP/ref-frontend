@@ -1,19 +1,59 @@
 import UserForm from "@/components/molecules/UserForm";
 import { useAppTheme } from "@/context/ThemeProvider/theme";
 import { addUserOnAccount } from "@/services/user";
+import { Ionicons } from "@expo/vector-icons";
 import { Stack, useRouter } from "expo-router";
 import React from "react";
 import Toast from "react-native-toast-message";
+import styled from "styled-components/native";
+
+const Container = styled.View`
+  flex: 1;
+  background-color: ${({ theme }) => theme.colors.background};
+  padding: 20px;
+`;
+
+const ItemRow = styled.TouchableOpacity`
+  flex-direction: row;
+  align-items: center;
+  padding-vertical: 16px;
+  padding-horizontal: 12px;
+  margin-vertical: 4px;
+  background-color: ${({ theme }) => theme.colors.surface};
+  border-radius: 12px;
+  elevation: 2;
+  shadow-color: #000;
+  shadow-offset: 0px 1px;
+  shadow-opacity: 0.2;
+  shadow-radius: 3px;
+  margin-bottom: 20px;
+`;
+
+const ItemText = styled.Text`
+  color: ${({ theme }) => theme.colors.text.primary};
+  font-size: 16px;
+  margin-left: 12px;
+`;
+
+const SectionTitle = styled.Text`
+  font-size: 18px;
+  font-weight: bold;
+  color: ${({ theme }) => theme.colors.text.primary};
+`;
 
 const CreateUserScreen = () => {
-
-  const router = useRouter()
-  const {theme} = useAppTheme()
+  const router = useRouter();
+  const { theme } = useAppTheme();
 
   const handleCreateUser = async (values: { name: string; email: string; password: string }) => {
     try {
       await addUserOnAccount(values);
-      router.navigate("/(tabs)/config");
+      Toast.show({
+        type: "success",
+        text1: "Sucesso",
+        text2: "Usuário criado com sucesso!",
+      });
+      // Limpa o formulário ou deixa para criar outro
     } catch (error) {
       Toast.show({
         type: "error",
@@ -27,12 +67,26 @@ const CreateUserScreen = () => {
     <>
       <Stack.Screen
         options={{
-          title: "Criar Usuário",
+          title: "Gerenciar Usuários",
           headerStyle: { backgroundColor: theme.colors.background },
           headerTintColor: theme.colors.text.primary,
         }}
       />
-      <UserForm onSubmit={handleCreateUser} />
+      <Container>
+        {/* Botão "Listar Usuários" com a mesma aparência da tela de Config */}
+        <ItemRow onPress={() => router.push("/users-list")}>
+          <Ionicons
+            name="list-outline"
+            size={22}
+            color={theme.colors.primary}
+          />
+          <ItemText>Listar Usuários</ItemText>
+        </ItemRow>
+
+        {/* Seção de criação de usuário */}
+        <SectionTitle>Criar Novo Usuário</SectionTitle>
+        <UserForm onSubmit={handleCreateUser} />
+      </Container>
     </>
   );
 };

@@ -16,8 +16,6 @@ import styled from "styled-components/native";
 const Container = styled.View`
   flex: 1;
   background-color: ${({ theme }) => theme.colors.background};
-  justify-content: center;
-  align-items: center;
   padding: 24px;
 `;
 
@@ -26,6 +24,24 @@ const Subtitle = styled.Text`
   color: ${({ theme }) => theme.colors.text.primary};
   font-weight: bold;
   margin-bottom: 20px;
+`;
+
+const CreateButton = styled.TouchableOpacity`
+  background-color: ${({ theme }) => theme.colors.surface};
+  padding: 12px 20px;
+  border-radius: 10px;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  border-width: 2px;
+  border-color: ${({ theme }) => theme.colors.primary};
+  border-style: dashed; /* Borda tracejada */
+`;
+
+const CreateButtonText = styled.Text`
+  color: ${({ theme }) => theme.colors.primary};
+  font-weight: bold;
+  font-size: 16px;
 `;
 
 export default function SelectRestaurantScreen() {
@@ -110,6 +126,15 @@ export default function SelectRestaurantScreen() {
       />
       <Container>
         <Subtitle>Restaurantes Disponíveis</Subtitle>
+        
+        {/* Botão de criar restaurante com borda tracejada */}
+        {isAdmin && (
+          <CreateButton onPress={handleCreateRestaurant}>
+            <CreateButtonText>+ Criar Novo Restaurante</CreateButtonText>
+          </CreateButton>
+        )}
+        
+        {/* Lista de restaurantes */}
         <RestaurantList
           restaurants={restaurants}
           selectedRestaurant={selectedRestaurant}
@@ -117,7 +142,7 @@ export default function SelectRestaurantScreen() {
           onEditRestaurant={isAdmin ? handleEditRestaurant : undefined}
           onFavoriteRestaurant={isAdmin ? handleFavoriteRestaurant : undefined}
           onDeleteRestaurant={isAdmin ? handleDeleteRestaurant : undefined}
-          onCreateRestaurant={isAdmin ? handleCreateRestaurant : undefined}
+          onCreateRestaurant={undefined}
           showActions={isAdmin}
         />
       </Container>

@@ -23,10 +23,16 @@ export const StyledButton = styled.TouchableOpacity<{
   elevation: 4;
 `;
 
-export const Label = styled.Text`
+export const Label = styled.Text<{ $hasIcon?: boolean }>`
   font-size: 16px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   color: ${({ theme }) => theme.colors.text.primary};
+`;
+
+export const IconContainer = styled.View`
+  margin-right: 8px;
+  align-items: center;
+  justify-content: center;
 `;
