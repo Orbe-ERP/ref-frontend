@@ -19,7 +19,7 @@ export const DateRow = styled.View`
 export const DateInput = styled.TouchableOpacity`
   flex: 1;
   padding: 12px;
-  border-width: 1px;
+  border-width: 1;
   border-color: #2d2d42;
   border-color: ${({ theme }) => theme.colors.border};
   border-radius: 8px;

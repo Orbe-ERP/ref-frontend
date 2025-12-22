@@ -121,7 +121,7 @@ export const ItemContainer = styled.View<{
   background-color: ${({ theme }) => theme.colors.surface};
   padding: 16px;
   border-radius: 14px;
-  border-width: 3px;
+  border-width: 3;
   border-color: ${(p) => p.borderColor};
   ${({ preparing, theme }) =>
     preparing &&

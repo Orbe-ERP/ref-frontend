@@ -219,7 +219,7 @@ export const TaxItem = styled.TouchableOpacity<{ selected?: boolean }>`
   background-color: ${({ selected, theme }) =>
     selected ? theme.colors.primary : theme.colors.surface};
 
-  border-width: 2px;
+  border-width: 2;
   border-color: ${({ theme }) => theme.colors.secondary};
   border-style: dashed;
 `;

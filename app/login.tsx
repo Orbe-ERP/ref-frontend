@@ -37,12 +37,12 @@ const Subtitle = styled.Text`
 `;
 
 const Input = styled.TextInput`
-  border-width: 1px;
+  border-width: 1;
   border-color: ${COLORS.border};
   padding: 14px;
   width: 100%;
-  border-radius: 10px;
-  margin-bottom: 10px;
+  border-radius: 10;
+  margin-bottom: 10;
   color: ${COLORS.text};
   background-color: #0a1b2a;
 `;
@@ -57,11 +57,11 @@ const Button = styled.TouchableOpacity<{ disabled?: boolean }>`
   background-color: ${(props: { disabled?: boolean }) =>
     props.disabled ? "#4B5563" : COLORS.background};
   padding: 16px;
-  border-radius: 10px;
+  border-radius: 10;
   align-items: center;
   width: 100%;
   margin-top: 12px;
-  border-width: 1px;
+  border-width: 1;
   border-color: ${COLORS.secondary};
 `;
 

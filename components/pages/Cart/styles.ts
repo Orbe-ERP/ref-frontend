@@ -33,7 +33,7 @@ export const Input = styled.TextInput`
   margin-bottom: 16px;
   font-weight: bold;
   font-size: 15px;
-  border-width: 1.5px;
+  border-width: 1.5;
   border-color: ${({ theme }) => theme.colors.border};
 `;
 
@@ -55,7 +55,7 @@ export const CheckboxContainer = styled.View`
 export const CheckboxItem = styled.TouchableOpacity<{ selected: boolean }>`
   background-color: ${({ selected, theme }) =>
     selected ? theme.colors.primary : theme.colors.surface};
-  border-width: 1.5px;
+  border-width: 1.5;
   border-color: ${({ selected, theme }) =>
     selected ? theme.colors.primary : theme.colors.border};
   border-radius: 8px;

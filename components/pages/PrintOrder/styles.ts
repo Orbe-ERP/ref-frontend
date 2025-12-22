@@ -79,7 +79,6 @@ export const Divider = styled.View<{ dashed?: boolean }>`
   background-color: ${({ theme }) => theme.colors.border};
   margin-vertical: 16px;
   border-style: ${({ dashed }) => (dashed ? "dashed" : "solid")};
-  border-width: ${({ dashed }) => (dashed ? "1px" : "0px")}; 
 `;
 
 export const SectionTitle = styled.Text`
@@ -178,7 +177,7 @@ export const FooterInfo = styled.View`
   align-items: center;
   background-color: ${({ theme }) => theme.colors.secondary};
   padding: 12px;
-  border-radius: 8px;
+  border-radius: 8;
 `;
 
 export const PaymentTitle = styled.Text`

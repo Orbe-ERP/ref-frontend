@@ -8,7 +8,7 @@ export const StyledInput = styled.TextInput`
   font-weight: bold;
   border-radius: 8px;
   font-size: 16px;
-  border-width: 1px;
+  border-width: 1;
   border-color: ${({ theme }) => theme.colors.background};
   margin-bottom: 20px;
 `;

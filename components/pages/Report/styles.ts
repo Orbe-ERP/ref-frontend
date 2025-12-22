@@ -19,9 +19,9 @@ export const DateRow = styled.View`
 export const DateInput = styled.TouchableOpacity`
   flex: 1;
   padding: 12px;
-  border-width: 1px;
+  border-width: 1;
   border-color: #2d2d42;
-  border-radius: 8px;
+  border-radius: 8;
   margin: 0 6px;
   background-color: ${({ theme }) => theme.colors.background};
 `;
@@ -34,7 +34,7 @@ export const LabelText = styled.Text`
 export const SearchButton = styled.TouchableOpacity<{ disabled?: boolean }>`
   background-color: ${(props) => (props.disabled ? '#2BAE66' : '#2BAE66')};
   padding: 14px;
-  border-radius: 8px;
+  border-radius: 8;
   align-items: center;
 `;
 
@@ -53,15 +53,15 @@ export const ModalContainer = styled.View`
 
 export const CalendarWrapper = styled.View`
   background-color: ${({ theme }) => theme.colors.background};
-  border-radius: 10px;
+  border-radius: 10;
   padding: 10px;
   elevation: 5;
 `;
 
 export const TableWrapper = styled.View`
-  border-width: 1px;
+  border-width: 1;
   border-color: #2d2d42;
-  border-radius: 8px;
+  border-radius: 8;
   overflow: hidden;
 `;
 
@@ -82,7 +82,7 @@ export const Row = styled.View<{ background?: string }>`
 
 export const RowFooter = styled(Row)`
   background-color: ${({ theme }) => theme.colors.background};
-  border-top-width: 2px;
+  border-top-width: 2;
   border-top-color: #2d2d42;
 `;
 

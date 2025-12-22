@@ -9,7 +9,7 @@ export const COLORS = {
   gray: "#888",
 };
 
-export const Container = styled.SafeAreaView`
+export const Container = styled.View`
   flex: 1;
   background-color: ${COLORS.primary};
 `;
@@ -96,7 +96,7 @@ export const SecondaryButton = styled.TouchableOpacity`
   flex: 1;
   height: 50px;
   border-radius: 8px;
-  border-width: 1px;
+  border-width: 1;
   border-color: ${COLORS.white};
   justify-content: center;
   align-items: center;

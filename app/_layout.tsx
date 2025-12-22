@@ -6,9 +6,10 @@ import { Stack, usePathname, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import { Loader } from "@/components/atoms/Loader";
+import { View } from "react-native";
 
 function AuthGuard({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -37,7 +38,7 @@ function LayoutContent() {
   const { theme, isDark } = useAppTheme();
 
   return (
-    <SafeAreaView
+    <View
       style={{
         flex: 1,
         backgroundColor: theme.colors.background,
@@ -61,7 +62,7 @@ function LayoutContent() {
       </Stack>
 
       <Toast />
-    </SafeAreaView>
+    </View>
   );
 }
 

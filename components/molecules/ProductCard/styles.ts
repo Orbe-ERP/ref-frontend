@@ -6,7 +6,7 @@ export const Card = styled.TouchableOpacity`
   flex: 1;
   align-items: center;
   justify-content: center;
-  border-width: 1px;
+  border-width: 1;
   border-color: ${({ theme }) => theme.colors.primary};
   shadow-color: ${({ theme }) => theme.colors.primary};
   shadow-offset: 0px 2px;

@@ -39,7 +39,7 @@ const ChartSection = styled.View`
   border-radius: 16px;
   padding: 16px;
   margin-bottom: 20px;
-  border-width: 1px;
+  border-width: 1;
   border-color: rgba(255, 255, 255, 0.1);
 `;
 
@@ -70,7 +70,7 @@ const EmptyState = styled.View`
   align-items: center;
   background-color: ${({ theme }) => theme.colors.surface};
   border-radius: 12px;
-  border-width: 1px;
+  border-width: 1;
   border-color: ${({ theme }) => theme.colors.border};
 `;
 
@@ -88,7 +88,7 @@ const StatusSection = styled.View`
   padding: 16px;
   flex-direction: row;
   justify-content: space-around;
-  border-width: 1px;
+  border-width: 1;
   border-color: rgba(255, 255, 255, 0.1);
   margin-bottom: 20px;
 `;
@@ -122,7 +122,7 @@ const MenuSection = styled.View`
   border-radius: 10px;
   padding: 10px;
   margin-bottom: 16px;
-  border-width: 1px;
+  border-width: 1;
   border-color: rgba(255, 255, 255, 0.08);
 `;
 

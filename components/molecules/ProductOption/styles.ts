@@ -28,7 +28,7 @@ export const Radio = styled.TouchableOpacity<{ selected: boolean }>`
   width: 22px;
   height: 22px;
   border-radius: 11px;
-  border-width: 2px;
+  border-width: 2;
   border-color: ${({ selected, theme }) =>
     selected ? theme.colors.primary || "#00C1B3" : "#777"};
   align-items: center;

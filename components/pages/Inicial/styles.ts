@@ -27,7 +27,7 @@ export const ChartSection = styled.View`
   border-radius: 16px;
   padding: 16px;
   margin-bottom: 20px;
-  border-width: 1px;
+  border-width: 1;
   border-color: rgba(255, 255, 255, 0.1);
 `;
 
@@ -67,7 +67,7 @@ export const EmptyState = styled.View`
   align-items: center;
   background-color: rgba(3, 128, 130, 0.1);
   border-radius: 12px;
-  border-width: 1px;
+  border-width: 1;
   border-color: rgba(3, 128, 130, 0.3);
 `;
 
@@ -94,8 +94,8 @@ export const ErrorContainer = styled.View`
   padding: 16px;
   align-items: center;
   background-color: rgba(211, 47, 47, 0.1);
-  border-radius: 12px;
-  border-width: 1px;
+  border-radius: 12;
+  border-width: 1;
   border-color: rgba(211, 47, 47, 0.3);
 `;
 
@@ -120,7 +120,7 @@ export const StatusSection = styled.View`
   padding: 16px;
   flex-direction: row;
   justify-content: space-around;
-  border-width: 1px;
+  border-width: 1;
   border-color: rgba(255, 255, 255, 0.1);
   margin-bottom: 20px;
 `;

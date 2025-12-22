@@ -6,7 +6,7 @@ export const CardContainer = styled.View`
   border-radius: 10px;
   padding: 15px;
   margin-bottom: 20px;
-  border-width: 1px;
+  border-width: 1;
   border-color: #038082;
 
 `;

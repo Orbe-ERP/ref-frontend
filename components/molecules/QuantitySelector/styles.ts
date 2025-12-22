@@ -13,7 +13,7 @@ export const CircleButton = styled.TouchableOpacity`
   background-color: ${({ theme }) => theme.colors.surface || "#2A2A2A"};
   align-items: center;
   justify-content: center;
-  border-width: 1.5px;
+  border-width: 1.5;
   border-color: ${({ theme }) => theme.colors.primary || "#00C1B3"};
   shadow-color: #000;
   shadow-opacity: 0.25;
