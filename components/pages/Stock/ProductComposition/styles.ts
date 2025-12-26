@@ -101,7 +101,7 @@ export const PreviewContainer = styled.View`
   padding: 12px;
   background-color: ${({ theme }) => theme.colors.feedback.success + '10'};
   border-radius: 6px;
-  border-left-width: 3px;
+  border-left-width: 3;
   border-left-color: ${({ theme }) => theme.colors.feedback.success};
 `;
 
@@ -110,7 +110,7 @@ export const ItemDetailContainer = styled.View`
   padding: 16px;
   background-color: ${({ theme }) => theme.colors.surface};
   border-radius: 8px;
-  border-width: 1px;
+  border-width: 1;
   border-color: ${({ theme }) => theme.colors.secondary + '30'};
 `;
 

@@ -50,10 +50,11 @@ const ProductModal: React.FC<ProductModalProps> = ({
   const [active, setActive] = useState(true);
   const [isKitchenModalVisible, setIsKitchenModalVisible] = useState(false);
 
+
   useEffect(() => {
     setName(product?.name ?? "");
     setPrice(product?.price?.toString() ?? "");
-    setKitchen(product?.kitchen ?? kitchens[0]?.id ?? "");
+    setKitchen(product?.kitchens ?? kitchens[0]?.id ?? "");
     setActive(product?.active ?? true);
   }, [product, kitchens]);
 

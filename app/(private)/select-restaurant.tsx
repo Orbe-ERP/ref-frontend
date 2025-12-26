@@ -33,7 +33,7 @@ const CreateButton = styled.TouchableOpacity`
   align-items: center;
   justify-content: center;
   margin-bottom: 16px;
-  border-width: 2px;
+  border-width: 2;
   border-color: ${({ theme }) => theme.colors.primary};
   border-style: dashed; /* Borda tracejada */
 `;

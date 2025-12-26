@@ -331,7 +331,7 @@ const PlanCard = styled.View<{ current: boolean }>`
   border-radius: 12px;
   padding: 20px;
   margin-bottom: 16px;
-  border-width: 2px;
+  border-width: 2;
   border-color: ${({ theme, current }) => 
     current ? theme.colors.primary : theme.colors.border};
 `;
@@ -386,7 +386,7 @@ const PlanButton = styled.TouchableOpacity<{ current: boolean }>`
   padding: 12px;
   border-radius: 8px;
   align-items: center;
-  border-width: 2px;
+  border-width: 2;
   border-color: ${({ theme, current }) => 
     current ? theme.colors.primary : theme.colors.primary};
 `;
@@ -403,7 +403,7 @@ const InfoCard = styled.View`
   border-radius: 12px;
   padding: 16px;
   margin-top: 20px;
-  border-left-width: 4px;
+  border-left-width: 4;
   border-left-color: ${({ theme }) => theme.colors.feedback.info};
 `;
 

@@ -25,7 +25,6 @@ export default function KitchenPage() {
   const [selectedKitchenId, setSelectedKitchenId] = useState<string>("null");
   const { selectedRestaurant } = useRestaurant();
 
-  const SOCKET_URL = process.env.SOCKET_URL
   const theme = useAppTheme();
 
   const DEFAULT_KITCHEN_COLOR = "#A0AEC0";
@@ -66,7 +65,10 @@ export default function KitchenPage() {
   };
 
   useEffect(() => {
-    const socket = io("http://localhost:3001");
+
+      const SOCKET_URL = process.env.SOCKET_URL
+
+    const socket = io("http://192.168.1.4:3001");
 
     const fetchOrders = async () => {
       if (!selectedRestaurant) return;
@@ -75,6 +77,7 @@ export default function KitchenPage() {
         const fetchedOrders = await getOrdersByRestaurant(
           selectedRestaurant.id
         );
+
         setOrders(fetchedOrders);
       } catch (err) {
         Toast.show({ type: "error", text1: "Erro ao buscar pedidos" });
@@ -86,6 +89,7 @@ export default function KitchenPage() {
       if (!selectedRestaurant) return;
       try {
         const kitchensList = await getKitchens(selectedRestaurant.id);
+
         setKitchens(kitchensList);
       } catch (err) {
         Toast.show({ type: "error", text1: "Erro ao buscar cozinhas" });

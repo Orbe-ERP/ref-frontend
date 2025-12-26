@@ -94,7 +94,6 @@ const ExpertModal: React.FC<ExpertModalProps> = ({
                   borderRadius: 15,
                   backgroundColor: color,
                   margin: 4,
-                  borderWidth: selectedColor === color ? 2 : 0,
                   borderColor: "#fff",
                 }}
               >

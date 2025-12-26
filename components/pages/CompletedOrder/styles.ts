@@ -64,7 +64,7 @@ export const OrderCard = styled.View`
   border-radius: 8px;
   padding: 16px;
   margin-bottom: 12px;
-  border-left-width: 4px;
+  border-left-width: 4;
   border-left-color: ${({ theme }) => theme.colors.border};
 `;
 
@@ -101,7 +101,7 @@ export const ProductItem = styled.View`
   flex-direction: row;
   justify-content: space-between;
   padding-vertical: 4px;
-  border-bottom-width: 1px;
+  border-bottom-width:1;
   border-bottom-color: #f0f0f0;
 `;
 
@@ -127,7 +127,7 @@ export const TotalContainer = styled.View`
   flex-direction: row;
   justify-content: space-between;
   margin-top: 12px;
-  border-top-width: 1px;
+  border-top-width: 1;
   border-top-color: #e0e0e0;
   padding-top: 8px;
 `;

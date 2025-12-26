@@ -49,12 +49,17 @@ export default function Purchases() {
   const { theme } = useAppTheme();
   const { selectedRestaurant } = useRestaurant();
 
-  const showToast = (type: 'success' | 'error' | 'info', message: string) => {
+  const showToast = (type: "success" | "error" | "info", message: string) => {
     Toast.show({
       type,
-      text1: type === 'error' ? 'Erro' : type === 'success' ? 'Sucesso' : 'Informação',
+      text1:
+        type === "error"
+          ? "Erro"
+          : type === "success"
+          ? "Sucesso"
+          : "Informação",
       text2: message,
-      position: 'top',
+      position: "top",
       visibilityTime: 3000,
     });
   };
@@ -67,7 +72,12 @@ export default function Purchases() {
   const [showModal, setShowModal] = useState(false);
 
   const [items, setItems] = useState<PurchaseItemForm[]>([
-    { id: Date.now().toString(), stockItemId: "", quantity: "1", unitCost: "0" },
+    {
+      id: Date.now().toString(),
+      stockItemId: "",
+      quantity: "1",
+      unitCost: "0",
+    },
   ]);
 
   useEffect(() => {
@@ -77,27 +87,27 @@ export default function Purchases() {
 
   async function loadData() {
     if (!selectedRestaurant?.id) return;
-    
+
     try {
       setLoading(true);
       const [purchaseData, stockData] = await Promise.all([
-        getPurchases(selectedRestaurant.id),
         getStockItems(selectedRestaurant.id),
+        getPurchases(selectedRestaurant.id),
       ]);
-      
-      const localPurchases: LocalPurchase[] = purchaseData.map(p => ({
+
+      const localPurchases: LocalPurchase[] = purchaseData.map((p) => ({
         id: p.id,
         purchaseId: p.purchaseId,
         total: calculatePurchaseTotal(p.items),
         itemsCount: p.items.length,
         createdAt: p.createdAt,
       }));
-      
+
       setPurchases(localPurchases);
       setStockItems(stockData);
     } catch (error) {
       console.error("Erro ao carregar dados:", error);
-      showToast('error', "Não foi possível carregar os dados");
+      showToast("error", "Não foi possível carregar os dados");
       setStockItems([]);
     } finally {
       setLoading(false);
@@ -113,18 +123,25 @@ export default function Purchases() {
   function addItem() {
     setItems((prev) => [
       ...prev,
-      { 
-        id: Date.now().toString(), 
-        stockItemId: "", 
-        quantity: "1", 
-        unitCost: "0" 
+      {
+        id: Date.now().toString(),
+        stockItemId: "",
+        quantity: "1",
+        unitCost: "0",
       },
     ]);
   }
 
   function removeItem(id: string) {
     if (items.length === 1) {
-      setItems([{ id: Date.now().toString(), stockItemId: "", quantity: "1", unitCost: "0" }]);
+      setItems([
+        {
+          id: Date.now().toString(),
+          stockItemId: "",
+          quantity: "1",
+          unitCost: "0",
+        },
+      ]);
       return;
     }
     setItems((prev) => prev.filter((i) => i.id !== id));
@@ -136,9 +153,7 @@ export default function Purchases() {
     value: string
   ) {
     setItems((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, [field]: value } : item
-      )
+      prev.map((item) => (item.id === id ? { ...item, [field]: value } : item))
     );
   }
 
@@ -153,16 +168,16 @@ export default function Purchases() {
   }
 
   function validateForm(): boolean {
-    const itemsToValidate: ApiPurchaseItem[] = items.map(item => ({
+    const itemsToValidate: ApiPurchaseItem[] = items.map((item) => ({
       stockItemId: item.stockItemId,
       quantity: parseFloat(item.quantity) || 0,
-      unitCost: parseFloat(item.unitCost) || 0
+      unitCost: parseFloat(item.unitCost) || 0,
     }));
 
     const validation = validatePurchaseItems(itemsToValidate);
 
     if (!validation.isValid) {
-      showToast('error', validation.errors[0]);
+      showToast("error", validation.errors[0]);
       return false;
     }
 
@@ -171,10 +186,10 @@ export default function Purchases() {
 
   async function handleSubmit() {
     if (!selectedRestaurant?.id) {
-      showToast('error', "Selecione um restaurante primeiro");
+      showToast("error", "Selecione um restaurante primeiro");
       return;
     }
-    
+
     if (!validateForm()) return;
 
     try {
@@ -187,7 +202,7 @@ export default function Purchases() {
       }));
 
       await createPurchase(purchaseItems);
-      
+
       const purchaseId = generatePurchaseId();
       const newPurchase: LocalPurchase = {
         id: purchaseId,
@@ -196,27 +211,37 @@ export default function Purchases() {
         itemsCount: items.length,
         createdAt: dayjs().format(),
       };
-      
-      setPurchases(prev => [newPurchase, ...prev]);
+
+      setPurchases((prev) => [newPurchase, ...prev]);
 
       setShowModal(false);
       resetForm();
-      
-      showToast('success', "Compra registrada com sucesso!");
+
+      showToast("success", "Compra registrada com sucesso!");
     } catch (error: any) {
       console.error("Erro ao registrar compra:", error);
-      showToast('error', error.message || "Não foi possível registrar a compra");
+      showToast(
+        "error",
+        error.message || "Não foi possível registrar a compra"
+      );
     } finally {
       setModalLoading(false);
     }
   }
 
   function resetForm() {
-    setItems([{ id: Date.now().toString(), stockItemId: "", quantity: "1", unitCost: "0" }]);
+    setItems([
+      {
+        id: Date.now().toString(),
+        stockItemId: "",
+        quantity: "1",
+        unitCost: "0",
+      },
+    ]);
   }
 
   function getSelectedStockItem(stockItemId: string): StockItem | undefined {
-    return stockItems.find(item => item.id === stockItemId);
+    return stockItems.find((item) => item.id === stockItemId);
   }
 
   function renderPurchaseItem({ item }: { item: LocalPurchase }) {
@@ -228,12 +253,18 @@ export default function Purchases() {
             {dayjs(item.createdAt).format("DD/MM/YYYY")}
           </S.DateBadge>
         </S.CardHeader>
-        
+
         <S.ItemInfo>
-          <Ionicons name="cube-outline" size={14} color={theme.colors.text.secondary} />
-          <S.InfoText>{item.itemsCount} item{item.itemsCount !== 1 ? 'ns' : ''}</S.InfoText>
+          <Ionicons
+            name="cube-outline"
+            size={14}
+            color={theme.colors.text.secondary}
+          />
+          <S.InfoText>
+            {item.itemsCount} item{item.itemsCount !== 1 ? "ns" : ""}
+          </S.InfoText>
         </S.ItemInfo>
-        
+
         <S.TotalContainer>
           <S.TotalLabel>Total:</S.TotalLabel>
           <S.Total>R$ {item.total.toFixed(2)}</S.Total>
@@ -254,17 +285,19 @@ export default function Purchases() {
 
       <S.ScreenContainer>
         <S.Header>
-          <Button 
-            label="Nova Compra" 
-            onPress={() => setShowModal(true)} 
+          <Button
+            label="Nova Compra"
+            onPress={() => setShowModal(true)}
             icon={<Ionicons name="add-outline" size={18} color="#fff" />}
             disabled={stockItems.length === 0}
           />
-          
+
           {stockItems.length === 0 && (
-            <S.HelpText style={{ marginTop: 8, color: theme.colors.feedback.warning }}>
-              <Ionicons name="alert-circle-outline" size={14} />
-              {" "}Cadastre itens no estoque antes de registrar compras
+            <S.HelpText
+              style={{ marginTop: 8, color: theme.colors.feedback.warning }}
+            >
+              <Ionicons name="alert-circle-outline" size={14} /> Cadastre itens
+              no estoque antes de registrar compras
             </S.HelpText>
           )}
         </S.Header>
@@ -288,26 +321,24 @@ export default function Purchases() {
             contentContainerStyle={{ paddingBottom: 20 }}
             ListEmptyComponent={
               <S.EmptyContainer>
-                <Ionicons 
-                  name="cart-outline" 
-                  size={64} 
-                  color={theme.colors.text.secondary} 
+                <Ionicons
+                  name="cart-outline"
+                  size={64}
+                  color={theme.colors.text.secondary}
                 />
                 <S.EmptyText>Nenhuma compra registrada</S.EmptyText>
                 <S.EmptySubtext>
-                  {stockItems.length === 0 
-                    ? (
-                      <>
-                        <Ionicons name="cube-outline" size={14} /> 
-                        {" "}Cadastre itens no estoque primeiro
-                      </>
-                    )
-                    : (
-                      <>
-                        <Ionicons name="add-circle-outline" size={14} />
-                        {" "}Clique em &apos;Nova Compra&apos; para começar
-                      </>
-                    )}
+                  {stockItems.length === 0 ? (
+                    <>
+                      <Ionicons name="cube-outline" size={14} /> Cadastre itens
+                      no estoque primeiro
+                    </>
+                  ) : (
+                    <>
+                      <Ionicons name="add-circle-outline" size={14} /> Clique em
+                      &apos;Nova Compra&apos; para começar
+                    </>
+                  )}
                 </S.EmptySubtext>
               </S.EmptyContainer>
             }
@@ -316,11 +347,12 @@ export default function Purchases() {
                 <S.ListHeader>
                   <S.ListHeaderText>
                     <Ionicons name="list-outline" size={16} />{" "}
-                    {purchases.length} compra{purchases.length !== 1 ? 's' : ''} registrada{purchases.length !== 1 ? 's' : ''}
+                    {purchases.length} compra{purchases.length !== 1 ? "s" : ""}{" "}
+                    registrada{purchases.length !== 1 ? "s" : ""}
                   </S.ListHeaderText>
                   <S.TotalSummary>
-                    <Ionicons name="cash-outline" size={14} />{" "}
-                    Total geral: R$ {purchases.reduce((sum, p) => sum + p.total, 0).toFixed(2)}
+                    <Ionicons name="cash-outline" size={14} /> Total geral: R${" "}
+                    {purchases.reduce((sum, p) => sum + p.total, 0).toFixed(2)}
                   </S.TotalSummary>
                 </S.ListHeader>
               ) : null
@@ -338,11 +370,11 @@ export default function Purchases() {
           resetForm();
         }}
       >
-        <KeyboardAvoidingView 
+        <KeyboardAvoidingView
           style={{ flex: 1, backgroundColor: theme.colors.background }}
           behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
-          <ScrollView 
+          <ScrollView
             style={{ flex: 1, backgroundColor: theme.colors.background }}
             contentContainerStyle={{ paddingBottom: 20 }}
             showsVerticalScrollIndicator={false}
@@ -351,9 +383,15 @@ export default function Purchases() {
               <Title style={{ color: theme.colors.text.primary }}>
                 <Ionicons name="cart-outline" size={20} /> Nova Compra
               </Title>
-              <Button 
+              <Button
                 label=""
-                icon={<Ionicons name="close-outline" size={20} color={theme.colors.text.primary} />}
+                icon={
+                  <Ionicons
+                    name="close-outline"
+                    size={20}
+                    color={theme.colors.text.primary}
+                  />
+                }
                 onPress={() => {
                   setShowModal(false);
                   resetForm();
@@ -361,34 +399,45 @@ export default function Purchases() {
               />
             </S.ModalHeader>
 
-            <S.FormContainer style={{ backgroundColor: theme.colors.background }}>
+            <S.FormContainer
+              style={{ backgroundColor: theme.colors.background }}
+            >
               <S.SectionTitle style={{ color: theme.colors.text.primary }}>
                 <Ionicons name="cube-outline" size={18} /> Itens da Compra *
               </S.SectionTitle>
-              <S.HelpText style={{ color: theme.colors.text.secondary, marginBottom: 16 }}>
-                <Ionicons name="information-circle-outline" size={12} />
-                {" "}Selecione itens cadastrados no estoque
+              <S.HelpText
+                style={{ color: theme.colors.text.secondary, marginBottom: 16 }}
+              >
+                <Ionicons name="information-circle-outline" size={12} />{" "}
+                Selecione itens cadastrados no estoque
               </S.HelpText>
-              
+
               {items.map((item, index) => {
                 const selectedItem = getSelectedStockItem(item.stockItemId);
-                
+
                 return (
-                  <S.ItemCard 
+                  <S.ItemCard
                     key={item.id}
-                    style={{ 
+                    style={{
                       backgroundColor: theme.colors.surface,
-                      borderColor: theme.colors.border 
+                      borderColor: theme.colors.border,
                     }}
                   >
                     <S.ItemHeader>
                       <S.ItemTitle style={{ color: theme.colors.text.primary }}>
-                        <Ionicons name="pricetag-outline" size={16} /> Item {index + 1}
+                        <Ionicons name="pricetag-outline" size={16} /> Item{" "}
+                        {index + 1}
                       </S.ItemTitle>
                       {items.length > 1 && (
                         <Button
                           label=""
-                          icon={<Ionicons name="trash-outline" size={16} color={theme.colors.feedback.error} />}
+                          icon={
+                            <Ionicons
+                              name="trash-outline"
+                              size={16}
+                              color={theme.colors.feedback.error}
+                            />
+                          }
                           onPress={() => removeItem(item.id)}
                         />
                       )}
@@ -396,38 +445,52 @@ export default function Purchases() {
 
                     <S.FormGroup>
                       <S.Label style={{ color: theme.colors.text.primary }}>
-                        <Ionicons name="fast-food-outline" size={14} /> Produto *
+                        <Ionicons name="fast-food-outline" size={14} /> Produto
+                        *
                       </S.Label>
-                      <S.PickerContainer style={{ borderColor: theme.colors.border }}>
+                      <S.PickerContainer
+                        style={{ borderColor: theme.colors.border }}
+                      >
                         <Picker
                           selectedValue={item.stockItemId}
-                          onValueChange={(v) => updateItem(item.id, "stockItemId", v)}
-                          style={{ 
+                          onValueChange={(v) =>
+                            updateItem(item.id, "stockItemId", v)
+                          }
+                          style={{
                             color: theme.colors.text.primary,
-                            backgroundColor: theme.colors.background 
+                            backgroundColor: theme.colors.background,
                           }}
                           dropdownIconColor={theme.colors.text.primary}
                         >
                           <Picker.Item label="Selecione um produto" value="" />
                           {stockItems.map((stockItem) => (
-                            <Picker.Item 
-                              key={stockItem.id} 
-                              label={`${stockItem.name} (${stockItem.unit || 'un'})`} 
-                              value={stockItem.id} 
+                            <Picker.Item
+                              key={stockItem.id}
+                              label={`${stockItem.name} (${
+                                stockItem.unit || "un"
+                              })`}
+                              value={stockItem.id}
                             />
                           ))}
                         </Picker>
                       </S.PickerContainer>
-                      
+
                       {selectedItem && (
-                        <S.HelpText style={{ color: theme.colors.text.secondary, marginTop: 4 }}>
-                          <Ionicons name="stats-chart-outline" size={12} />
-                          {" "}Estoque atual: {selectedItem.quantity} {selectedItem.unit || 'un'}
+                        <S.HelpText
+                          style={{
+                            color: theme.colors.text.secondary,
+                            marginTop: 4,
+                          }}
+                        >
+                          <Ionicons name="stats-chart-outline" size={12} />{" "}
+                          Estoque atual: {selectedItem.quantity}{" "}
+                          {selectedItem.unit || "un"}
                           {selectedItem.lastCost && (
                             <>
-                              {" "}|{" "}
-                              <Ionicons name="cash-outline" size={12} />
-                              {" "}Último custo: R$ {selectedItem.lastCost.toFixed(2)}
+                              {" "}
+                              | <Ionicons name="cash-outline" size={12} />{" "}
+                              Último custo: R${" "}
+                              {selectedItem.lastCost.toFixed(2)}
                             </>
                           )}
                         </S.HelpText>
@@ -437,63 +500,85 @@ export default function Purchases() {
                     <S.Row>
                       <S.FormGroup style={{ flex: 1, marginRight: 8 }}>
                         <S.Label style={{ color: theme.colors.text.primary }}>
-                          <Ionicons name="scale-outline" size={14} /> Quantidade *
+                          <Ionicons name="scale-outline" size={14} /> Quantidade
+                          *
                         </S.Label>
                         <Input
                           placeholder="Ex: 10"
                           keyboardType="decimal-pad"
                           value={item.quantity}
-                          onChangeText={(v) => updateItem(item.id, "quantity", v.replace(',', '.'))}
-                          style={{ 
+                          onChangeText={(v) =>
+                            updateItem(item.id, "quantity", v.replace(",", "."))
+                          }
+                          style={{
                             backgroundColor: theme.colors.background,
                             color: theme.colors.text.primary,
-                            borderColor: theme.colors.border 
+                            borderColor: theme.colors.border,
                           }}
                           placeholderTextColor={theme.colors.text.secondary}
                         />
                         {selectedItem && (
-                          <S.HelpText style={{ color: theme.colors.text.secondary }}>
-                            <Ionicons name="trending-up-outline" size={12} />
-                            {" "}Novo estoque: {(selectedItem.quantity + (parseFloat(item.quantity) || 0))} {selectedItem.unit || 'un'}
+                          <S.HelpText
+                            style={{ color: theme.colors.text.secondary }}
+                          >
+                            <Ionicons name="trending-up-outline" size={12} />{" "}
+                            Novo estoque:{" "}
+                            {selectedItem.quantity +
+                              (parseFloat(item.quantity) || 0)}{" "}
+                            {selectedItem.unit || "un"}
                           </S.HelpText>
                         )}
                       </S.FormGroup>
 
                       <S.FormGroup style={{ flex: 1 }}>
                         <S.Label style={{ color: theme.colors.text.primary }}>
-                          <Ionicons name="pricetag-outline" size={14} /> Custo (R$) *
+                          <Ionicons name="pricetag-outline" size={14} /> Custo
+                          (R$) *
                         </S.Label>
                         <Input
                           placeholder="Ex: 5.50"
                           keyboardType="decimal-pad"
                           value={item.unitCost}
-                          onChangeText={(v) => updateItem(item.id, "unitCost", v.replace(',', '.'))}
-                          style={{ 
+                          onChangeText={(v) =>
+                            updateItem(item.id, "unitCost", v.replace(",", "."))
+                          }
+                          style={{
                             backgroundColor: theme.colors.background,
                             color: theme.colors.text.primary,
-                            borderColor: theme.colors.border 
+                            borderColor: theme.colors.border,
                           }}
                           placeholderTextColor={theme.colors.text.secondary}
                         />
                         {selectedItem && selectedItem.lastCost && (
-                          <S.HelpText style={{ 
-                            color: parseFloat(item.unitCost) > selectedItem.lastCost * 1.1 
-                              ? theme.colors.feedback.warning 
-                              : theme.colors.text.secondary 
-                          }}>
-                            {parseFloat(item.unitCost) > selectedItem.lastCost * 1.1 
-                              ? (
-                                <>
-                                  <Ionicons name="warning-outline" size={12} />
-                                  {" "}Custo {((parseFloat(item.unitCost) / selectedItem.lastCost - 1) * 100).toFixed(0)}% acima do último
-                                </>
-                              )
-                              : (
-                                <>
-                                  <Ionicons name="cash-outline" size={12} />
-                                  {" "}Último custo: R$ {selectedItem.lastCost.toFixed(2)}
-                                </>
-                              )}
+                          <S.HelpText
+                            style={{
+                              color:
+                                parseFloat(item.unitCost) >
+                                selectedItem.lastCost * 1.1
+                                  ? theme.colors.feedback.warning
+                                  : theme.colors.text.secondary,
+                            }}
+                          >
+                            {parseFloat(item.unitCost) >
+                            selectedItem.lastCost * 1.1 ? (
+                              <>
+                                <Ionicons name="warning-outline" size={12} />{" "}
+                                Custo{" "}
+                                {(
+                                  (parseFloat(item.unitCost) /
+                                    selectedItem.lastCost -
+                                    1) *
+                                  100
+                                ).toFixed(0)}
+                                % acima do último
+                              </>
+                            ) : (
+                              <>
+                                <Ionicons name="cash-outline" size={12} />{" "}
+                                Último custo: R${" "}
+                                {selectedItem.lastCost.toFixed(2)}
+                              </>
+                            )}
                           </S.HelpText>
                         )}
                       </S.FormGroup>
@@ -501,10 +586,15 @@ export default function Purchases() {
 
                     {item.stockItemId && (
                       <S.ItemTotal>
-                        <S.TotalLabel style={{ color: theme.colors.text.secondary }}>
-                          <Ionicons name="calculator-outline" size={14} /> Total do item:
+                        <S.TotalLabel
+                          style={{ color: theme.colors.text.secondary }}
+                        >
+                          <Ionicons name="calculator-outline" size={14} /> Total
+                          do item:
                         </S.TotalLabel>
-                        <S.ItemTotalValue style={{ color: theme.colors.primary }}>
+                        <S.ItemTotalValue
+                          style={{ color: theme.colors.primary }}
+                        >
                           R$ {getItemTotal(item).toFixed(2)}
                         </S.ItemTotalValue>
                       </S.ItemTotal>
@@ -516,13 +606,21 @@ export default function Purchases() {
               <Button
                 label="Adicionar Item"
                 onPress={addItem}
-                icon={<Ionicons name="add-circle-outline" size={18} color={theme.colors.primary} />}
+                icon={
+                  <Ionicons
+                    name="add-circle-outline"
+                    size={18}
+                    color={theme.colors.primary}
+                  />
+                }
               />
 
-              <S.TotalSection style={{ 
-                backgroundColor: theme.colors.surface,
-                borderColor: theme.colors.primary + '20' 
-              }}>
+              <S.TotalSection
+                style={{
+                  backgroundColor: theme.colors.surface,
+                  borderColor: theme.colors.primary + "20",
+                }}
+              >
                 <S.TotalLabelLarge style={{ color: theme.colors.text.primary }}>
                   <Ionicons name="receipt-outline" size={20} /> Total da Compra:
                 </S.TotalLabelLarge>
@@ -538,13 +636,29 @@ export default function Purchases() {
                     setShowModal(false);
                     resetForm();
                   }}
-                  icon={<Ionicons name="close-outline" size={16} color={theme.colors.text.secondary} />}
+                  icon={
+                    <Ionicons
+                      name="close-outline"
+                      size={16}
+                      color={theme.colors.text.secondary}
+                    />
+                  }
                 />
                 <Button
                   label={modalLoading ? "Registrando..." : "Registrar Compra"}
                   onPress={handleSubmit}
-                  disabled={modalLoading || items.some(item => !item.stockItemId)}
-                  icon={modalLoading ? undefined : <Ionicons name="checkmark-outline" size={18} color="#fff" />}
+                  disabled={
+                    modalLoading || items.some((item) => !item.stockItemId)
+                  }
+                  icon={
+                    modalLoading ? undefined : (
+                      <Ionicons
+                        name="checkmark-outline"
+                        size={18}
+                        color="#fff"
+                      />
+                    )
+                  }
                 />
               </S.ButtonRow>
             </S.FormContainer>

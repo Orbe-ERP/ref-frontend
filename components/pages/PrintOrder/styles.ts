@@ -156,7 +156,7 @@ export const TotalRow = styled.View`
   justify-content: space-between;
   margin-top: 12px;
   padding-top: 12px;
-  border-top-width: 1px;
+  border-top-width: 1;
   border-top-color: ${({ theme }) => theme.colors.border};
 `;
 
@@ -195,7 +195,7 @@ export const PaymentInfo = styled.Text`
 export const BottomButtonContainer = styled.View`
   padding: 20px;
   background-color: ${({ theme }) => theme.colors.background};
-  border-top-width: 1px;
+  border-top-width: 1;
   border-top-color: ${({ theme }) => theme.colors.border};
   shadow-color: #000;
   shadow-opacity: 0.05;

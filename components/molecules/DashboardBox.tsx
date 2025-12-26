@@ -4,7 +4,7 @@ import Title from "../atoms/Title";
 
 const Container = styled.View`
   background-color: #041224;
-  border: 1px solid #038082;
+  border: 1 solid #038082;
   border-radius: 15px;
   padding: 25px;
   margin-top: 20px;
