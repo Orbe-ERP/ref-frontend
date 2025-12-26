@@ -12,6 +12,8 @@ import AccountForm from "@/components/organisms/AccountForm";
 import useAuth from "@/hooks/useAuth";
 import { useAppTheme } from "@/context/ThemeProvider/theme";
 import Toast from "react-native-toast-message";
+import { getMySubscription, startSubscription } from "@/services/subscription";
+import * as Linking from "expo-linking";
 
 const TABS = {
   GENERAL: "Dados Gerais",
@@ -19,6 +21,53 @@ const TABS = {
 } as const;
 
 type TabType = keyof typeof TABS;
+
+const PLANS_CATALOG = [
+  {
+    id: "basic",
+    name: "Starter",
+    price: "R$ 149/mês",
+    priceId: "price_basic_123",
+    features: [
+      "Mesas e Comandas ilimitadas",
+      "Categorias, Produtos e Observações",
+      "Até 3 usuários",
+      "Relatórios básicos",
+      "Suporte por email",
+    ],
+  },
+  {
+    id: "pro",
+    name: "Pro",
+    price: "R$ 299/mês",
+    priceId: "price_pro_456",
+    features: [
+      "Tudo do Starter",
+      "Mesas, Comandas e Delivery",
+      "Estoque Completo + Compras",
+      "Relatório + Taxas de cartão",
+      "Até 10 usuários",
+      "5 restaurantes",
+      "Relatórios avançados",
+      "Suporte prioritário",
+    ],
+  },
+  {
+    id: "enterprise",
+    name: "Empresarial",
+    price: "R$ 499/mês",
+    priceId: "price_enterprise_789",
+    features: [
+      "Tudo do Pro",
+      "Usuários ilimitados",
+      "Restaurantes ilimitados",
+      "Relatórios personalizados",
+      "Insumos/Ficha técnica",
+      "Dashboard avançado",
+      "Suporte 24/7",
+    ],
+  },
+];
 
 export default function AccountEditScreen() {
   const [name, setName] = useState("");
@@ -28,6 +77,18 @@ export default function AccountEditScreen() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>("GENERAL");
+
+  const [plans, setPlans] = useState<
+    {
+      id: string;
+      name: string;
+      price: string;
+      priceId: string;
+      features: string[];
+      current: boolean;
+    }[]
+  >([]);
+
   const { theme } = useAppTheme();
   const navigation = useRouter();
   const { user, logout } = useAuth();
@@ -39,14 +100,37 @@ export default function AccountEditScreen() {
     }
   }, [user]);
 
+  useEffect(() => {
+    async function loadPlans() {
+      try {
+        const subscription = await getMySubscription();
+
+        setPlans(
+          PLANS_CATALOG.map((plan) => ({
+            ...plan,
+            current: plan.id === subscription.plan,
+          }))
+        );
+      } catch (error) {
+        Toast.show({
+          type: "error",
+          text1: "Erro",
+          text2: "Não foi possível carregar os planos",
+        });
+      }
+    }
+
+    if (activeTab === "PLANS") {
+      loadPlans();
+    }
+  }, [activeTab]);
+
   const handleSave = async () => {
     if (!currentPassword) {
       Toast.show({
         type: "error",
         text1: "Erro",
         text2: "Informe sua senha atual para atualizar os dados.",
-        position: "top",
-        visibilityTime: 3000,
       });
       return;
     }
@@ -56,8 +140,6 @@ export default function AccountEditScreen() {
         type: "error",
         text1: "Erro",
         text2: "As senhas não coincidem.",
-        position: "top",
-        visibilityTime: 3000,
       });
       return;
     }
@@ -74,135 +156,74 @@ export default function AccountEditScreen() {
       };
 
       await updateUser(updateData);
+
       Toast.show({
         type: "success",
         text1: "Sucesso",
-        text2: "Para a atualização ser efetivada, por favor, faça login novamente.",
-        position: "top",
-        visibilityTime: 2000,
+        text2: "Faça login novamente para concluir a atualização.",
       });
 
       logout();
       navigation.back();
-    } catch (err: any) {
-      console.error("Erro ao atualizar usuário:", err);
+    } catch (err) {
       Toast.show({
         type: "error",
         text1: "Erro",
         text2: "Não foi possível atualizar os dados.",
-        position: "top",
-        visibilityTime: 3000,
       });
     } finally {
       setLoading(false);
     }
   };
 
-  const renderPlansContent = () => {
-    // Aqui você pode implementar a lógica de planos
-    // Exemplo de planos disponíveis
-    const plans = [
-      {
-        id: "basic",
-        name: "Básico",
-        price: "R$ 49,90/mês",
-        features: [
-          "Até 3 usuários",
-          "2 restaurantes",
-          "Relatórios básicos",
-          "Suporte por email",
-        ],
-        current: true,
-      },
-      {
-        id: "pro",
-        name: "Profissional",
-        price: "R$ 99,90/mês",
-        features: [
-          "Até 10 usuários",
-          "5 restaurantes",
-          "Relatórios avançados",
-          "Suporte prioritário",
-          "Integração com marketplaces",
-        ],
-        current: false,
-      },
-      {
-        id: "enterprise",
-        name: "Empresarial",
-        price: "R$ 199,90/mês",
-        features: [
-          "Usuários ilimitados",
-          "Restaurantes ilimitados",
-          "Relatórios personalizados",
-          "Suporte 24/7",
-          "API exclusiva",
-          "Treinamento personalizado",
-        ],
-        current: false,
-      },
-    ];
+  const renderPlansContent = () => (
+    <PlansContainer>
+      <PlansTitle>Selecione seu plano</PlansTitle>
+      <PlansDescription>
+        Escolha o plano que melhor atende às necessidades do seu negócio
+      </PlansDescription>
 
-    return (
-      <PlansContainer>
-        <PlansTitle>Selecione seu plano</PlansTitle>
-        <PlansDescription>
-          Escolha o plano que melhor atende às necessidades do seu negócio
-        </PlansDescription>
-        
-        {plans.map((plan) => (
-          <PlanCard key={plan.id} current={plan.current}>
-            <PlanHeader>
-              <PlanName current={plan.current}>{plan.name}</PlanName>
-              <PlanPrice current={plan.current}>{plan.price}</PlanPrice>
-            </PlanHeader>
-            
-            <PlanFeatures>
-              {plan.features.map((feature, index) => (
-                <PlanFeature key={index}>
-                  <FeatureIcon current={plan.current}>
-                    ✓
-                  </FeatureIcon>
-                  <FeatureText>{feature}</FeatureText>
-                </PlanFeature>
-              ))}
-            </PlanFeatures>
-            
-            <PlanButton 
-              current={plan.current}
-              onPress={() => {
-                if (!plan.current) {
-                  // Lógica para alterar o plano
-                  Toast.show({
-                    type: "info",
-                    text1: "Alterar Plano",
-                    text2: `Você selecionou o plano ${plan.name}`,
-                  });
-                }
-              }}
-            >
-              <PlanButtonText current={plan.current}>
-                {plan.current ? "Plano Atual" : "Selecionar Plano"}
-              </PlanButtonText>
-            </PlanButton>
-          </PlanCard>
-        ))}
-        
-        <InfoCard>
-          <InfoTitle>Informações importantes</InfoTitle>
-          <InfoText>
-            • A alteração de plano entra em vigor no próximo ciclo de faturamento
-          </InfoText>
-          <InfoText>
-            • Não há cobranças extras por mudança de plano
-          </InfoText>
-          <InfoText>
-            • Para cancelar seu plano, entre em contato com nosso suporte
-          </InfoText>
-        </InfoCard>
-      </PlansContainer>
-    );
-  };
+      {plans.map((plan) => (
+        <PlanCard key={plan.id} current={plan.current}>
+          <PlanHeader>
+            <PlanName current={plan.current}>{plan.name}</PlanName>
+            <PlanPrice current={plan.current}>{plan.price}</PlanPrice>
+          </PlanHeader>
+
+          <PlanFeatures>
+            {plan.features.map((feature, index) => (
+              <PlanFeature key={index}>
+                <FeatureIcon current={plan.current}>✓</FeatureIcon>
+                <FeatureText>{feature}</FeatureText>
+              </PlanFeature>
+            ))}
+          </PlanFeatures>
+
+          <PlanButton
+            current={plan.current}
+            onPress={async () => {
+              if (plan.current) return;
+
+              try {
+                const { url } = await startSubscription(plan.priceId);
+                await Linking.openURL(url);
+              } catch {
+                Toast.show({
+                  type: "error",
+                  text1: "Erro",
+                  text2: "Não foi possível iniciar a assinatura",
+                });
+              }
+            }}
+          >
+            <PlanButtonText current={plan.current}>
+              {plan.current ? "Plano Atual" : "Selecionar Plano"}
+            </PlanButtonText>
+          </PlanButton>
+        </PlanCard>
+      ))}
+    </PlansContainer>
+  );
 
   if (!user) {
     return (
@@ -221,8 +242,8 @@ export default function AccountEditScreen() {
           headerTintColor: theme.colors.text.primary,
         }}
       />
+
       <Container>
-        {/* Tabs de navegação */}
         <TabsContainer>
           {Object.entries(TABS).map(([key, label]) => (
             <TabButton

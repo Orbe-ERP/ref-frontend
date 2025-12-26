@@ -8,84 +8,93 @@ export interface PurchaseItem {
 
 export interface Purchase {
   id: string;
-  purchaseId: string;
   restaurantId: string;
-  items: PurchaseItem[];
+  supplierId?: string;
   createdAt: string;
-}
-
-export interface CreatePurchaseInput {
-  restaurantId: string;
-  purchaseId: string;
   items: PurchaseItem[];
 }
 
-// Função para gerar ID de compra
-export function generatePurchaseId(): string {
-  const timestamp = Date.now();
-  const random = Math.floor(Math.random() * 1000);
-  return `PUR-${timestamp}-${random}`;
+export async function createManualPurchase(data: {
+  restaurantId: string;
+  supplierId?: string;
+  date?: string;
+}) {
+  const response = await api.post("/purchase/manual", data);
+  return response.data;
 }
 
-/**
- * Registra uma nova compra e atualiza o estoque
- * Endpoint: POST /stock/purchase/:purchaseId
- */
-export async function createPurchase(items: PurchaseItem[]): Promise<{ success: boolean }> {
-  if (!items || items.length === 0) throw new Error("Items list cannot be empty");
-
-  try {
-    const purchaseId = generatePurchaseId();
-    const response = await api.post(`/stock/purchase/${purchaseId}`, { items });
-    return response.data;
-  } catch (error: any) {
-    throw new Error(`Erro ao registrar compra: ${error.message || "Erro desconhecido"}`);
+export async function addItemsToPurchase(
+  purchaseId: string,
+  items: PurchaseItem[]
+) {
+  if (!items.length) {
+    throw new Error("A compra deve conter ao menos um item");
   }
+
+  const response = await api.post(`/purchase/add/${purchaseId}`, {
+    items,
+  });
+
+  return response.data;
 }
 
-/**
- * Busca todas as compras de um restaurante
- * ATENÇÃO: Este endpoint NÃO EXISTE no backend atual
- * Vamos simular retornando array vazio
- */
-export async function getPurchases(restaurantId: string): Promise<Purchase[]> {
-  console.log(`[INFO] Endpoint GET /purchases não implementado no backend para restaurante ${restaurantId}`);
-  return [];
+export async function getPurchasesByRestaurant(
+  restaurantId: string
+): Promise<Purchase[]> {
+  const response = await api.get(`/purchase/restaurant/${restaurantId}`);
+  return response.data;
 }
 
-/**
- * Calcula o total de uma compra (apenas no frontend)
- */
+export async function importPurchaseXml(data: {
+  restaurantId: string;
+  file: File;
+}) {
+  const formData = new FormData();
+  formData.append('file', data.file);
+  formData.append('restaurantId', data.restaurantId);
+  
+  const response = await api.post("/purchase/import/xml", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+  return response.data;
+}
+
+export async function confirmPurchaseXml(data: any) {
+  const response = await api.post("/purchase/import/xml/confirm", data);
+  return response.data;
+}
+
 export function calculatePurchaseTotal(items: PurchaseItem[]): number {
-  return items.reduce((total, item) => {
-    return total + (item.quantity * item.unitCost);
-  }, 0);
+  return items.reduce(
+    (total, item) => total + item.quantity * item.unitCost,
+    0
+  );
 }
 
-/**
- * Valida os itens da compra antes de enviar
- */
-export function validatePurchaseItems(items: PurchaseItem[]): { isValid: boolean; errors: string[] } {
+export function validatePurchaseItems(items: PurchaseItem[]) {
   const errors: string[] = [];
 
-  if (!items || items.length === 0) {
+  if (!items.length) {
     errors.push("A compra deve conter pelo menos um item");
   }
 
   items.forEach((item, index) => {
     if (!item.stockItemId) {
-      errors.push(`Item ${index + 1}: Informe o nome do produto`);
+      errors.push(`Item ${index + 1}: Produto não informado`);
     }
-    if (!item.quantity || item.quantity <= 0) {
-      errors.push(`Item ${index + 1}: Quantidade deve ser maior que zero`);
+    if (item.quantity <= 0) {
+      errors.push(`Item ${index + 1}: Quantidade inválida`);
     }
-    if (item.unitCost === undefined || item.unitCost < 0) {
-      errors.push(`Item ${index + 1}: Custo unitário deve ser maior ou igual a zero`);
+    if (item.unitCost < 0) {
+      errors.push(`Item ${index + 1}: Custo inválido`);
     }
   });
 
   return {
     isValid: errors.length === 0,
-    errors
+    errors,
   };
 }

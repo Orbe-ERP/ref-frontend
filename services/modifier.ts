@@ -72,12 +72,13 @@ export async function getModifiersByProductIds(productIds: string[]) {
 
 export async function addModifierToProduct(
   modifierId: string, 
-  productId: string, 
+  productId: string,
+  restaurantId: string,
   opts?: { required?: boolean; limit?: number; default?: boolean }
 ) {
   try {
     const response = await api.post(
-      `/modifiers/${modifierId}/add-to-product/${productId}`,
+      `/modifiers/${restaurantId}/${modifierId}/add-to-product/${productId}`,
       opts
     );
     return response.data;

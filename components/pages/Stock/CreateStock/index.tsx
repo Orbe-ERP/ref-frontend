@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Alert, 
   View, 
   ScrollView,
   Text 
 } from 'react-native';
 import { useRouter, useLocalSearchParams, Stack } from 'expo-router';
 import { Picker } from '@react-native-picker/picker';
+import Toast from 'react-native-toast-message';
 import * as S from './styles';
 import Title from '@/components/atoms/Title';
 import Button from '@/components/atoms/Button';
@@ -51,18 +51,36 @@ export default function CreateStock() {
         lastCost: data.lastCost?.toString() || '',
       });
     } catch (error) {
-      Alert.alert('Erro', 'Não foi possível carregar o item');
+      Toast.show({
+        type: "error",
+        text1: "Erro",
+        text2: "Não foi possível carregar o item",
+        position: "top",
+        visibilityTime: 3000,
+      });
     }
   };
 
   const handleSubmit = async () => {
     if (!selectedRestaurant?.id) {
-      Alert.alert('Erro', 'Restaurante não selecionado');
+      Toast.show({
+        type: "error",
+        text1: "Erro",
+        text2: "Restaurante não selecionado",
+        position: "top",
+        visibilityTime: 3000,
+      });
       return;
     }
 
     if (!form.name.trim()) {
-      Alert.alert('Atenção', 'Informe o nome do item');
+      Toast.show({
+        type: "error",
+        text1: "Atenção",
+        text2: "Informe o nome do item",
+        position: "top",
+        visibilityTime: 3000,
+      });
       return;
     }
 
@@ -78,16 +96,48 @@ export default function CreateStock() {
       };
 
       if (id) {
-        await updateStockItem(id as string, stockData);
-        Alert.alert('Sucesso', 'Item atualizado com sucesso');
+        const { restaurantId, ...updateData } = stockData;
+        await updateStockItem(id as string, updateData);
+        
+        Toast.show({
+          type: "success",
+          text1: "Sucesso",
+          text2: "Item atualizado com sucesso",
+          position: "top",
+          visibilityTime: 2000,
+        });
+        
+        // Passa um parâmetro indicando que houve atualização
+        router.replace({
+          pathname: "/stock/items",
+          params: { refresh: Date.now() }
+        });
       } else {
         await createStockItem(stockData);
-        Alert.alert('Sucesso', 'Item criado com sucesso');
+        
+        Toast.show({
+          type: "success",
+          text1: "Sucesso",
+          text2: "Item criado com sucesso",
+          position: "top",
+          visibilityTime: 2000,
+        });
+        
+        router.replace({
+          pathname: "/stock/items",
+          params: { refresh: Date.now() }
+        });
       }
       
-      router.back();
-    } catch (error) {
-      Alert.alert('Erro', 'Não foi possível salvar o item');
+    } catch (error: any) {
+      console.error('Erro ao salvar item:', error);
+      Toast.show({
+        type: "error",
+        text1: "Erro",
+        text2: error.message || "Não foi possível salvar o item",
+        position: "top",
+        visibilityTime: 3000,
+      });
     } finally {
       setLoading(false);
     }
@@ -202,10 +252,11 @@ export default function CreateStock() {
             />
           </View>
 
-          <View style={{ opacity: form.name.trim() ? 1 : 0.6 }}>
+          <View style={{ opacity: form.name.trim() && !loading ? 1 : 0.6 }}>
             <Button
               label={id ? 'Atualizar Item' : 'Criar Item'}
-              onPress={form.name.trim() ? handleSubmit : () => {}}
+              onPress={form.name.trim() && !loading ? handleSubmit : () => {}}
+              disabled={loading || !form.name.trim()}
             />
           </View>
         </ScrollView>
