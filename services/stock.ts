@@ -41,11 +41,17 @@ export async function createStockItem(data: CreateStockItemInput) {
   }
 }
 
-export async function getStockItems(restaurantId: string): Promise<StockItem[]> {
+export async function getStockItems(
+  restaurantId: string, 
+  page = 1, 
+  limit = 20
+): Promise<StockItem[]> {
   if (!restaurantId) throw new Error("No restaurant selected");
 
   try {
-    const response = await api.get(`/stock/restaurant/${restaurantId}`);
+    const response = await api.get(`/stock/restaurant/${restaurantId}`, {
+      params: { page, limit }
+    });
     return response.data;
   } catch (error) {
     throw new Error(`Error fetching stock items: ${error}`);
@@ -96,22 +102,6 @@ export async function consumeStock(
     return response.data;
   } catch (error) {
     throw new Error(`Error consuming stock: ${error}`);
-  }
-}
-
-export async function addStockPurchase(
-  purchaseId: string,
-  items: { stockItemId: string; quantity: number; unitCost: number }[]
-) {
-  if (!purchaseId) throw new Error("purchaseId is required");
-
-  try {
-    const response = await api.post(`/stock/purchase/${purchaseId}`, {
-      items,
-    });
-    return response.data;
-  } catch (error) {
-    throw new Error(`Error adding purchase: ${error}`);
   }
 }
 

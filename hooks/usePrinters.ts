@@ -1,0 +1,75 @@
+import { useCallback, useEffect, useState } from "react";
+import {
+  Printer,
+  CreatePrinter,
+  UpdatePrinter,
+  getPrintersByRestaurant,
+  createPrinter as createPrinterService,
+  updatePrinter as updatePrinterService,
+  deletePrinter as deletePrinterService,
+} from "@/services/printer";
+import useRestaurant from "@/hooks/useRestaurant";
+
+export function usePrinters() {
+  const { selectedRestaurant } = useRestaurant();
+
+  const [printers, setPrinters] = useState<Printer[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const loadPrinters = useCallback(async () => {
+    if (!selectedRestaurant?.id) return;
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const data = await getPrintersByRestaurant(selectedRestaurant.id);
+      setPrinters(data);
+    } catch (err) {
+      setError("Erro ao carregar impressoras");
+    } finally {
+      setLoading(false);
+    }
+  }, [selectedRestaurant?.id]);
+
+  useEffect(() => {
+    loadPrinters();
+  }, [loadPrinters]);
+
+  async function createPrinter(data: Omit<CreatePrinter, "restaurantId">) {
+    if (!selectedRestaurant?.id) {
+      throw new Error("Nenhum restaurante selecionado");
+    }
+
+    await createPrinterService({
+      ...data,
+      restaurantId: selectedRestaurant.id,
+    });
+
+    await loadPrinters();
+  }
+
+  async function updatePrinter(
+    printerId: string,
+    data: UpdatePrinter
+  ) {
+    await updatePrinterService(printerId, data);
+    await loadPrinters();
+  }
+
+  async function deletePrinter(printerId: string) {
+    await deletePrinterService(printerId);
+    await loadPrinters();
+  }
+
+  return {
+    printers,
+    loading,
+    error,
+    reload: loadPrinters,
+    createPrinter,
+    updatePrinter,
+    deletePrinter,
+  };
+}

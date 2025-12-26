@@ -21,7 +21,7 @@ export default function StockManagement() {
       title: 'Compras',
       description: 'Registrar entradas por compra',
       icon: 'cart-outline',
-      route: '/(private)/stock/purchases',
+      route: '/stock/purchases',
     },
     {
       id: 'product-compositions',

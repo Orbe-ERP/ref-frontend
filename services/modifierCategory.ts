@@ -75,11 +75,11 @@ export async function updateModifierCategory(
   }
 }
 
-export async function deleteModifierCategory(id: string) {
-  if (!id) throw new Error("modifierCategoryId is required");
+export async function deleteModifierCategory(id: string, restaurantId: string) {
+  if (!id || !restaurantId) throw new Error("id and restaurantId are required");
   
   try {
-    await api.delete(`/modifier-categories/${id}`);
+    await api.delete(`/modifier-categories/${id}/${restaurantId}`);
     return;
   } catch (error) {
     throw new Error(`Error deleting modifier category: ${error}`);

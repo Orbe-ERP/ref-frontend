@@ -54,7 +54,7 @@ export default function ConfigPage() {
 
         <S.ItemRow onPress={() => router.push("/completed-orders")}>
           <Ionicons
-            name="print-outline"
+            name="checkmark-circle-outline"
             size={22}
             color={theme.theme.colors.primary}
           />
@@ -70,6 +70,15 @@ export default function ConfigPage() {
           <S.ItemText>Gerenciar estoque</S.ItemText>
         </S.ItemRow>
 
+        <S.ItemRow onPress={() => router.push("/printer")}>
+          <Ionicons
+            name="print-outline"
+            size={22}
+            color={theme.theme.colors.primary}
+          />
+          <S.ItemText>Configuração da Impressora</S.ItemText>
+        </S.ItemRow>
+
         <S.ItemRow onPress={() => router.push("/edit-account")}>
           <Ionicons
             name="person-outline"
@@ -79,13 +88,22 @@ export default function ConfigPage() {
           <S.ItemText>Gerenciar Conta</S.ItemText>
         </S.ItemRow>
 
-        <S.ItemRow onPress={() => router.push("/onboarding")}>
+        {/* <S.ItemRow onPress={() => router.push("/onboarding")}>
           <Ionicons
             name="information-circle-sharp"
             size={22}
             color={theme.theme.colors.primary}
           />
           <S.ItemText>Tutorial</S.ItemText>
+        </S.ItemRow> */}
+
+        <S.ItemRow onPress={() => router.push("/(private)/help")}>
+          <Ionicons
+            name="information-circle-sharp"
+            size={22}
+            color={theme.theme.colors.primary}
+          />
+          <S.ItemText>Ajuda</S.ItemText>
         </S.ItemRow>
 
         <S.Footer>
