@@ -72,8 +72,9 @@ const ButtonText = styled.Text`
 `;
 
 const Logo = styled.Image`
-  width: 240px;
-  height: 240px;
+  width: 160px;
+  height: 160px;
+  margin-bottom: 16px;
 `;
 
 const LoginSchema = Yup.object().shape({
@@ -82,6 +83,25 @@ const LoginSchema = Yup.object().shape({
     .min(6, "Mínimo 6 caracteres")
     .required("Senha obrigatória"),
 });
+
+const RegisterContainer = styled.View`
+  flex-direction: row;
+  justify-content: center;
+  margin-top: 24px;
+`;
+
+const RegisterText = styled.Text`
+  color: #cbd5e1;
+  font-size: 14px;
+`;
+
+const RegisterButton = styled.TouchableOpacity``;
+
+const RegisterButtonText = styled.Text`
+  color: ${COLORS.primary};
+  font-size: 14px;
+  font-weight: 600;
+`;
 
 export default function Login() {
   const { authenticate } = useAuth();
@@ -180,6 +200,13 @@ export default function Login() {
                   <ButtonText>Entrar</ButtonText>
                 )}
               </Button>
+
+              <RegisterContainer>
+                <RegisterText>Não tem cadastro? </RegisterText>
+                <RegisterButton onPress={() => router.push("/signup")}>
+                  <RegisterButtonText>Cadastre-se</RegisterButtonText>
+                </RegisterButton>
+              </RegisterContainer>
             </>
           )}
         </Formik>

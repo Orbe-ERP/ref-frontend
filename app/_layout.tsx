@@ -31,6 +31,21 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
     return null;
   }
 
+   if (pathname === "/plans" && !user?.hasAuthenticatedUser) {
+    const checkTempToken = async () => {
+      try {
+        const AsyncStorage = await import('@react-native-async-storage/async-storage');
+        const tempToken = await AsyncStorage.default.getItem('temp_token');
+        if (!tempToken) {
+          router.replace("/signup");
+        }
+      } catch (error) {
+        router.replace("/signup");
+      }
+    };
+    checkTempToken();
+  }
+
   return <>{children}</>;
 }
 
@@ -52,9 +67,14 @@ function LayoutContent() {
           contentStyle: { backgroundColor: theme.colors.background },
         }}
       >
+        <Stack.Screen name="signup" />
+        <Stack.Screen name="plans" />
+        <Stack.Screen name="auth/confirm" />
+
+        <Stack.Screen name="login" />
+        
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="(private)" />
-        <Stack.Screen name="login" />
         <Stack.Screen
           name="+not-found"
           options={{ title: "Página não encontrada" }}

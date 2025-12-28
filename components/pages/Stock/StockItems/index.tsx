@@ -16,6 +16,7 @@ import { useAppTheme } from "@/context/ThemeProvider/theme";
 import useRestaurant from "@/hooks/useRestaurant";
 import useAuth from "@/hooks/useAuth";
 import { getStockItems, deleteStockItem, StockItem } from "@/services/stock";
+import { api } from "@/services/api";
 
 type StockStatus = "ok" | "warning" | "critical";
 
@@ -137,39 +138,64 @@ export default function StockItems() {
     }
   }, [currentPage, totalPages, loadStock]);
 
-  function handleDelete(id: string) {
-    console.log("🗑️ Botão delete clicado para ID:", id);
-    console.log("🗑️ Item a ser excluído:", items.find(item => item.id === id));
-    
-    Alert.alert(
-      "Excluir item",
-      "Tem certeza que deseja excluir este item do estoque?",
-      [
-        { text: "Cancelar", style: "cancel", onPress: () => console.log("❌ Delete cancelado") },
-        {
-          text: "Excluir",
-          style: "destructive",
-          onPress: async () => {
-            console.log("✅ Confirmado delete para ID:", id);
-            try {
-              console.log("🔄 Chamando deleteStockItem...");
-              await deleteStockItem(id);
-              console.log("✅ deleteStockItem executado com sucesso");
-              Alert.alert("Sucesso", "Item excluído com sucesso");
-              // Recarrega a página atual
-              loadStock(currentPage);
-            } catch (error: any) {
-              console.error("❌ Erro no delete:", error);
-              console.error("❌ Mensagem:", error.message);
-              console.error("❌ Response:", error.response?.data);
-              Alert.alert("Erro", error.message || "Erro ao excluir item");
-            }
-          },
-        },
-      ]
-    );
+function handleDelete(id: string) {
+  console.log("🗑️ Iniciando delete para:", id);
+  
+  const itemToDelete = items.find(item => item.id === id);
+  if (!itemToDelete) {
+    console.error("❌ Item não encontrado no estado local");
+    Alert.alert("Erro", "Item não encontrado");
+    return;
   }
-
+  
+  Alert.alert(
+    `Excluir "${itemToDelete.name}"`,
+    `Deseja excluir ${itemToDelete.quantity} ${itemToDelete.unit} de ${itemToDelete.name}?`,
+    [
+      { text: "Cancelar", style: "cancel" },
+      {
+        text: "Excluir",
+        style: "destructive",
+        onPress: async () => {
+          try {
+            console.log(`🗑️ Excluindo: ${itemToDelete.name} (${id})`);
+            
+            // REQUISIÇÃO
+            await deleteStockItem(id);
+            console.log("✅ Backend confirmou exclusão");
+            
+            // ATUALIZAÇÃO DE ESTADO
+            const newItems = items.filter(item => item.id !== id);
+            setItems(newItems);
+            setTotalItems(prev => prev - 1);
+            
+            console.log(`🗑️ Estado atualizado. Restam: ${newItems.length} itens`);
+            
+            // Feedback
+            Alert.alert(
+              "Sucesso", 
+              `${itemToDelete.name} excluído`,
+              [{ text: "OK" }]
+            );
+            
+          } catch (error: any) {
+            console.error("❌ Falha na exclusão:", error);
+            
+            // Recarrega tudo em caso de erro
+            Alert.alert(
+              "Erro",
+              "Não foi possível excluir. Recarregando dados...",
+              [{ 
+                text: "OK", 
+                onPress: () => loadStock(currentPage) 
+              }]
+            );
+          }
+        }
+      }
+    ]
+  );
+}
   function getStatus(item: StockItem): StockStatus {
     if (!item.minimum) return "ok";
     if (item.quantity <= item.minimum) return "critical";
