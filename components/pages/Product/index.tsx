@@ -45,6 +45,7 @@ export default function ProductScreen() {
     if (!selectedRestaurant) return;
     try {
       const data = await getKitchens(selectedRestaurant.id);
+
       setKitchens(data);
     } catch (error: any) {
       if (error.response?.status === 404) {

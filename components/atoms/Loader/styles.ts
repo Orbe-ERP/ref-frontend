@@ -25,7 +25,6 @@ export const LoaderBox = styled.View`
   shadow-opacity: 0.2;
   shadow-radius: 6px;
   
-  border-width: ${({ theme }) => theme.colors.border};
   border-color: ${({ theme }) => theme.colors.border};
 `;
 

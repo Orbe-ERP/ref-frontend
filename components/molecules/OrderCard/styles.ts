@@ -126,7 +126,7 @@ export const ItemContainer = styled.View<{
   ${({ preparing, theme }) =>
     preparing &&
     `
-    border-left-width: 10px;
+    border-left-width: 10;
     border-left-color: ${theme.colors.feedback.warning};
   `}
   elevation: 3;

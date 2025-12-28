@@ -110,7 +110,7 @@ export const ItemCard = styled.View`
   border-radius: 8px;
   padding: 16px;
   margin-bottom: 16px;
-  border-width: 1px;
+  border-width: 1;
   border-color: ${({ theme }) => theme.colors.border};
 `;
 
@@ -128,7 +128,7 @@ export const ItemTitle = styled.Text`
 `;
 
 export const PickerContainer = styled.View`
-  border-width: 1px;
+  border-width: 1;
   border-color: ${({ theme }) => theme.colors.border};
   border-radius: 4px;
   background-color: ${({ theme }) => theme.colors.background};
@@ -140,7 +140,7 @@ export const ItemTotal = styled.View`
   align-items: center;
   margin-top: 12px;
   padding-top: 12px;
-  border-top-width: 1px;
+  border-top-width: 1;
   border-top-color: ${({ theme }) => theme.colors.border};
 `;
 
@@ -158,7 +158,7 @@ export const TotalSection = styled.View`
   padding: 16px;
   background-color: ${({ theme }) => theme.colors.surface};
   border-radius: 8px;
-  border-width: 1px;
+  border-width: 1;
   border-color: ${({ theme }) => theme.colors.primary}20;
 `;
 
@@ -207,7 +207,7 @@ export const TotalContainer = styled.View`
   align-items: center;
   margin-top: 8px;
   padding-top: 8px;
-  border-top-width: 1px;
+  border-top-width: 1;
   border-top-color: ${({ theme }) => theme.colors.border};
 `;
 
@@ -234,7 +234,7 @@ export const FilterButton = styled.TouchableOpacity`
   padding: 8px 12px;
   background-color: ${({ theme }) => theme.colors.surface};
   border-radius: 20px;
-  border-width: 1px;
+  border-width: 1;
   border-color: ${({ theme }) => theme.colors.border};
 `;
 
@@ -249,7 +249,7 @@ export const ListHeader = styled.View`
   background-color: ${({ theme }) => theme.colors.surface};
   border-radius: 8px;
   margin-bottom: 12px;
-  border-width: 1px;
+  border-width: 1;
   border-color: ${({ theme }) => theme.colors.border};
 `;
 
@@ -271,7 +271,7 @@ export const CardActions = styled.View`
   gap: 8px;
   margin-top: 12px;
   padding-top: 12px;
-  border-top-width: 1px;
+  border-top-width: 1;
   border-top-color: ${({ theme }) => theme.colors.border};
 `;
 
