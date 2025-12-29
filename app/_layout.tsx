@@ -14,35 +14,41 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
-  const isPrivateRoute = pathname.includes("(private)");
+
+  React.useEffect(() => {
+    if (loading) return;
+
+    const isPrivateRoute =
+      pathname.startsWith("/(private)") || pathname.startsWith("/(tabs)");
+
+    // 🔒 Tentando acessar rota privada sem login
+    if (isPrivateRoute && !user?.hasAuthenticatedUser) {
+      router.replace("/login");
+      return;
+    }
+
+    // 🔑 Usuário logado na tela de login
+    if (pathname === "/login" && user?.hasAuthenticatedUser) {
+      if (!user?.defaultRestaurantId) {
+        router.replace("/plans");
+      } else {
+        router.replace("/(tabs)");
+      }
+      return;
+    }
+
+    // 🧾 Tentando acessar plans sem estar logado
+    if (pathname === "/plans" && !user?.hasAuthenticatedUser) {
+      router.replace("/signup");
+      return;
+    }
+  }, [loading, pathname, user, router]);
+
+  const isStripeRoute = pathname.startsWith("/stripe");
+  if (isStripeRoute) return;
 
   if (loading) {
     return <Loader size="large" />;
-  }
-
-  if (isPrivateRoute && !user?.hasAuthenticatedUser) {
-    router.replace("/login");
-    return null;
-  }
-
-  if (pathname === "/login" && user?.hasAuthenticatedUser) {
-    router.replace("/(private)/select-restaurant");
-    return null;
-  }
-
-   if (pathname === "/plans" && !user?.hasAuthenticatedUser) {
-    const checkTempToken = async () => {
-      try {
-        const AsyncStorage = await import('@react-native-async-storage/async-storage');
-        const tempToken = await AsyncStorage.default.getItem('temp_token');
-        if (!tempToken) {
-          router.replace("/signup");
-        }
-      } catch (error) {
-        router.replace("/signup");
-      }
-    };
-    checkTempToken();
   }
 
   return <>{children}</>;

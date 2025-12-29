@@ -47,7 +47,6 @@ export interface SubscriptionData {
 export interface StartSubscriptionParams {
   priceId: string;
   email: string;
-  password: string;
 }
 
 /**
@@ -62,7 +61,6 @@ export async function startSubscription(
     
     const { data } = await api.post<{ url: string }>("/subscription/start", {
       email: params.email,
-      password: params.password,
       priceId: params.priceId
     });
     

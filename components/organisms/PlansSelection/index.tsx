@@ -19,7 +19,7 @@ const PLANS_DATA = [
     name: 'Starter',
     price: 149,
     interval: 'month',
-    priceId: 'price_basic_monthly',
+    priceId: 'price_1ShFUt58vQQNZspsP1KPkbGN',
     features: [
       'Mesas e Comandas ilimitadas',
       'Categorias, Produtos e Observações',
@@ -33,7 +33,7 @@ const PLANS_DATA = [
     name: 'Pro',
     price: 299,
     interval: 'month',
-    priceId: 'price_pro_monthly',
+    priceId: 'price_1ShFV658vQQNZspsalnwXZXe',
     features: [
       'Tudo do Starter',
       'Mesas, Comandas e Delivery',
@@ -51,7 +51,7 @@ const PLANS_DATA = [
     name: 'Empresarial',
     price: 499,
     interval: 'month',
-    priceId: 'price_enterprise_monthly',
+    priceId: 'price_1ShFVa58vQQNZspsIqZQRGBE',
     features: [
       'Tudo do Pro',
       'Usuários ilimitados',
@@ -101,7 +101,6 @@ export default function PlansSelection() {
         const { url } = await startSubscription({
             priceId: selectedPlanData.priceId,
             email,
-            password
         });
       
         Toast.show({
@@ -229,11 +228,11 @@ export default function PlansSelection() {
           </S.SecurityInfo>
 
           {/* Observações */}
-          <S.NotesContainer>
+          {/* <S.NotesContainer>
             <S.NoteText>• 7 dias de teste gratuito</S.NoteText>
             <S.NoteText>• Cancele quando quiser</S.NoteText>
             <S.NoteText>• Nenhum compromisso</S.NoteText>
-          </S.NotesContainer>
+          </S.NotesContainer> */}
         </S.Content>
       </ScrollView>
     </S.Container>
