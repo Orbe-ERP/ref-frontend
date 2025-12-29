@@ -1,283 +1,153 @@
-import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
-import { View } from "react-native";
-
-import {
-  Card,
-  ItemContainer,
-  ItemDetails,
-  ItemHeader,
-  ItemName,
-  ItemObservations,
-  ActionsHeader,
-  EditButton,
-  ObservationRow,
-  ObservationDeleteButton,
-  ObservationText,
-  ProductActions,
-  ActionButton,
-  ActionText,
-  ModalActions,
-  ModalContainer,
-  ModalContent,
-  ModalTitle,
-  CancelButtonStyled,
-  QtyButton,
-  QtyText,
-  QuantityContainer,
-  ConfirmButton,
-  ConfirmText,
-  CancelButton,
-  CancelText,
-  WorkInProgressButtonSyled,
-  AlertIconContainer,
-  ItemDetailsCentered,
-  ConfirmButtonDestructive,
-  Title,
-} from "./styles";
-
-interface Product {
-  id: string;
-  product: { name: string; kitchen?: { name: string; color: string } };
-  quantity: number;
-  status: string;
-  observations: any[];
-  customObservation?: string;
-}
-
-interface Order {
-  id: string;
-  table: { name: string };
-  status: string;
-  products: Product[];
-  toTake?: boolean;
-}
+import { ActionButton, ActionsHeader, ActionText, CancelButtonStyled, Card, EditButton, ItemContainer, ItemDetails, ItemHeader, ItemName, ItemObservations, ObservationDeleteButton, ObservationRow, ObservationText, ProductActions, Title, WorkInProgressButtonSyled } from "./styles";
+import { useState } from "react";
 
 interface Props {
-  order: Order | any;
-  handleProductStatus: (id: string, status: string) => void;
-  onUpdateQuantity?: (productId: string, quantity: number) => void;
-  confirmDeleteObservation?: (productId: string, observationId: string) => void;
-  confirmDeleteCustomObservation?: (orderProductId: string) => void;
-  handleDeleteProduct?: (orderId: string, productId: string) => void;
-}
+  tableName: string;
+  items: KitchenItem[];
 
-export default function OrderCard({
-  order,
-  handleProductStatus,
+  onUpdateStatus: (orderProductId: string, status: string) => void;
+  onUpdateQuantity?: (orderProductId: string, quantity: number) => void;
+
+  onDeleteObservation?: (orderProductId: string, obsId: string) => void;
+  onDeleteCustomObservation?: (orderProductId: string) => void;
+
+  onCancelItem?: (orderProductId: string) => void;
+}
+export type KitchenItem = {
+  orderId: string;
+  tableName: string;
+
+  orderProductId: string;
+  productName: string;
+
+  composition: {
+    id?: string;
+    kitchen: {
+      id: string;
+      name: string;
+      color: string;
+    };
+    quantity: number;
+    unit: string;
+  };
+
+  quantity: number;
+  status: string;
+
+  observations: any[];
+  customObservation?: string;
+};
+
+
+export default function KitchenOrderCard({
+  tableName,
+  items,
+  onUpdateStatus,
   onUpdateQuantity,
-  confirmDeleteObservation,
-  confirmDeleteCustomObservation,
-  handleDeleteProduct,
+  onDeleteObservation,
+  onDeleteCustomObservation,
+  onCancelItem,
 }: Props) {
-  const [modalVisible, setModalVisible] = useState(false);
-  const [cancelModalVisible, setCancelModalVisible] = useState(false);
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [productToCancel, setProductToCancel] = useState<Product | null>(null);
+  const [editingItem, setEditingItem] = useState<KitchenItem | null>(null);
   const [quantity, setQuantity] = useState("1");
 
-  const handleEditProduct = (product: Product) => {
-    setEditingProduct(product);
-    setQuantity(product.quantity.toString());
-    setModalVisible(true);
-  };
-
-  const confirmAction = () => {
-    if (editingProduct) {
-      onUpdateQuantity?.(editingProduct.id, Number(quantity));
-      setModalVisible(false);
-    }
-  };
-
-  const handleCancelRequest = (product: Product) => {
-    setProductToCancel(product);
-    setCancelModalVisible(true);
-  };
-
-  const confirmCancel = () => {
-    if (!productToCancel) return;
-    handleDeleteProduct?.(order.id, productToCancel.id);
-    setCancelModalVisible(false);
-    setProductToCancel(null);
+  const openEditQuantity = (item: KitchenItem) => {
+    setEditingItem(item);
+    setQuantity(item.quantity.toString());
   };
 
   return (
     <Card>
-      {order.products
-        .filter((p) => p.status !== "CANCELED" || "COMPLETED")
-        .map((p) => (
-          <ItemContainer
-            key={p.id}
-            borderColor={p.product.kitchen?.color || "#475569"}
-            preparing={p.status === "WORK_IN_PROGRESS"}
-          >
-            <ItemHeader>
-              <ItemName>{p.product.name}</ItemName>
-              <ActionsHeader>
-                <EditButton onPress={() => handleEditProduct(p)}>
-                  <Ionicons
-                    name="create-outline"
-                    size={18}
-                    color={p.product.kitchen?.color || "#3b82f6"}
-                  />
-                </EditButton>
-              </ActionsHeader>
-            </ItemHeader>
+      <Title>Mesa {tableName}</Title>
 
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 6,
-                marginBottom: 8,
-              }}
+      {items.map((item) => (
+        <ItemContainer
+          key={item.orderProductId + item.composition.kitchen.id}
+          borderColor={item.composition.kitchen.color}
+          preparing={item.status === "WORK_IN_PROGRESS"}
+        >
+          <ItemHeader>
+            <ItemName>{item.productName}</ItemName>
+
+            <ActionsHeader>
+              <EditButton onPress={() => openEditQuantity(item)}>
+                <Ionicons
+                  name="create-outline"
+                  size={18}
+                  color={item.composition.kitchen.color}
+                />
+              </EditButton>
+            </ActionsHeader>
+          </ItemHeader>
+
+          <ItemDetails>
+            Quantidade: {item.quantity}
+          </ItemDetails>
+
+          {(item.observations.length > 0 || item.customObservation) && (
+            <ItemObservations>
+              <Title>Observações</Title>
+
+              {item.observations.map((obs) => (
+                <ObservationRow key={obs.id}>
+                  <ObservationText>
+                    • {obs.observation?.description || obs.description}
+                  </ObservationText>
+
+                  <ObservationDeleteButton
+                    onPress={() =>
+                      onDeleteObservation?.(item.orderProductId, obs.id)
+                    }
+                  >
+                    <Ionicons name="trash-outline" size={16} color="#ef4444" />
+                  </ObservationDeleteButton>
+                </ObservationRow>
+              ))}
+
+              {item.customObservation && (
+                <ObservationRow>
+                  <ObservationText>• {item.customObservation}</ObservationText>
+                  <ObservationDeleteButton
+                    onPress={() =>
+                      onDeleteCustomObservation?.(item.orderProductId)
+                    }
+                  >
+                    <Ionicons name="trash-outline" size={16} color="#ef4444" />
+                  </ObservationDeleteButton>
+                </ObservationRow>
+              )}
+            </ItemObservations>
+          )}
+
+          <ProductActions>
+            <WorkInProgressButtonSyled
+              onPress={() =>
+                onUpdateStatus(item.orderProductId, "WORK_IN_PROGRESS")
+              }
             >
-              <ItemDetails>Quantidade: {p.quantity}</ItemDetails>
-            </View>
+              <Ionicons name="time-outline" size={16} color="#fff" />
+              <ActionText>Preparar</ActionText>
+            </WorkInProgressButtonSyled>
 
-            {(p.observations.length > 0 || p.customObservation) && (
-              <ItemObservations>
-                <Title>Observações:</Title>
+            <ActionButton
+              onPress={() =>
+                onUpdateStatus(item.orderProductId, "COMPLETED")
+              }
+            >
+              <Ionicons name="checkmark-done-outline" size={16} color="#fff" />
+              <ActionText>Concluir</ActionText>
+            </ActionButton>
 
-                {p.observations.map((obs) => (
-                  <ObservationRow key={obs.id}>
-                    <ObservationText>
-                      • {obs.observation?.description || obs.description}
-                    </ObservationText>
-
-                    <ObservationDeleteButton
-                      onPress={() => confirmDeleteObservation?.(p.id, obs.id)}
-                    >
-                      <Ionicons
-                        name="trash-outline"
-                        size={16}
-                        color="#ef4444"
-                      />
-                    </ObservationDeleteButton>
-                  </ObservationRow>
-                ))}
-
-                {p.customObservation && (
-                  <ObservationRow>
-                    <ObservationText>• {p.customObservation}</ObservationText>
-                    <ObservationDeleteButton
-                      onPress={() => {
-                        confirmDeleteCustomObservation?.(p.id);
-                      }}
-                    >
-                      <Ionicons
-                        name="trash-outline"
-                        size={16}
-                        color="#ef4444"
-                      />
-                    </ObservationDeleteButton>
-                  </ObservationRow>
-                )}
-              </ItemObservations>
-            )}
-
-            <ProductActions>
-              <WorkInProgressButtonSyled
-                onPress={() => handleProductStatus(p.id, "WORK_IN_PROGRESS")}
-              >
-                <Ionicons name="time-outline" size={16} color="#fff" />
-                <ActionText>Preparar</ActionText>
-              </WorkInProgressButtonSyled>
-
-              <ActionButton
-                onPress={() => handleProductStatus(p.id, "COMPLETED")}
-              >
-                <Ionicons
-                  name="checkmark-done-outline"
-                  size={16}
-                  color="#fff"
-                />
-                <ActionText>Concluir</ActionText>
-              </ActionButton>
-
-              <CancelButtonStyled onPress={() => handleCancelRequest(p)}>
-                <Ionicons name="close-circle-outline" size={16} color="#fff" />
-                <ActionText>Cancelar</ActionText>
-              </CancelButtonStyled>
-            </ProductActions>
-          </ItemContainer>
-        ))}
-
-      {modalVisible && editingProduct && (
-        <ModalContainer>
-          <ModalContent>
-            <ModalTitle>Editar Quantidade</ModalTitle>
-
-            <QuantityContainer>
-              <QtyButton
-                onPress={() =>
-                  setQuantity((prev) => String(Math.max(1, Number(prev) - 1)))
-                }
-              >
-                <Ionicons
-                  name="remove-circle-outline"
-                  size={28}
-                  color="#ef4444"
-                />
-              </QtyButton>
-
-              <QtyText>{quantity}</QtyText>
-
-              <QtyButton
-                onPress={() => setQuantity((prev) => String(Number(prev) + 1))}
-              >
-                <Ionicons name="add-circle-outline" size={28} color="#22c55e" />
-              </QtyButton>
-            </QuantityContainer>
-
-            <ModalActions>
-              <CancelButton onPress={() => setModalVisible(false)}>
-                <CancelText>Cancelar</CancelText>
-              </CancelButton>
-              <ConfirmButton
-                onPress={() => {
-                  confirmAction();
-                  setModalVisible(false);
-                }}
-              >
-                <ConfirmText>Confirmar</ConfirmText>
-              </ConfirmButton>
-            </ModalActions>
-          </ModalContent>
-        </ModalContainer>
-      )}
-
-      {cancelModalVisible && productToCancel && (
-        <ModalContainer>
-          <ModalContent>
-            <AlertIconContainer>
-              <Ionicons name="alert-circle-outline" size={56} color="#ef4444" />
-            </AlertIconContainer>
-
-            <ModalTitle>Confirmar cancelamento</ModalTitle>
-
-            <ItemDetailsCentered>
-              Deseja realmente cancelar o produto{" "}
-              <ItemName>{productToCancel.product.name}</ItemName>?
-            </ItemDetailsCentered>
-
-            <ModalActions>
-              <CancelButton
-                onPress={() => {
-                  setCancelModalVisible(false);
-                  setProductToCancel(null);
-                }}
-              >
-                <CancelText>Não</CancelText>
-              </CancelButton>
-
-              <ConfirmButtonDestructive onPress={confirmCancel}>
-                <ConfirmText>Sim, cancelar</ConfirmText>
-              </ConfirmButtonDestructive>
-            </ModalActions>
-          </ModalContent>
-        </ModalContainer>
-      )}
+            <CancelButtonStyled
+              onPress={() => onCancelItem?.(item.orderProductId)}
+            >
+              <Ionicons name="close-circle-outline" size={16} color="#fff" />
+              <ActionText>Cancelar</ActionText>
+            </CancelButtonStyled>
+          </ProductActions>
+        </ItemContainer>
+      ))}
     </Card>
   );
 }

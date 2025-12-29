@@ -1,110 +1,129 @@
-import OrderCard from "@/components/molecules/OrderCard";
-import useRestaurant from "@/hooks/useRestaurant";
-import { getOrdersByRestaurant, Order } from "@/services/order";
-import { getKitchens, Kitchen } from "@/services/kitchen";
-import { Stack } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
+import { Stack } from "expo-router";
 import { Picker } from "@react-native-picker/picker";
 import Toast from "react-native-toast-message";
 import io from "socket.io-client";
-import * as S from "./styles";
+import useRestaurant from "@/hooks/useRestaurant";
+import { getOrdersByRestaurant, Order } from "@/services/order";
+import { getKitchens, Kitchen } from "@/services/kitchen";
 import {
   deleteProductFromOrder,
-  updateCustomObservation,
-  updateQuantityOnProduct,
   updateStatusOnProduct,
 } from "@/services/order-product";
-import { deleteObservationLink } from "@/services/order-product-obs";
 import { useAppTheme } from "@/context/ThemeProvider/theme";
 
-export default function KitchenPage() {
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [kitchens, setKitchens] = useState<Kitchen[]>([]);
-  const [selectedKitchenId, setSelectedKitchenId] = useState<string>("null");
-  const { selectedRestaurant } = useRestaurant();
+import KitchenOrderCard, {
+  KitchenCompositionItem,
+} from "@/components/molecules/KitchenOrderCard";
 
-  const theme = useAppTheme();
+import * as S from "./styles";
 
-  const DEFAULT_KITCHEN_COLOR = "#A0AEC0";
+function normalizeKitchenItems(orders: Order[]) {
+  type KitchenOrder = {
+    orderId: string;
+    tableName: string;
+    kitchenId: string;
+    kitchen: { id: string; name: string; color?: string };
+    items: KitchenCompositionItem[];
+    totalQuantity: number;
+  };
 
-  const groupOrders = (orders: Order[], filterKitchenId?: string) => {
-    const grouped: Record<
+  const result: KitchenOrder[] = [];
+
+  orders.forEach((order) => {
+    const tableName = order.table?.name ?? "Mesa";
+
+    const kitchenMap: Record<
       string,
-      Record<string, { order: Order; products: (typeof orders)[0]["products"] }>
+      { items: KitchenCompositionItem[]; totalQuantity: number }
     > = {};
 
-    orders.forEach((order) => {
-      const tableName = order.table?.name || "Mesa Desconhecida";
-      if (!grouped[tableName]) grouped[tableName] = {};
+    order.products.forEach((orderProduct) => {
+      if (orderProduct.status === "WAITING_DELIVERY") return;
 
-      let productsToGroup =
-        !filterKitchenId || filterKitchenId === "null"
-          ? order.products
-          : order.products.filter(
-              (p) => p.product.kitchen?.id === filterKitchenId
-            );
+      const productTotalQuantity = orderProduct.quantity;
 
-      productsToGroup = productsToGroup.filter(
-        (p) => p.status !== "CANCELED" && p.status !== "COMPLETED"
-      );
+      orderProduct.product.compositions.forEach((comp) => {
+        if (!comp.kitchen?.showOnKitchen) return;
 
-      if (productsToGroup.length === 0) return;
+        const kitchenId = comp.kitchen.id;
 
-      productsToGroup.forEach((product) => {
-        const kitchenId = product.product.kitchen?.id || "default";
-        if (!grouped[tableName][kitchenId]) {
-          grouped[tableName][kitchenId] = { order, products: [] };
+        if (!kitchenMap[kitchenId]) {
+          kitchenMap[kitchenId] = {
+            items: [],
+            totalQuantity: productTotalQuantity,
+          };
         }
-        grouped[tableName][kitchenId].products.push(product);
+
+        kitchenMap[kitchenId].items.push({
+          orderId: order.id,
+          orderProductId: orderProduct.id,
+          tableName,
+          productName: orderProduct.product.name,
+          compositionName: comp.stockItem.name,
+          quantity: comp.quantity,
+          kitchen: comp.kitchen,
+          status: orderProduct.status,
+        });
       });
     });
 
-    return grouped;
-  };
+    Object.entries(kitchenMap).forEach(
+      ([kitchenId, { items, totalQuantity }]) => {
+        if (items.length > 0) {
+          result.push({
+            orderId: order.id,
+            tableName,
+            kitchenId,
+            kitchen: items[0].kitchen,
+            items,
+            totalQuantity,
+          });
+        }
+      }
+    );
+  });
+
+  return result;
+}
+
+export default function KitchenPage() {
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [kitchens, setKitchens] = useState<Kitchen[]>([]);
+  const [selectedKitchenId, setSelectedKitchenId] = useState<string>("null");
+  const [loading, setLoading] = useState(true);
+  const { selectedRestaurant } = useRestaurant();
+  const theme = useAppTheme();
 
   useEffect(() => {
+    if (!selectedRestaurant) return;
 
-      const SOCKET_URL = process.env.SOCKET_URL
+    const socket = io("http://localhost:3001");
 
-    const socket = io("http://192.168.1.4:3001");
-
-    const fetchOrders = async () => {
-      if (!selectedRestaurant) return;
-      setLoading(true);
+    const fetchData = async () => {
       try {
-        const fetchedOrders = await getOrdersByRestaurant(
-          selectedRestaurant.id
-        );
-
-        setOrders(fetchedOrders);
-      } catch (err) {
-        Toast.show({ type: "error", text1: "Erro ao buscar pedidos" });
-      }
-      setLoading(false);
-    };
-
-    const fetchKitchens = async () => {
-      if (!selectedRestaurant) return;
-      try {
-        const kitchensList = await getKitchens(selectedRestaurant.id);
-
-        setKitchens(kitchensList);
-      } catch (err) {
-        Toast.show({ type: "error", text1: "Erro ao buscar cozinhas" });
+        const [ordersData, kitchensData] = await Promise.all([
+          getOrdersByRestaurant(selectedRestaurant.id),
+          getKitchens(selectedRestaurant.id),
+        ]);
+        setOrders(ordersData);
+        setKitchens(kitchensData);
+      } catch {
+        Toast.show({ type: "error", text1: "Erro ao carregar dados" });
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchOrders();
-    fetchKitchens();
+    fetchData();
 
-    socket.on("newOrder", (newOrder: Order) => {
-      setOrders((prevOrders) => [...prevOrders, newOrder]);
+    socket.on("newOrder", (order: Order) => {
+      setOrders((prev) => [...prev, order]);
     });
 
     return () => {
-      socket.off("newOrder");
+      socket.disconnect();
     };
   }, [selectedRestaurant]);
 
@@ -113,59 +132,17 @@ export default function KitchenPage() {
     status: string
   ) => {
     try {
-      const updatedProduct = await updateStatusOnProduct({
-        orderProductId,
-        status,
-      });
-
-      setOrders((prevOrders) =>
-        prevOrders.map((order) => ({
+      const updated = await updateStatusOnProduct({ orderProductId, status });
+      setOrders((prev) =>
+        prev.map((order) => ({
           ...order,
           products: order.products.map((p) =>
-            p.id === orderProductId
-              ? { ...p, status: updatedProduct.status }
-              : p
+            p.id === orderProductId ? { ...p, status: updated.status } : p
           ),
         }))
       );
-    } catch (error) {
-      Toast.show({
-        type: "error",
-        text1: "Não foi possível atualizar o status do produto.",
-      });
-    }
-  };
-
-  const handleUpdateQuantity = async (
-    orderId: string,
-    productId: string,
-    quantity: number
-  ) => {
-    try {
-      const updatedProduct = await updateQuantityOnProduct({
-        orderProductId: productId,
-        quantity,
-      });
-
-      setOrders((prev) =>
-        prev.map((order) =>
-          order.id === orderId
-            ? {
-                ...order,
-                products: order.products.map((p) =>
-                  p.id === productId
-                    ? { ...p, quantity: updatedProduct.quantity }
-                    : p
-                ),
-              }
-            : order
-        )
-      );
-    } catch (err) {
-      Toast.show({
-        type: "error",
-        text1: "Não foi possível atualizar a quantidade",
-      });
+    } catch {
+      Toast.show({ type: "error", text1: "Erro ao atualizar status" });
     }
   };
 
@@ -182,75 +159,9 @@ export default function KitchenPage() {
             : order
         )
       );
-      Toast.show({ type: "success", text1: "Produto removido com sucesso" });
+      Toast.show({ type: "success", text1: "Item cancelado" });
     } catch {
-      Toast.show({ type: "error", text1: "Erro ao remover produto" });
-    }
-  };
-
-  const handleDeleteObservationCustomObs = async (
-    orderId: string,
-    productId: string
-  ) => {
-    try {
-      await updateCustomObservation(productId);
-
-      setOrders((prevOrders) =>
-        prevOrders.map((order) =>
-          order.id === orderId
-            ? {
-                ...order,
-                products: order.products.map((p) =>
-                  p.id === productId ? { ...p, customObservation: null } : p
-                ),
-              }
-            : order
-        )
-      );
-
-      Toast.show({
-        type: "success",
-        text1: "Observação livre removida com sucesso",
-      });
-    } catch {
-      Toast.show({
-        type: "error",
-        text1: "Erro ao remover observação livre",
-      });
-    }
-  };
-
-  const handleDeleteObservation = async (
-    orderId: string,
-    productId: string,
-    obsId: string
-  ) => {
-    try {
-      await deleteObservationLink(obsId);
-
-      setOrders((prevOrders) =>
-        prevOrders.map((order) =>
-          order.id === orderId
-            ? {
-                ...order,
-                products: order.products.map((p) =>
-                  p.id === productId
-                    ? {
-                        ...p,
-                        observations:
-                          p.observations?.filter((obs) => obs.id !== obsId) ??
-                          [],
-                      }
-                    : p
-                ),
-              }
-            : order
-        )
-      );
-
-      Toast.show({ type: "success", text1: "Observação removida com sucesso" });
-    } catch {
-      Toast.show({ type: "error", text1: "Erro ao remover observação" });
+      Toast.show({ type: "error", text1: "Erro ao cancelar item" });
     }
   };
 
@@ -258,7 +169,12 @@ export default function KitchenPage() {
     return <ActivityIndicator size="large" color="#029269" />;
   }
 
-  const groupedOrders = groupOrders(orders, selectedKitchenId);
+  const kitchenItems = normalizeKitchenItems(orders);
+
+  const filteredKitchens =
+    selectedKitchenId === "null"
+      ? kitchenItems
+      : kitchenItems.filter((k) => k.kitchenId === selectedKitchenId);
 
   return (
     <>
@@ -269,75 +185,47 @@ export default function KitchenPage() {
           headerTintColor: theme.theme.colors.text.primary,
         }}
       />
+
       <S.Container>
         <S.PickerContainer>
           <Picker
             selectedValue={selectedKitchenId}
-            onValueChange={(value) => setSelectedKitchenId(value)}
-            style={{ color: "#fff", backgroundColor: "#1E293B" }}
+            onValueChange={setSelectedKitchenId}
+            style={{ color: "#fff", backgroundColor: "#274980" }}
             dropdownIconColor="#fff"
           >
             <Picker.Item label="Todas as cozinhas" value="null" />
             {kitchens
               .filter((k) => k.showOnKitchen)
-              .map((kitchen) => (
+              .map((k) => (
                 <Picker.Item
-                  key={kitchen.id}
-                  label={kitchen.name}
-                  value={kitchen.id}
+                  key={k.id}
+                  label={k.name}
+                  value={k.id}
                   color="#fff"
                 />
               ))}
           </Picker>
         </S.PickerContainer>
 
-        {Object.entries(groupedOrders).length === 0 && (
-          <S.EmptyText>Nenhum pedido encontrado no momento.</S.EmptyText>
+        {filteredKitchens.length === 0 && (
+          <S.EmptyText>Nenhum item para esta cozinha.</S.EmptyText>
         )}
 
-        {Object.entries(groupedOrders).map(([tableName, kitchens]) => (
-          <View key={tableName} style={{ marginBottom: 24 }}>
-            <S.TableName>{tableName}</S.TableName>
-
-            {Object.entries(kitchens).map(
-              ([kitchenId, { order, products }]) => {
-                const kitchenCount: Record<string, number> = {};
-                products.forEach((p) => {
-                  const name = p.product.kitchen?.name || "default";
-                  kitchenCount[name] = (kitchenCount[name] || 0) + 1;
-                });
-                const mainKitchen = Object.entries(kitchenCount).sort(
-                  (a, b) => b[1] - a[1]
-                )[0][0];
-
-                const kitchenName =
-                  products[0]?.product.kitchen?.name || "Cozinha";
-                const kitchenColor =
-                  products[0]?.product.kitchen?.color || DEFAULT_KITCHEN_COLOR;
-
-                return (
-                  <View key={kitchenId} style={{ marginBottom: 16 }}>
-                    <OrderCard
-                      order={{ ...order, products }}
-                      handleProductStatus={handleProductStatus}
-                      onUpdateQuantity={(productId, quantity) =>
-                        handleUpdateQuantity(order.id, productId, quantity)
-                      }
-                      confirmDeleteObservation={(productId, obsId) =>
-                        handleDeleteObservation(order.id, productId, obsId)
-                      }
-                      confirmDeleteCustomObservation={(productId: string) => {
-                        handleDeleteObservationCustomObs(order.id, productId);
-                      }}
-                      handleDeleteProduct={(
-                        orderId: string,
-                        productId: string
-                      ) => handleDeleteProduct(orderId, productId)}
-                    />
-                  </View>
-                );
+        {filteredKitchens.map((kitchenOrder) => (
+          <View
+            key={`${kitchenOrder.kitchenId}-${kitchenOrder.orderId}`}
+            style={{ marginBottom: 24 }}
+          >
+            <KitchenOrderCard
+              tableName={kitchenOrder.tableName}
+              items={kitchenOrder.items}
+              totalQuantity={kitchenOrder.totalQuantity}
+              onUpdateStatus={handleProductStatus}
+              onCancelOrder={(productId) =>
+                handleDeleteProduct(kitchenOrder.orderId, productId)
               }
-            )}
+            />
           </View>
         ))}
       </S.Container>

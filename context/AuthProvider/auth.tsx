@@ -1,4 +1,10 @@
-import React, { createContext, useState, useEffect, useCallback, useContext } from "react";
+import React, {
+  createContext,
+  useState,
+  useEffect,
+  useCallback,
+  useContext,
+} from "react";
 import { IContext, IAuthProvider, IUser } from "./types";
 import {
   LoginRequest,
@@ -7,12 +13,12 @@ import {
   setUserAsyncStorage,
 } from "./utils";
 import useRestaurant from "@/hooks/useRestaurant";
+import { getRestaurantById } from "@/services/restaurant";
 
 export const AuthContext = createContext<IContext>({} as IContext);
 
 export const AuthProvider = ({ children }: IAuthProvider) => {
-
-  const {selectRestaurant} = useRestaurant()
+  const { selectRestaurant } = useRestaurant();
 
   const [user, setUser] = useState<IUser | null>({
     hasAuthenticatedUser: false,
@@ -26,8 +32,19 @@ export const AuthProvider = ({ children }: IAuthProvider) => {
 
       if (storedUser) {
         const isTokenValid = await validateToken(storedUser.token);
+
         if (isTokenValid) {
           setUser(storedUser);
+
+          if (storedUser.defaultRestaurantId) {
+            const restaurant = await getRestaurantById(
+              storedUser.defaultRestaurantId
+            );
+
+            if (restaurant) {
+              selectRestaurant(restaurant);
+            }
+          }
         } else {
           await logout();
         }
@@ -67,12 +84,13 @@ export const AuthProvider = ({ children }: IAuthProvider) => {
       setUser(payload);
       await setUserAsyncStorage(payload);
 
-          selectRestaurant({
-        id: payload.defaultRestaurantId!,
-        name: payload.restaurantName!,
-      });
+      if (payload.defaultRestaurantId) {
+        const restaurant = await getRestaurantById(payload.defaultRestaurantId);
 
-
+        if (restaurant) {
+          selectRestaurant(restaurant);
+        }
+      }
       return true;
     } catch (error) {
       console.error("Erro ao autenticar", error);

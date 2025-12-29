@@ -2,7 +2,7 @@ import { JSX } from "react";
 
 export interface IRestaurant {
     id: string;
-    name: string
+    name: string;
   }
   
   export interface ISelected {

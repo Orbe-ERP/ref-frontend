@@ -58,8 +58,11 @@ export const PlansGrid = styled.View`
   margin-bottom: 24px;
 `;
 
-export const PlanCard = styled.TouchableOpacity<{ recommended?: boolean; selected: boolean }>`
-  background-color: ${({ theme, selected }) => 
+export const PlanCard = styled.TouchableOpacity<{
+  recommended?: boolean;
+  selected: boolean;
+}>`
+  background-color: ${({ theme, selected }) =>
     selected ? `${theme.colors.primary}15` : theme.colors.surface};
   border-radius: 16px;
   padding: 24px;
@@ -74,10 +77,6 @@ export const PlanCard = styled.TouchableOpacity<{ recommended?: boolean; selecte
 
 export const RecommendedBadge = styled.View`
   position: absolute;
-  top: -12px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: ${({ theme }) => `linear-gradient(90deg, ${theme.colors.accent}, ${theme.colors.feedback.warning})`};
   flex-direction: row;
   align-items: center;
   gap: 4px;
@@ -101,14 +100,14 @@ export const PlanHeader = styled.View`
 export const PlanName = styled.Text<{ selected: boolean }>`
   font-size: 20px;
   font-weight: bold;
-  color: ${({ theme, selected }) => 
+  color: ${({ theme, selected }) =>
     selected ? theme.colors.primary : theme.colors.text.primary};
 `;
 
 export const PlanPrice = styled.Text<{ selected: boolean }>`
   font-size: 24px;
   font-weight: bold;
-  color: ${({ theme, selected }) => 
+  color: ${({ theme, selected }) =>
     selected ? theme.colors.primary : theme.colors.text.primary};
 `;
 

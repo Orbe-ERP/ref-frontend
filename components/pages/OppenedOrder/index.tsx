@@ -34,8 +34,14 @@ export default function OppenedOrderPage() {
   const fetchOrders = async () => {
     try {
       const data = await getOrders(tableId as string);
-      setOrders(data);
-      setFilteredOrders(data); // Inicializa com todas as comandas
+
+      const activeOrders = data.filter(
+      (order: any) =>
+        Array.isArray(order.products) &&
+        order.products.some((p) => p.status !== "CANCELED" && !p.deletedAt)
+    );
+      setOrders(activeOrders);
+      setFilteredOrders(activeOrders); 
     } catch {
       setError("Erro ao carregar os pedidos");
     } finally {
@@ -47,7 +53,6 @@ export default function OppenedOrderPage() {
     if (tableId) fetchOrders();
   }, [tableId]);
 
-  // Filtra as comandas quando o texto de busca muda
   useEffect(() => {
     if (searchText.trim() === "") {
       setFilteredOrders(orders);
@@ -77,13 +82,10 @@ export default function OppenedOrderPage() {
     );
   };
 
-  // Seleciona todas as comandas visíveis (filtradas)
   const toggleSelectAllVisible = () => {
     if (selectedOrders.length === filteredOrders.length) {
-      // Se todas já estão selecionadas, deseleciona todas
       setSelectedOrders([]);
     } else {
-      // Seleciona todas as comandas visíveis
       const allVisibleIds = filteredOrders.map(order => order.id);
       setSelectedOrders(allVisibleIds);
     }
@@ -161,6 +163,17 @@ export default function OppenedOrderPage() {
 
       const response = await concludeOrders(payload);
 
+      if (response.status === "NO_ACTIVE_PRODUCTS") {
+  Toast.show({
+    type: "info",
+    text1: "Comanda sem produtos ativos",
+    text2: response.message,
+    position: "top",
+    visibilityTime: 4000,
+  });
+  return; 
+}
+
       setSelectedOrders([]);
       setIsModalVisible(false);
       await fetchOrders();
@@ -220,7 +233,6 @@ export default function OppenedOrderPage() {
 
       <TopBar ordersCount={orders.length} />
       
-      {/* Filtro de pesquisa */}
       <S.SearchContainer>
         <Ionicons name="search" size={20} color="#666" style={{ marginRight: 8 }} />
         <S.SearchInput
@@ -231,7 +243,6 @@ export default function OppenedOrderPage() {
         />
       </S.SearchContainer>
 
-      {/* Checkbox "Selecionar todas" - aparece apenas quando há resultados */}
       {filteredOrders.length > 0 && (
         <S.SelectAllContainer>
           <Checkbox
@@ -257,7 +268,6 @@ export default function OppenedOrderPage() {
         </S.NoOrdersText>
       )}
 
-      {/* Mensagem quando não há resultados na pesquisa */}
       {!loading && !error && orders.length > 0 && filteredOrders.length === 0 && (
         <S.NoOrdersText>
           Nenhuma comanda encontrada para &quot;{searchText}&quot;.

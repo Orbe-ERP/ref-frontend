@@ -7,6 +7,7 @@ export interface ButtonProps {
   variant?: "primary" | "secondary" | "danger";
   icon?: React.ReactNode;
   disabled?: boolean;
+  hasFlex1?: boolean;
 }
 
 export default function Button({
@@ -14,12 +15,13 @@ export default function Button({
   onPress,
   variant = "primary",
   icon,
+  hasFlex1 = false,
   disabled = false,
 }: ButtonProps) {
   return (
-    <StyledButton onPress={onPress} variant={variant} disabled={disabled}>
+    <StyledButton onPress={onPress} variant={variant} disabled={disabled} hasFlex1={hasFlex1}>
       {icon && <IconContainer>{icon}</IconContainer>}
-      <Label $hasIcon={!!icon}>{label}</Label>
+      <Label $hasIcon={!!icon} numberOfLines={1} ellipsizeMode="tail">{label}</Label>
     </StyledButton>
   );
 }

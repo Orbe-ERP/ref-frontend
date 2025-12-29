@@ -2,15 +2,18 @@ import { api } from "./api";
 import { Kitchen } from "./kitchen";
 
 export interface OrderProduct {
+  customObservation: any;
   id: string;
   productId: string;
   quantity: number;
   appliedPrice?: number;
   status: string;
+  
   observations?: { id: string; description: string }[];
   product: {
     name: string;
     price: number;
+    compositions: any
     kitchen: Kitchen;
   };
 }
@@ -264,8 +267,6 @@ export async function concludeOrders({
 }: ConcludeOrderInput) {
   if (!tableId || !restaurantId)
     throw new Error("TableId e RestaurantId são obrigatórios");
-
-
 
   try {
     const response = await api.put(`/orders/restaurant/conclude-orders`, {

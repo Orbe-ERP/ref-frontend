@@ -71,3 +71,7 @@ export const AddButton = styled.TouchableOpacity`
   shadow-offset: 0px 2px;
   elevation: 4;
 `;
+
+export const Space = styled.View`
+  height: 15;
+`;

@@ -1,7 +1,7 @@
 import styled from "styled-components/native";
 
 export const Container = styled.View`
-  background-color: ${({ theme }) => theme.colors.background};
+  background-color: ${({ theme }) => theme.colors.surface};
   padding: 16px;
   border-radius: 12px;
   shadow-color: ${({ theme }) => theme.colors.surface};

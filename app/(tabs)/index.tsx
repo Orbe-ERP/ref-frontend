@@ -247,10 +247,6 @@ export default function IndexScreen() {
 
         <MenuSection>
           <MenuColumn>
-            <Button
-              label="🍴 Selecionar Restaurante"
-              onPress={() => router.push("/(private)/select-restaurant")}
-            />
             {canAccessKitchen && (
               <Button
                 label="👨‍🍳 Cozinha"

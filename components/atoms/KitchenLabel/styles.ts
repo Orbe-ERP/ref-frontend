@@ -1,7 +1,7 @@
 import styled from "styled-components/native";
 
 export const StyledKitchenLabel = styled.Text<{ color: string }>`
-  font-size: 12px;
+  font-size: 16px;
   font-weight: bold;
   padding: 4px 8px;
   border-radius: 12px;

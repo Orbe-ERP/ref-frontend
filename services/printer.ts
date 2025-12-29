@@ -61,7 +61,7 @@ export async function createPrinter(body: CreatePrinter) {
   if (!body.restaurantId) {
     throw new Error("ID do restaurante não definido");
   }
-
+  
   try {
     const response = await api.post<Printer>("/printers", body);
     return response.data;

@@ -16,6 +16,15 @@ export default function ConfigPage() {
         <Title>Configurações</Title>
       </S.Header>
       <S.ConfigScroll style={{ flex: 1 }}>
+        <S.ItemRow onPress={() => router.push("/select-restaurant")}>
+          <Ionicons
+            name="albums"
+            size={22}
+            color={theme.theme.colors.primary}
+          />
+          <S.ItemText>Gerenciar Restaurantes</S.ItemText>
+        </S.ItemRow>
+
         <S.ItemRow onPress={() => router.push("/create-kitchen")}>
           <Ionicons
             name="restaurant-outline"
