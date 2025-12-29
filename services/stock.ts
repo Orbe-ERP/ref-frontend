@@ -52,7 +52,7 @@ export async function getStockItems(
     const response = await api.get(`/stock/restaurant/${restaurantId}`, {
       params: { page, limit }
     });
-    return response.data;
+    return response.data.data;
   } catch (error) {
     throw new Error(`Error fetching stock items: ${error}`);
   }
