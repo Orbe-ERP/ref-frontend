@@ -55,7 +55,6 @@ export default function AccountEditScreen() {
       setLoading(true);
 
       const updateData: UpdateUser = {
-        id: user?.id,
         currentPassword,
         ...(name !== user?.name && { name }),
         ...(email !== user?.email && { email }),

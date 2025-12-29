@@ -251,12 +251,14 @@ export default function IndexScreen() {
             {canAccessKitchen && (
               <Button
                 label="Cozinha"
+                variant="primary"
                 onPress={() => router.push("/(private)/kitchen")}
               />
             )}
             {canAccessReports && (
               <Button
                 label="Relatórios"
+                variant="danger"
                 onPress={() => router.push("/(private)/report")}
               />
             )}

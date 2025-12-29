@@ -22,7 +22,6 @@ export interface AddUserOnAccount {
 }
 
 export interface UpdateUser {
-  id?: string;
   name?: string;
   email?: string;
   newPassword?: string;
@@ -50,8 +49,18 @@ export async function getUserById(id: string) {
 }
 
 export async function updateUser(data: UpdateUser) {
-  const response = await api.patch<User>("/users/update", data);
+
+  console.log(data)
+try {
+    const response = await api.patch<User>("/users/update", data);
   return response.data;
+} catch (error: any) {
+  console.error(
+      "Erro ao deletar no service:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
 }
 
 export async function defineFavoriteRestaurant(restaurant: Restaurant) {

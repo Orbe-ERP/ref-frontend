@@ -48,10 +48,7 @@ export default function DashboardScreen() {
         endDate
       );
 
-      const totalProductsSold = totalResponse.reduce(
-        (acc: number, product: ProductTotal) => acc + product.totalQuantity,
-        0
-      );
+      const totalProductsSold = totalResponse.totalProductsSold;
 
       setTotalProducts(totalProductsSold);
     } catch (err) {
@@ -80,7 +77,7 @@ export default function DashboardScreen() {
       <S.ScrollView>
         {loading ? (
           <S.View>
-            <ActivityIndicator size="large" color="#45B7D1" />
+            <ActivityIndicator size="large" color="#2BAE66" />
             <S.Text>Carregando dados...</S.Text>
           </S.View>
         ) : error ? (

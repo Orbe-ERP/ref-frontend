@@ -30,11 +30,9 @@ export const TopProductsChart: React.FC<TopProductsChartProps> = ({
   const timeRanges = SalesService.getTimeRanges();
   const currentData: ProductSales[] = salesData?.[selectedRange] || [];
 
-  // Ordena os produtos pelo número de vendas para o insight
   const sortedData = [...currentData].sort((a, b) => b.salesCount - a.salesCount);
   const topProduct = sortedData[0];
 
-  // Para exibir no mini gráfico, usamos sempre os dados do dia
   const displayData = variant === "mini" ? salesData?.day || [] : currentData;
 
   return (
@@ -62,7 +60,6 @@ export const TopProductsChart: React.FC<TopProductsChartProps> = ({
         )}
       </View>
 
-      {/* Filtros de tempo */}
       {showFilters && variant === "full" && (
         <View style={styles.timeFilter}>
           {timeRanges.map((range) => (
@@ -87,7 +84,6 @@ export const TopProductsChart: React.FC<TopProductsChartProps> = ({
         </View>
       )}
 
-      {/* Insight */}
       {showInsights && variant === "full" && topProduct && (
         <View style={styles.insightContainer}>
           <Text style={styles.insightTitle}>💡 Insight</Text>
@@ -99,7 +95,6 @@ export const TopProductsChart: React.FC<TopProductsChartProps> = ({
         </View>
       )}
 
-      {/* Gráfico */}
       <View style={styles.chartContainer}>
         {displayData.length > 0 ? (
           variant === "mini" ? (
@@ -129,7 +124,7 @@ export const TopProductsChart: React.FC<TopProductsChartProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#041224",
+    backgroundColor: "#0A1A2F",
     borderRadius: 12,
     borderColor: "#fff",
     borderWidth: 1,
@@ -170,7 +165,7 @@ const styles = StyleSheet.create({
     color: "#666",
   },
   chartTypeTextActive: {
-    color: "#333",
+    color: "#264653",
     fontWeight: "500",
   },
   timeFilter: {
@@ -188,15 +183,15 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   timeFilterButtonActive: {
-    backgroundColor: "#45B7D1",
+    backgroundColor: "#2BAE66",
   },
   timeFilterText: {
     fontSize: 14,
-    color: "#666",
+    color: "#264653",
     fontWeight: "500",
   },
   timeFilterTextActive: {
-    color: "#041224",
+    color: "#0A1A2F",
   },
   insightContainer: {
     backgroundColor: "#E3F2FD",
@@ -230,14 +225,14 @@ const styles = StyleSheet.create({
     fontStyle: "italic",
   },
   refreshButton: {
-    backgroundColor: "#45B7D1",
+    backgroundColor: "#2BAE66",
     padding: 12,
     borderRadius: 8,
     alignItems: "center",
     marginTop: 12,
   },
   refreshButtonText: {
-    color: "#041224",
+    color: "#0A1A2F",
     fontWeight: "bold",
   },
 });
