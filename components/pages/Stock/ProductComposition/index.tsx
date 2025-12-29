@@ -35,7 +35,6 @@ export default function ProductCompositions() {
   const [loadingCategories, setLoadingCategories] = useState(false);
   const [loadingCompositions, setLoadingCompositions] = useState(false);
 
-  // Função para mostrar toast
   const showToast = (type: 'success' | 'error' | 'info' | 'warning', message: string) => {
     Toast.show({
       type,
@@ -129,7 +128,6 @@ export default function ProductCompositions() {
     setCompositions([]);
   };
 
-  // Handle edit composition
   const handleEditComposition = (item: ProductComposition) => {
     if (!item.stockItem?.name) {
       showToast('warning', 'Ingrediente não disponível para edição');
@@ -139,7 +137,8 @@ export default function ProductCompositions() {
     router.push({
       pathname: '/stock/product-composition/edit',
       params: { 
-        compositionId: item.id,
+        id: item.id,
+        quantity: item.quantity,
         productName: selectedProduct?.name,
         ingredientName: item.stockItem.name
       },
