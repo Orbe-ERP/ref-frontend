@@ -79,6 +79,7 @@ export default function ProductScreen() {
           flexDirection: "row",
           flexWrap: "wrap",
           justifyContent: "space-between",
+          gap: "15px"
         }}
       >
         {products.length === 0 ? (

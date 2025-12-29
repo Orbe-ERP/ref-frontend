@@ -21,7 +21,7 @@ export default function Button({
   return (
     <StyledButton onPress={onPress} variant={variant} disabled={disabled} hasFlex1={hasFlex1}>
       {icon && <IconContainer>{icon}</IconContainer>}
-      <Label $hasIcon={!!icon} numberOfLines={1} ellipsizeMode="tail">{label}</Label>
+      <Label>{label}</Label>
     </StyledButton>
   );
 }

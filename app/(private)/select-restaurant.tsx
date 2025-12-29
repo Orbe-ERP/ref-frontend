@@ -35,7 +35,7 @@ const CreateButton = styled.TouchableOpacity`
   margin-bottom: 16px;
   border-width: 2;
   border-color: ${({ theme }) => theme.colors.primary};
-  border-style: dashed; /* Borda tracejada */
+  border-style: dashed;
 `;
 
 const CreateButtonText = styled.Text`

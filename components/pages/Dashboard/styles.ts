@@ -2,16 +2,17 @@ import styled from "styled-components/native";
 
 export const ScrollView = styled.ScrollView`
   flex: 1;
-  background-color: #041224;
+  background-color: ${({ theme }) => theme.colors.background};
 `;
 
 export const View = styled.View`
-  padding: 40px;
+  background-color: ${({ theme }) => theme.colors.background};
+  padding: 10px;
   align-items: center;
 `;
 
 export const Text = styled.Text`
-  color: #fff;
+  color: ${({ theme }) => theme.colors.primary};
   font-size: 16px;
   margin-top: 16px;
 `;
@@ -23,7 +24,7 @@ export const ErrorText = styled.Text`
 `;
 
 export const SummaryCard = styled.View`
-  background-color: #0A2647;
+  background-color: ${({ theme }) => theme.colors.primary};
   border-radius: 12px;
   padding: 20px;
   margin-horizontal: 16px;
@@ -38,13 +39,13 @@ export const SummaryCard = styled.View`
 `;
 
 export const SummaryTitle = styled.Text`
-  color: #45B7D1;
+  color: ${({ theme }) => theme.colors.surface};
   font-size: 16px;
   font-weight: 500;
 `;
 
 export const SummaryValue = styled.Text`
-  color: #fff;
+  color: ${({ theme }) => theme.colors.primary};
   font-size: 32px;
   font-weight: bold;
   margin-top: 6px;

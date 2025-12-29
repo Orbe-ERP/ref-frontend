@@ -86,6 +86,7 @@ export default function CategoryPage() {
           flexDirection: "row",
           flexWrap: "wrap",
           justifyContent: "space-between",
+          gap: "15px"
         }}
       >
         {categories.map((category) => (

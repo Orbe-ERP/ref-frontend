@@ -37,9 +37,7 @@ export default function TabLayout() {
           backgroundColor: theme.colors.background,
           borderTopWidth: 0,
           elevation: 0,
-          height: Platform.OS === "ios" ? 60 + insets.bottom : 60,
-          paddingBottom: Platform.OS === "ios" ? insets.bottom : 6,
-          paddingTop: 6,
+          paddingBottom: Platform.OS === "ios" ? insets.bottom + 10 : 8,
           position: "absolute",
         },
       }}
@@ -64,28 +62,27 @@ export default function TabLayout() {
       />
       {isAdmin && (
         <>
-<Tabs.Screen
-  name="dashboard"
-  options={{
-    title: "Dashboard",
-    href: isAdmin ? undefined : null,
-    tabBarIcon: ({ color, size }) => (
-      <Ionicons name="stats-chart" size={size} color={color} />
-    ),
-  }}
-/>
+          <Tabs.Screen
+            name="dashboard"
+            options={{
+              title: "Dashboard",
+              href: isAdmin ? undefined : null,
+              tabBarIcon: ({ color, size }) => (
+                <Ionicons name="stats-chart" size={size} color={color} />
+              ),
+            }}
+          />
 
-<Tabs.Screen
-  name="config"
-  options={{
-    title: "Opções",
-    href: isAdmin ? undefined : null,
-    tabBarIcon: ({ color, size }) => (
-      <Ionicons name="settings" size={size} color={color} />
-    ),
-  }}
-/>
-
+          <Tabs.Screen
+            name="config"
+            options={{
+              title: "Opções",
+              href: isAdmin ? undefined : null,
+              tabBarIcon: ({ color, size }) => (
+                <Ionicons name="settings" size={size} color={color} />
+              ),
+            }}
+          />
         </>
       )}
     </Tabs>

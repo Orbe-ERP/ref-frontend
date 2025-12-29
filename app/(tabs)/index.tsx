@@ -137,11 +137,11 @@ export default function IndexScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { selectedRestaurant } = useRestaurant();
-  const { 
-    canAccessDashboard, 
-    canAccessReports, 
+  const {
+    canAccessDashboard,
+    canAccessReports,
     canAccessKitchen,
-    canViewAdvancedCharts 
+    canViewAdvancedCharts,
   } = usePermissions();
   const router = useRouter();
   const { theme } = useAppTheme();
@@ -190,7 +190,7 @@ export default function IndexScreen() {
       <ScrollContent showsVerticalScrollIndicator={false}>
         <LogoutContainer>
           <ThemeToggle />
-          <LogoutButton/>
+          <LogoutButton />
         </LogoutContainer>
 
         {canViewAdvancedCharts && (
@@ -201,7 +201,8 @@ export default function IndexScreen() {
                 {selectedRestaurant && (
                   <SalesCount>
                     {salesData.length}{" "}
-                    {salesData.length === 1 ? "produto" : "produtos"} diferentes vendidos
+                    {salesData.length === 1 ? "produto" : "produtos"} diferentes
+                    vendidos
                   </SalesCount>
                 )}
                 <RefreshButton onPress={refreshData} disabled={loading}>
@@ -231,7 +232,7 @@ export default function IndexScreen() {
             ) : (
               <>
                 <HorizontalBarChart data={salesData} />
-                
+
                 {canAccessDashboard && (
                   <ActionsRow>
                     <Button
@@ -249,16 +250,18 @@ export default function IndexScreen() {
           <MenuColumn>
             {canAccessKitchen && (
               <Button
-                label="👨‍🍳 Cozinha"
+                label="Cozinha"
                 onPress={() => router.push("/(private)/kitchen")}
               />
             )}
             {canAccessReports && (
               <Button
-                label="📈 Relatórios"
+                label="Relatórios"
                 onPress={() => router.push("/(private)/report")}
               />
             )}
+
+            <Button label=" Planos" onPress={() => router.push("/plans")} />
           </MenuColumn>
         </MenuSection>
 

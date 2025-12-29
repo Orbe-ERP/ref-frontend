@@ -139,6 +139,7 @@ export default function KitchenPage() {
           flexDirection: "row",
           flexWrap: "wrap",
           justifyContent: "space-between",
+          gap: "15px"
         }}
       >
         {kitchens.length === 0 ? (

@@ -92,9 +92,8 @@ export default function DashboardScreen() {
             {totalProducts !== null && (
               <S.View>
                 <S.Text>
-                  📦 Produtos Vendidos (7 dias)
+                  📦 Produtos Vendidos (7 dias) - {totalProducts} vendidos
                 </S.Text>
-                <S.Text>{totalProducts}</S.Text>
               </S.View>
             )}
 

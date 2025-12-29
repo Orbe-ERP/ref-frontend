@@ -24,5 +24,6 @@ export const TableScroll = styled(ScrollView).attrs({
     justifyContent: "space-between",
     paddingTop: 20,
     paddingBottom: 40,
+    gap: 15
   },
 })``;
