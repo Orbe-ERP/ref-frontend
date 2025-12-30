@@ -106,7 +106,7 @@ export default function ConfigPage() {
           <S.ItemText>Tutorial</S.ItemText>
         </S.ItemRow> */}
 
-        <S.ItemRow onPress={() => router.push("/(private)/help")}>
+        <S.ItemRow onPress={() => router.push("/help")}>
           <Ionicons
             name="information-circle-sharp"
             size={22}

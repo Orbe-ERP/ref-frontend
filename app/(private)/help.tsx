@@ -1,5 +1,5 @@
 import HelpScreen from "@/components/pages/Help";
 
-export function Help() {
+export default function Help() {
     return <HelpScreen />;
 }
