@@ -13,6 +13,7 @@ import LogoutButton from "@/components/atoms/LogoutButton";
 import { ThemeToggle } from "@/components/molecules/ToggleTheme";
 import styled from "styled-components/native";
 import { useAppTheme } from "@/context/ThemeProvider/theme";
+import Title from "@/components/atoms/Title";
 
 const Container = styled.View`
   flex: 1;
@@ -190,7 +191,10 @@ export default function IndexScreen() {
       <ScrollContent showsVerticalScrollIndicator={false}>
         <LogoutContainer>
           <ThemeToggle />
-          <LogoutButton />
+<Title variant="restaurant">
+  {selectedRestaurant?.name || "Nenhum restaurante selecionado"}
+</Title>          <LogoutButton />
+
         </LogoutContainer>
 
         {canViewAdvancedCharts && (

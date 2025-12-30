@@ -65,7 +65,7 @@ export default function SelectRestaurantScreen() {
 
   const handleSelectRestaurant = (restaurant: any) => {
     selectRestaurant(restaurant);
-    router.back();
+    router.replace('/(tabs)');
   };
 
   const handleEditRestaurant = (restaurant: any) => {

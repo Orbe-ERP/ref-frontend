@@ -79,6 +79,7 @@ export const AuthProvider = ({ children }: IAuthProvider) => {
         token: response.payload.token,
         plan: response.payload.plan,
         defaultRestaurantId: response.payload.defaultRestaurantId,
+        restaurantName: response.payload.restaurantName,
       };
 
       

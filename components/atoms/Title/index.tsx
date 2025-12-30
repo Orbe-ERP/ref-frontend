@@ -2,7 +2,7 @@ import React from "react";
 import { TextProps } from "react-native";
 import { StyledTitle } from "./styles";
 
-export type TitleVariant = "page" | "section" | "card";
+export type TitleVariant = "page" | "section" | "card" | "restaurant";
 
 export interface TitleProps extends TextProps {
   variant?: TitleVariant;

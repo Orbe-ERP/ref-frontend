@@ -11,6 +11,7 @@ import * as Yup from "yup";
 import Toast from "react-native-toast-message";
 import useAuth from "@/hooks/useAuth";
 import styled from "styled-components/native";
+import { Ionicons } from "@expo/vector-icons";
 
 const COLORS = {
   primary: "#2BAE66",
@@ -77,6 +78,18 @@ const Logo = styled.Image`
   margin-bottom: 16px;
 `;
 
+const PasswordContainer = styled.View`
+  width: 100%;
+  position: relative;
+`;
+
+const EyeButton = styled.TouchableOpacity`
+  position: absolute;
+  right: 14px;
+  top: 18px;
+`;
+
+
 const LoginSchema = Yup.object().shape({
   email: Yup.string().email("E-mail inválido").required("E-mail obrigatório"),
   password: Yup.string()
@@ -107,6 +120,8 @@ export default function Login() {
   const { authenticate } = useAuth();
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
+
 
   const handleLogin = async (values: { email: string; password: string }) => {
     setLoading(true);
@@ -182,14 +197,26 @@ export default function Login() {
                 <ErrorText>{errors.email}</ErrorText>
               )}
 
-              <Input
-                placeholder="Senha"
-                placeholderTextColor="#718096"
-                secureTextEntry
-                onChangeText={handleChange("password")}
-                onBlur={handleBlur("password")}
-                value={values.password}
-              />
+<PasswordContainer>
+  <Input
+    placeholder="Senha"
+    placeholderTextColor="#718096"
+    secureTextEntry={!showPassword}
+    onChangeText={handleChange("password")}
+    onBlur={handleBlur("password")}
+    value={values.password}
+    style={{ paddingRight: 44 }} // espaço pro ícone
+  />
+
+  <EyeButton onPress={() => setShowPassword(!showPassword)}>
+    <Ionicons
+      name={showPassword ? "eye-off" : "eye"}
+      size={22}
+      color="#94a3b8"
+    />
+  </EyeButton>
+</PasswordContainer>
+
               {errors.password && touched.password && (
                 <ErrorText>{errors.password}</ErrorText>
               )}

@@ -16,11 +16,13 @@ export const StyledTitle = styled.Text<StyledTitleProps>`
         return `font-size: 18px; font-weight: 700;`;
       case "card":
         return `font-size: 16px; font-weight: 600;`;
+      case "restaurant":
+        return `font-size: 28px; font-weight: bold;`;
       default:
         return `font-size: 18px; font-weight: 700;`;
     }
   }}
 
-  color: ${({ color, theme }) => color ?? theme.colors.text.primary};
+  color: ${({ color, theme }) => color ?? theme.colors.primary};
   text-align: ${({ align }) => align};
 `;

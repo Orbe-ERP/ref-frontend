@@ -26,7 +26,7 @@ export default function PlanOverlay() {
           marginTop: 16,
         }}
       >
-        Plano necessário
+        Restaurante necessário
       </Text>
 
       <Text
@@ -38,11 +38,11 @@ export default function PlanOverlay() {
           paddingHorizontal: 32,
         }}
       >
-        Assine um plano para liberar todas as funcionalidades do app.
+        Crie um selecione um restasurante para acessar todas funcionalidades.
       </Text>
 
       <TouchableOpacity
-        onPress={() => router.push("/plans")}
+        onPress={() => router.push("/select-restaurant")}
         style={{
           marginTop: 24,
           paddingVertical: 12,
@@ -52,7 +52,7 @@ export default function PlanOverlay() {
         }}
       >
         <Text style={{ color: "#fff", fontWeight: "bold" }}>
-          Ver planos
+          Ir para restaurantes
         </Text>
       </TouchableOpacity>
     </View>

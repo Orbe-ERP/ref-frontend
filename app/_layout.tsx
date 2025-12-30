@@ -9,24 +9,49 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import { Loader } from "@/components/atoms/Loader";
-import PlanOverlay from "@/components/molecules/Overlay";
+import PlanOverlay from "@/components/molecules/PlanOverlay";
+import RestaurantOverlay from "@/components/molecules/RestaurantOverlay";
+import useRestaurant from "@/hooks/useRestaurant";
 
 function AuthGuard({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
+  const { selectedRestaurant } = useRestaurant();
   const router = useRouter();
   const pathname = usePathname();
   const hasPlan = Boolean(user?.plan);
 
-  const isTabsRoot = pathname === "/";
+  const isLogged = Boolean(user?.hasAuthenticatedUser);
+
+  const hasRestaurant = selectedRestaurant;
+
+  const restaurantAllowedRoutes = [
+    "/select-restaurant",
+    "/create-restaurant",
+    "/edit-restaurant",
+  ];
+
+  const isRestaurantFlow = restaurantAllowedRoutes.some((route) =>
+    pathname.startsWith(route)
+  );
 
   const isTabsRoute =
     pathname !== "/" &&
     !pathname.startsWith("/login") &&
     !pathname.startsWith("/signup") &&
     !pathname.startsWith("/plans") &&
-    !pathname.startsWith("/stripe");
+    !pathname.startsWith("/stripe") &&
+    !isRestaurantFlow;
 
-  const shouldBlock = user?.hasAuthenticatedUser && !hasPlan && isTabsRoute;
+  type BlockReason = "PLAN" | "RESTAURANT" | null;
+  let blockReason: BlockReason = null;
+
+  if (isLogged && isTabsRoute) {
+    if (!hasRestaurant) {
+      blockReason = "RESTAURANT";
+    } else if (!hasPlan) {
+      blockReason = "PLAN";
+    }
+  }
 
   React.useEffect(() => {
     if (loading) return;
@@ -57,15 +82,12 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
     return <Loader size="large" />;
   }
 
-  console.log("AUTH DEBUG", {
-    pathname,
-    hasPlan,
-    plan: user?.plan,
-  });
-
   return (
     <>
-      {shouldBlock && <PlanOverlay />}
+      {blockReason === "PLAN" && <PlanOverlay />}
+
+      {blockReason === "RESTAURANT" && <RestaurantOverlay />}
+
       {children}
     </>
   );
