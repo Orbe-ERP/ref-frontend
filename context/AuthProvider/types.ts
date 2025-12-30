@@ -6,9 +6,8 @@ export interface IUser {
   role?: string;
   name?: string;
   token?: string;
+  plan?: string | null;
   hasAuthenticatedUser?: boolean;
-  defaultRestaurantId?: string;
-  restaurantName?: string;
 }
 
 export interface IContext {

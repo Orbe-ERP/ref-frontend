@@ -14,22 +14,22 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const hasPlan = Boolean(user?.plan);
 
   React.useEffect(() => {
     if (loading) return;
 
-    const isPrivateRoute =
-      pathname.startsWith("/(private)") || pathname.startsWith("/(tabs)");
+    const isPrivateRoute = pathname.startsWith("/(private)") || pathname.startsWith("/(tabs)");
 
-    // 🔒 Tentando acessar rota privada sem login
+    // Tentando acessar rota privada sem login
     if (isPrivateRoute && !user?.hasAuthenticatedUser) {
       router.replace("/login");
       return;
     }
 
-    // 🔑 Usuário logado na tela de login
+    // Usuário logado na tela de login
     if (pathname === "/login" && user?.hasAuthenticatedUser) {
-      if (!user?.defaultRestaurantId) {
+      if (!hasPlan) {
         router.replace("/plans");
       } else {
         router.replace("/(tabs)");
@@ -37,12 +37,12 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    // 🧾 Tentando acessar plans sem estar logado
+    // Tentando acessar plans sem estar logado
     if (pathname === "/plans" && !user?.hasAuthenticatedUser) {
       router.replace("/signup");
       return;
     }
-  }, [loading, pathname, user, router]);
+  }, [loading, pathname, user, router, hasPlan]);
 
   const isStripeRoute = pathname.startsWith("/stripe");
   if (isStripeRoute) return;

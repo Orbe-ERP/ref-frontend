@@ -7,12 +7,8 @@ export interface AccountRegisterData {
 }
 
 export interface AuthResponse {
-  token: string;
-  user: {
-    id: string;
-    name: string;
-    email: string;
-  };
+  id: string;
+  email: string;
 }
 
 export async function registerAccount(data: AccountRegisterData): Promise<AuthResponse> {

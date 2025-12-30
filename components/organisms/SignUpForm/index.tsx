@@ -84,12 +84,10 @@ export default function SignUpForm({ onSuccess }: SignUpFormProps) {
       const response = await registerAccount(formData);
       
       await AsyncStorage.multiSet([
-        ['temp_token', response.token],
-        ['user_email', formData.email],
-        ['user_id', response.user.id],
-        ['user_name', formData.name],
-        ['subscription_password', formData.password],
-      ]);
+      ['user_email', formData.email],
+      ['user_id', response.id],
+      ['subscription_password', formData.password],
+    ]);
       
       Toast.show({
         type: 'success',

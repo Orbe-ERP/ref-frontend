@@ -1,17 +1,19 @@
 {
   "expo": {
-    "name": "front",
+    "name": "ComandanteApp",
     "slug": "front",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/logo-comandante.png",
-    "scheme": "front",
+    "scheme": "comandante",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.seuusuario.meuappcomandante"
     },
     "android": {
+      "package": "com.seuusuario.meuappcomandante",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/logo-comandante.png",
         "backgroundColor": "#ffffff"

@@ -30,13 +30,6 @@ export default function StockManagement() {
       icon: 'git-network-outline',
       route: '/(private)/stock/product-composition/composition',
     },
-    {
-      id: 'modifier-categories',
-      title: 'Categorias de Modificadores',
-      description: 'Organizar modificadores',
-      icon: 'layers-outline',
-      route: '/(private)/stock/modifiers/create-modifier-category',
-    },
   ];
 
 
