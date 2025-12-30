@@ -10,10 +10,25 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.seuusuario.meuappcomandante"
+      "bundleIdentifier": "br.com.comandanteapp",
+      "associatedDomains": ["applinks:comandanteapp.com.br", "applinks:www.comandanteapp.com.br"]
     },
     "android": {
-      "package": "com.seuusuario.meuappcomandante",
+      "package": "br.com.comandanteapp",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "www.comandanteapp.com.br",
+              "pathPrefix": "/stripe"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/logo-comandante.png",
         "backgroundColor": "#ffffff"
@@ -23,7 +38,8 @@
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/logo-comandante.png"
+      "favicon": "./assets/images/logo-comandante.png",
+      "dangerous_useStaticInDevelopment": true
     },
     "plugins": [
       "expo-router",
