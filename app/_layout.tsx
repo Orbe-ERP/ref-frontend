@@ -9,6 +9,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import { Loader } from "@/components/atoms/Loader";
+import PlanOverlay from "@/components/molecules/Overlay";
 
 function AuthGuard({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -16,10 +17,22 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const hasPlan = Boolean(user?.plan);
 
+  const isTabsRoot = pathname === "/";
+
+  const isTabsRoute =
+    pathname !== "/" &&
+    !pathname.startsWith("/login") &&
+    !pathname.startsWith("/signup") &&
+    !pathname.startsWith("/plans") &&
+    !pathname.startsWith("/stripe");
+
+  const shouldBlock = user?.hasAuthenticatedUser && !hasPlan && isTabsRoute;
+
   React.useEffect(() => {
     if (loading) return;
 
-    const isPrivateRoute = pathname.startsWith("/(private)") || pathname.startsWith("/(tabs)");
+    const isPrivateRoute =
+      pathname.startsWith("/(private)") || pathname.startsWith("/(tabs)");
 
     if (isPrivateRoute && !user?.hasAuthenticatedUser) {
       router.replace("/login");
@@ -27,11 +40,7 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
     }
 
     if (pathname === "/login" && user?.hasAuthenticatedUser) {
-      if (!hasPlan) {
-        router.replace("/plans");
-      } else {
-        router.replace("/(tabs)");
-      }
+      router.replace("/(tabs)");
       return;
     }
     if (pathname === "/plans" && !user?.hasAuthenticatedUser) {
@@ -42,13 +51,24 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
 
   const isStripeRoute = pathname.startsWith("/stripe");
   if (isStripeRoute) {
-  return <>{children}</>;
-}
+    return <>{children}</>;
+  }
   if (loading) {
     return <Loader size="large" />;
   }
 
-  return <>{children}</>;
+  console.log("AUTH DEBUG", {
+    pathname,
+    hasPlan,
+    plan: user?.plan,
+  });
+
+  return (
+    <>
+      {shouldBlock && <PlanOverlay />}
+      {children}
+    </>
+  );
 }
 
 function LayoutContent() {
@@ -69,12 +89,11 @@ function LayoutContent() {
           contentStyle: { backgroundColor: theme.colors.background },
         }}
       >
+        <Stack.Screen name="login" />
         <Stack.Screen name="signup" />
         <Stack.Screen name="plans" />
         <Stack.Screen name="auth/confirm" />
 
-        <Stack.Screen name="login" />
-        
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="(private)" />
         <Stack.Screen

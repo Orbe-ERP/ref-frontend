@@ -1,3 +1,4 @@
+import { Plan } from './../../services/plans';
 import { ReactNode } from "react";
 
 export interface IUser {
@@ -6,8 +7,10 @@ export interface IUser {
   role?: string;
   name?: string;
   token?: string;
-  plan?: string | null;
   hasAuthenticatedUser?: boolean;
+  defaultRestaurantId?: string;
+  restaurantName?: string;
+  plan?: string
 }
 
 export interface IContext {

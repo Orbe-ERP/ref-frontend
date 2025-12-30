@@ -11,106 +11,103 @@ import {
   getUserAsyncStorage,
   setUserAsyncStorage,
 } from "./utils";
+import useRestaurant from "@/hooks/useRestaurant";
+import { getRestaurantById } from "@/services/restaurant";
 
 export const AuthContext = createContext<IContext>({} as IContext);
 
 export const AuthProvider = ({ children }: IAuthProvider) => {
-  const [user, setUser] = useState<IUser | null>(null);
+  const { selectRestaurant } = useRestaurant();
+
+  const [user, setUser] = useState<IUser | null>({
+    hasAuthenticatedUser: false,
+  } as IUser);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadUser = async () => {
       setLoading(true);
-
       const storedUser = await getUserAsyncStorage();
 
-      if (!storedUser?.token) {
-        setUser(null);
-        setLoading(false);
-        return;
-      }
+      if (storedUser) {
+        const isTokenValid = await validateToken(storedUser.token);
 
-      try {
-        const response = await ValidateToken();
+        if (isTokenValid) {
+          setUser(storedUser);
 
-        if (!response?.hasAuthenticatedUser) {
-          setUser(null);
-          await setUserAsyncStorage(null);
-          setLoading(false);
-          return;
+          if (storedUser.defaultRestaurantId) {
+            const restaurant = await getRestaurantById(
+              storedUser.defaultRestaurantId
+            );
+
+            if (restaurant) {
+              selectRestaurant(restaurant);
+            }
+          }
+        } else {
+          await logout();
         }
-
-        setUser({
-          ...storedUser,
-          hasAuthenticatedUser: true,
-        });
-      } catch (error) {
-        console.error("Erro ao validar token", error);
-        setUser(null);
-        await setUserAsyncStorage(null);
-      } finally {
-        setLoading(false);
       }
+      setLoading(false);
     };
 
     loadUser();
   }, []);
 
-  const authenticate = useCallback(
-    async (email: string, password: string) => {
-      try {
-        const response = await LoginRequest(email, password);
+  const validateToken = useCallback(async (token?: string) => {
+    if (!token) return false;
+    try {
+      const response = await ValidateToken();
+      return response?.hasAuthenticatedUser ?? false;
+    } catch (error) {
+      console.error("Token inválido ou erro de autenticação", error);
+      return false;
+    }
+  }, []);
 
-        if (!response?.payload) return false;
+  const authenticate = useCallback(async (email: string, password: string) => {
+    try {
+      const response = await LoginRequest(email, password);
+      if (!response || !response.payload) return false;
 
-        const payload: IUser = {
-          id: response.payload.id,
-          email: response.payload.email,
-          name: response.payload.name,
-          role: response.payload.role,
-          token: response.payload.token,
-          plan: response.payload.plan ?? null,
-          hasAuthenticatedUser: true,
-        };
+      const payload: IUser = {
+        role: response.payload.role,
+        hasAuthenticatedUser: true,
+        name: response.payload.name,
+        email: response.payload.email,
+        id: response.payload.id,
+        token: response.payload.token,
+        plan: response.payload.plan,
+        defaultRestaurantId: response.payload.defaultRestaurantId,
+      };
 
-        setUser(payload);
-        await setUserAsyncStorage(payload);
+      
+      setUser(payload);
+      await setUserAsyncStorage(payload);
+      console.log(payload)
+      
+      if (payload.defaultRestaurantId) {
+        const restaurant = await getRestaurantById(payload.defaultRestaurantId);
 
-        return true;
-      } catch (error) {
-        console.error("Erro ao autenticar", error);
-        return false;
+        if (restaurant) {
+          selectRestaurant(restaurant);
+        }
       }
-    },
-    []
-  );
+      return true;
+    } catch (error) {
+      console.error("Erro ao autenticar", error);
+      return false;
+    }
+  }, []);
 
   const logout = useCallback(async () => {
     setUser(null);
     await setUserAsyncStorage(null);
   }, []);
 
-  /**
-   * Validação manual (opcional)
-   */
-  const validateToken = useCallback(async () => {
-    try {
-      const response = await ValidateToken();
-      return response?.hasAuthenticatedUser ?? false;
-    } catch {
-      return false;
-    }
-  }, []);
-
   return (
     <AuthContext.Provider
-      value={{
-        user,
-        loading,
-        authenticate,
-        logout,
-        validateToken,
-      }}
+      value={{ user, loading, authenticate, logout, validateToken }}
     >
       {children}
     </AuthContext.Provider>

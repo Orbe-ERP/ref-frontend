@@ -137,9 +137,8 @@ export default function PlansSelection() {
 
   return (
     <S.Container>
-      {/* Header */}
       <S.Header>
-        <S.BackButton onPress={() => router.back()}>
+        <S.BackButton onPress={() => router.replace("/")}>
           <Ionicons
             name="arrow-back-outline"
             size={24}

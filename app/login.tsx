@@ -131,6 +131,7 @@ export default function Login() {
     }
 
     setLoading(false);
+    router.replace("/(tabs)");
   };
 
   return (

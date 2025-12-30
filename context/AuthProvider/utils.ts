@@ -29,9 +29,18 @@ export async function getUserAsyncStorage(): Promise<IUser | null> {
 export async function LoginRequest(
   email: string,
   password: string
-): Promise<{ payload: {
-  plan: null;id: string; token: string; role: string, restaurantName: string, name: string, email: string; 
-} } | null> {
+): Promise<{
+  payload: {
+    id: string;
+    token: string;
+    role: string;
+    defaultRestaurantId: string;
+    restaurantName: string;
+    name: string;
+    email: string;
+    plan: string;
+  };
+} | null> {
   try {
     const request = await api.post("signin", { email, password });
     return request.data;
@@ -41,7 +50,9 @@ export async function LoginRequest(
   }
 }
 
-export async function ValidateToken(): Promise<{ hasAuthenticatedUser: boolean } | null> {
+export async function ValidateToken(): Promise<{
+  hasAuthenticatedUser: boolean;
+} | null> {
   try {
     const request = await api.post("validateToken");
     return request.data;
