@@ -1,138 +1,150 @@
-import React, { useState } from 'react';
-import {
-  View,
-  ScrollView,
-  ActivityIndicator,
-  Linking,
-} from 'react-native';
-import { useRouter } from 'expo-router';
-import { useAppTheme } from '@/context/ThemeProvider/theme';
-import { startSubscription } from '@/services/subscription';
-import Ionicons from '@expo/vector-icons/Ionicons';
-import Toast from 'react-native-toast-message';
-import * as S from './styles';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useEffect, useState } from "react";
+import { View, ScrollView, ActivityIndicator, Linking } from "react-native";
+import { useRouter } from "expo-router";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import Toast from "react-native-toast-message";
+import dayjs from "dayjs";
 
-const PLANS_DATA = [
-  {
-    id: 'basic',
-    name: 'Starter',
-    price: 149,
-    interval: 'month',
-    priceId: 'price_1ShFUt58vQQNZspsP1KPkbGN',
-    features: [
-      'Mesas e Comandas ilimitadas',
-      'Categorias, Produtos e Observações',
-      'Até 3 usuários',
-      'Relatórios básicos',
-      'Suporte por email',
-    ],
-  },
-  {
-    id: 'pro',
-    name: 'Pro',
-    price: 299,
-    interval: 'month',
-    priceId: 'price_1ShFV658vQQNZspsalnwXZXe',
-    features: [
-      'Tudo do Starter',
-      'Mesas, Comandas e Delivery',
-      'Estoque Completo + Compras',
-      'Relatório + Taxas de cartão',
-      'Até 10 usuários',
-      '5 restaurantes',
-      'Relatórios avançados',
-      'Suporte prioritário',
-    ],
-    recommended: true,
-  },
-  {
-    id: 'enterprise',
-    name: 'Empresarial',
-    price: 499,
-    interval: 'month',
-    priceId: 'price_1ShFVa58vQQNZspsIqZQRGBE',
-    features: [
-      'Tudo do Pro',
-      'Usuários ilimitados',
-      'Restaurantes ilimitados',
-      'Relatórios personalizados',
-      'Insumos/Ficha técnica',
-      'Dashboard avançado',
-      'Suporte 24/7',
-    ],
-  },
-];
+import { useAppTheme } from "@/context/ThemeProvider/theme";
+import useAuth from "@/hooks/useAuth";
+
+import { getPlans, Plan } from "@/services/plans";
+import {
+  startSubscription,
+  getMySubscription,
+  SubscriptionData,
+} from "@/services/subscription";
+
+import * as S from "./styles";
+import { LoadingContainer } from "@/components/pages/ClosedOrder/styles";
+
+const PLAN_FEATURES: Record<Plan["name"], string[]> = {
+  starter: [
+    "Mesas e Comandas ilimitadas",
+    "Categorias, Produtos e Observações",
+    "Até 3 usuários",
+    "Relatórios básicos",
+    "Suporte por email",
+  ],
+  pro: [
+    "Tudo do Starter",
+    "Mesas, Comandas e Delivery",
+    "Estoque completo + Compras",
+    "Até 10 usuários",
+    "Relatórios avançados",
+    "Suporte prioritário",
+  ],
+  enterprise: [
+    "Tudo do Pro",
+    "Usuários ilimitados",
+    "Restaurantes ilimitados",
+    "Relatórios personalizados",
+    "Dashboard avançado",
+    "Suporte 24/7",
+  ],
+};
 
 export default function PlansSelection() {
   const { theme } = useAppTheme();
   const router = useRouter();
-  const [selectedPlan, setSelectedPlan] = useState<string | null>('pro');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const auth = useAuth();
 
-  const handleContinue = async () => {
-    if (!selectedPlan) {
-      Toast.show({
-        type: 'error',
-        text1: 'Erro',
-        text2: 'Selecione um plano para continuar',
-        position: 'top',
-        visibilityTime: 3000,
-      });
-      return;
+  const [plans, setPlans] = useState<Plan[]>([]);
+  const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+  const [currentSubscription, setCurrentSubscription] =
+    useState<SubscriptionData | null>(null);
+
+  const [loading, setLoading] = useState(false);
+  const [loadingData, setLoadingData] = useState(true);
+
+  const canSeeCurrentPlan = auth.user?.role !== "USER";
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const [plansData, subscription] = await Promise.all([
+          getPlans(),
+          getMySubscription(),
+        ]);
+
+        setPlans(plansData);
+        setCurrentSubscription(subscription);
+
+        if (subscription?.priceId) {
+          setSelectedPlan(subscription.priceId);
+        }
+      } catch {
+        Toast.show({
+          type: "error",
+          text1: "Erro",
+          text2: "Erro ao carregar planos",
+        });
+      } finally {
+        setLoadingData(false);
+      }
     }
 
-    setLoading(true);
+    loadData();
+  }, []);
 
+  const handleContinue = async () => {
     try {
-        const email = await AsyncStorage.getItem('user_email');
-        const password = await AsyncStorage.getItem('subscription_password');
-        const selectedPlanData = PLANS_DATA.find(p => p.id === selectedPlan);
+      if (!selectedPlan) return;
 
-        if (!email || !password) {
-            throw new Error('Credenciais não encontradas. Faça o cadastro novamente.');
-        }
-        
-        if (!selectedPlanData) {
-            throw new Error('Plano não encontrado');
-        }
+      if (selectedPlan === currentSubscription?.priceId) {
+        return;
+      }
 
-        const { url } = await startSubscription({
-            priceId: selectedPlanData.priceId,
-            email,
-        });
-      
-        Toast.show({
-            type: 'info',
-            text1: 'Redirecionando',
-            text2: 'Abrindo tela de pagamento...',
-            position: 'top',
-            visibilityTime: 2000,
-        });
-      
-        await Linking.openURL(url);
+      const email = auth.user?.email;
+      if (!email) {
+        throw new Error("Usuário não autenticado");
+      }
+
+      setLoading(true);
+
+      const { url } = await startSubscription({
+        priceId: selectedPlan,
+        email,
+      });
+
+      Toast.show({
+        type: "info",
+        text1: "Redirecionando",
+        text2: "Abrindo pagamento...",
+      });
+
+      await Linking.openURL(url);
     } catch (err: any) {
-        Toast.show({
-            type: 'error',
-            text1: 'Erro',
-            text2: err.message || 'Erro ao iniciar assinatura',
-            position: 'top',
-            visibilityTime: 4000,
-        });
+      Toast.show({
+        type: "error",
+        text1: "Erro",
+        text2: err.message || "Erro ao iniciar assinatura",
+      });
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
   };
 
-  const selectedPlanData = PLANS_DATA.find(p => p.id === selectedPlan);
+  if (loadingData) {
+    return (
+      <LoadingContainer>
+        <ActivityIndicator size="large" color={theme.colors.primary} />
+      </LoadingContainer>
+    );
+  }
+
+  const selectedPlanData = plans.find((p) => p.id === selectedPlan);
 
   return (
     <S.Container>
       {/* Header */}
       <S.Header>
         <S.BackButton onPress={() => router.back()}>
-          <Ionicons name="arrow-back-outline" size={24} color={theme.colors.text.primary} />
+          <Ionicons
+            name="arrow-back-outline"
+            size={24}
+            color={theme.colors.text.primary}
+          />
         </S.BackButton>
         <S.HeaderTitle>Escolha seu plano</S.HeaderTitle>
         <View style={{ width: 40 }} />
@@ -142,97 +154,148 @@ export default function PlansSelection() {
         <S.Content>
           <S.TitleContainer>
             <S.Title>Encontre o plano perfeito</S.Title>
-            <S.Subtitle>
-              Comece com 14 dias grátis. Cancele a qualquer momento.
-            </S.Subtitle>
+            <S.Subtitle>14 dias grátis. Cancele quando quiser.</S.Subtitle>
           </S.TitleContainer>
-
-          {error && (
-            <S.ErrorContainer>
-              <S.ErrorText>{error}</S.ErrorText>
-            </S.ErrorContainer>
-          )}
 
           {/* Planos */}
           <S.PlansGrid>
-            {PLANS_DATA.map((plan) => (
-              <S.PlanCard
-                key={plan.id}
-                recommended={plan.recommended}
-                selected={selectedPlan === plan.id}
-                onPress={() => setSelectedPlan(plan.id)}
-              >
-                {plan.recommended && (
-                  <S.RecommendedBadge>
-                    <Ionicons name="sparkles-outline" size={14} color={theme.colors.surface} />
-                    <S.RecommendedText>Recomendado</S.RecommendedText>
-                  </S.RecommendedBadge>
-                )}
+            {plans.map((plan) => {
+              const isSelected = selectedPlan === plan.id;
+              const isCurrentPlan =
+                canSeeCurrentPlan && currentSubscription?.priceId === plan.id;
 
-                <S.PlanHeader>
-                  <S.PlanName selected={selectedPlan === plan.id}>
-                    {plan.name}
-                  </S.PlanName>
-                  <S.PlanPrice selected={selectedPlan === plan.id}>
-                    R$ {plan.price}
-                    <S.Interval>/mês</S.Interval>
-                  </S.PlanPrice>
-                </S.PlanHeader>
-
-                <S.PlanFeatures>
-                  {plan.features.map((feature, index) => (
-                    <S.FeatureItem key={index}>
-                      <Ionicons 
-                        name="checkmark-circle-outline" 
-                        size={16} 
-                        color={selectedPlan === plan.id ? theme.colors.primary : theme.colors.feedback.success} 
+              return (
+                <S.PlanCard
+                  key={plan.id}
+                  selected={isSelected}
+                  recommended={plan.name === "pro"}
+                  disabled={canSeeCurrentPlan && isCurrentPlan}
+                  onPress={() => {
+                    if (!isCurrentPlan) {
+                      setSelectedPlan(plan.id);
+                    }
+                  }}
+                >
+                  {isCurrentPlan && (
+                    <S.CurrentPlanBadge>
+                      <Ionicons
+                        name="checkmark-circle"
+                        size={14}
+                        color="#fff"
                       />
-                      <S.FeatureText>{feature}</S.FeatureText>
-                    </S.FeatureItem>
-                  ))}
-                </S.PlanFeatures>
-              </S.PlanCard>
-            ))}
+                      <S.CurrentPlanText>Plano atual</S.CurrentPlanText>
+                    </S.CurrentPlanBadge>
+                  )}
+
+                  {plan.name === "pro" && (
+                    <S.RecommendedBadge>
+                      <Ionicons
+                        name="sparkles-outline"
+                        size={14}
+                        color={theme.colors.surface}
+                      />
+                      <S.RecommendedText>Recomendado</S.RecommendedText>
+                    </S.RecommendedBadge>
+                  )}
+
+                  <S.PlanHeader>
+                    <S.PlanName selected={isSelected}>
+                      {plan.name === "starter"
+                        ? "Starter"
+                        : plan.name === "pro"
+                        ? "Pro"
+                        : "Empresarial"}
+                    </S.PlanName>
+
+                    <S.PlanPrice selected={isSelected}>
+                      R$ {(plan.amount / 100).toFixed(2)}
+                      <S.Interval>/mês</S.Interval>
+                    </S.PlanPrice>
+                  </S.PlanHeader>
+
+                  <S.PlanFeatures>
+                    {PLAN_FEATURES[plan.name].map((feature, index) => (
+                      <S.FeatureItem key={index}>
+                        <Ionicons
+                          name="checkmark-circle-outline"
+                          size={16}
+                          color={
+                            isSelected
+                              ? theme.colors.primary
+                              : theme.colors.feedback.success
+                          }
+                        />
+                        <S.FeatureText>{feature}</S.FeatureText>
+                      </S.FeatureItem>
+                    ))}
+                  </S.PlanFeatures>
+                </S.PlanCard>
+              );
+            })}
           </S.PlansGrid>
 
-          {/* Resumo do plano selecionado */}
+          {/* Resumo */}
           {selectedPlanData && (
             <S.SelectedPlanSummary>
               <S.SummaryHeader>
                 <S.SummaryTitle>Plano selecionado</S.SummaryTitle>
                 <S.SummaryPrice>
-                  R$ {selectedPlanData.price}/{selectedPlanData.interval === 'month' ? 'mês' : 'ano'}
+                  R$ {(selectedPlanData.amount / 100).toFixed(2)}
+                  /mês
                 </S.SummaryPrice>
               </S.SummaryHeader>
-              <S.SummaryName>{selectedPlanData.name}</S.SummaryName>
-              
-              <S.ContinueButton onPress={handleContinue} disabled={loading}>
-                {loading ? (
+
+              <S.SummaryName>
+                {selectedPlanData.name.toUpperCase()}
+              </S.SummaryName>
+
+              {currentSubscription &&
+                selectedPlan === currentSubscription.priceId && (
+                  <S.SubscriptionInfo>
+                    <Ionicons name="calendar-outline" size={16} />
+                    <S.SubscriptionText>
+                      Próxima renovação em{" "}
+                      {dayjs(currentSubscription.currentPeriodEnd).format(
+                        "DD/MM/YYYY"
+                      )}
+                    </S.SubscriptionText>
+                  </S.SubscriptionInfo>
+                )}
+
+              <S.ContinueButton
+                onPress={handleContinue}
+                disabled={
+                  loading || selectedPlan === currentSubscription?.priceId
+                }
+              >
+                {selectedPlan === currentSubscription?.priceId ? (
+                  <S.ContinueButtonText>Plano atual</S.ContinueButtonText>
+                ) : loading ? (
                   <ActivityIndicator color={theme.colors.surface} />
                 ) : (
                   <>
-                    <S.ContinueButtonText>Continuar para pagamento</S.ContinueButtonText>
-                    <Ionicons name="shield-checkmark-outline" size={18} color={theme.colors.surface} />
+                    <S.ContinueButtonText>
+                      Continuar para pagamento
+                    </S.ContinueButtonText>
+                    <Ionicons
+                      name="shield-checkmark-outline"
+                      size={18}
+                      color={theme.colors.surface}
+                    />
                   </>
                 )}
               </S.ContinueButton>
             </S.SelectedPlanSummary>
           )}
 
-          {/* Informações de segurança */}
           <S.SecurityInfo>
-            <Ionicons name="shield-checkmark-outline" size={20} color={theme.colors.feedback.success} />
-            <S.SecurityText>
-              Pagamento 100% seguro processado por Stripe. Seus dados estão protegidos.
-            </S.SecurityText>
+            <Ionicons
+              name="shield-checkmark-outline"
+              size={20}
+              color={theme.colors.feedback.success}
+            />
+            <S.SecurityText>Pagamento 100% seguro via Stripe.</S.SecurityText>
           </S.SecurityInfo>
-
-          {/* Observações */}
-          {/* <S.NotesContainer>
-            <S.NoteText>• 7 dias de teste gratuito</S.NoteText>
-            <S.NoteText>• Cancele quando quiser</S.NoteText>
-            <S.NoteText>• Nenhum compromisso</S.NoteText>
-          </S.NotesContainer> */}
         </S.Content>
       </ScrollView>
     </S.Container>

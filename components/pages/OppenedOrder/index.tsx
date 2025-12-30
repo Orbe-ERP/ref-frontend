@@ -36,12 +36,12 @@ export default function OppenedOrderPage() {
       const data = await getOrders(tableId as string);
 
       const activeOrders = data.filter(
-      (order: any) =>
-        Array.isArray(order.products) &&
-        order.products.some((p) => p.status !== "CANCELED" && !p.deletedAt)
-    );
+        (order: any) =>
+          Array.isArray(order.products) &&
+          order.products.some((p) => p.status !== "CANCELED" && !p.deletedAt)
+      );
       setOrders(activeOrders);
-      setFilteredOrders(activeOrders); 
+      setFilteredOrders(activeOrders);
     } catch {
       setError("Erro ao carregar os pedidos");
     } finally {
@@ -57,7 +57,7 @@ export default function OppenedOrderPage() {
     if (searchText.trim() === "") {
       setFilteredOrders(orders);
     } else {
-      const filtered = orders.filter(order =>
+      const filtered = orders.filter((order) =>
         order.responsible.toLowerCase().includes(searchText.toLowerCase())
       );
       setFilteredOrders(filtered);
@@ -86,7 +86,7 @@ export default function OppenedOrderPage() {
     if (selectedOrders.length === filteredOrders.length) {
       setSelectedOrders([]);
     } else {
-      const allVisibleIds = filteredOrders.map(order => order.id);
+      const allVisibleIds = filteredOrders.map((order) => order.id);
       setSelectedOrders(allVisibleIds);
     }
   };
@@ -164,15 +164,15 @@ export default function OppenedOrderPage() {
       const response = await concludeOrders(payload);
 
       if (response.status === "NO_ACTIVE_PRODUCTS") {
-  Toast.show({
-    type: "info",
-    text1: "Comanda sem produtos ativos",
-    text2: response.message,
-    position: "top",
-    visibilityTime: 4000,
-  });
-  return; 
-}
+        Toast.show({
+          type: "info",
+          text1: "Comanda sem produtos ativos",
+          text2: response.message,
+          position: "top",
+          visibilityTime: 4000,
+        });
+        return;
+      }
 
       setSelectedOrders([]);
       setIsModalVisible(false);
@@ -202,7 +202,7 @@ export default function OppenedOrderPage() {
     switch (status) {
       case "WAITING_DELIVERY":
         return "Esperando Entrega";
-      case "PREPARING":
+      case "WORK_IN_PROGRESS":
         return "Preparando Pedido";
       case "PENDING":
         return "Pendente";
@@ -232,9 +232,14 @@ export default function OppenedOrderPage() {
       />
 
       <TopBar ordersCount={orders.length} />
-      
+
       <S.SearchContainer>
-        <Ionicons name="search" size={20} color="#666" style={{ marginRight: 8 }} />
+        <Ionicons
+          name="search"
+          size={20}
+          color="#666"
+          style={{ marginRight: 8 }}
+        />
         <S.SearchInput
           placeholder="Filtrar por nome do responsável"
           value={searchText}
@@ -247,7 +252,8 @@ export default function OppenedOrderPage() {
         <S.SelectAllContainer>
           <Checkbox
             status={
-              selectedOrders.length === filteredOrders.length && filteredOrders.length > 0
+              selectedOrders.length === filteredOrders.length &&
+              filteredOrders.length > 0
                 ? "checked"
                 : "unchecked"
             }
@@ -268,11 +274,14 @@ export default function OppenedOrderPage() {
         </S.NoOrdersText>
       )}
 
-      {!loading && !error && orders.length > 0 && filteredOrders.length === 0 && (
-        <S.NoOrdersText>
-          Nenhuma comanda encontrada para &quot;{searchText}&quot;.
-        </S.NoOrdersText>
-      )}
+      {!loading &&
+        !error &&
+        orders.length > 0 &&
+        filteredOrders.length === 0 && (
+          <S.NoOrdersText>
+            Nenhuma comanda encontrada para &quot;{searchText}&quot;.
+          </S.NoOrdersText>
+        )}
 
       <ScrollView style={{ width: "100%" }}>
         {filteredOrders.map((order) => {

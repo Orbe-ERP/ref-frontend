@@ -30,10 +30,29 @@ export const HeaderTitle = styled.Text`
   color: ${({ theme }) => theme.colors.text.primary};
 `;
 
+export const CurrentPlanBadge = styled.View`
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  flex-direction: row;
+  align-items: center;
+  background-color: ${({ theme }) => theme.colors.feedback.success};
+  padding: 4px 10px;
+  border-radius: 999px;
+  z-index: 10;
+`;
+
+export const CurrentPlanText = styled.Text`
+  color: ${({ theme }) => theme.colors.surface};
+  font-size: 12px;
+  font-weight: 600;
+  margin-left: 6px;
+`;
+
 export const Content = styled.View`
   padding: 24px;
   width: 100%;
-  max-width: 600px; /* Impede que o conteúdo estique no Desktop */
+  max-width: 600px;
   align-self: center;
 `;
 
@@ -61,6 +80,28 @@ export const PlansGrid = styled.View`
   margin-bottom: 24px;
 `;
 
+
+export const SubscriptionInfo = styled.View`
+  flex-direction: row;
+  align-items: center;
+  margin-top: 8px;
+`;
+
+export const SubscriptionText = styled.Text`
+  margin-left: 6px;
+  font-size: 13px;
+  color: ${({ theme }) => theme.colors.text.secondary};
+`;
+
+export const RecommendedBadge = styled.View`
+  position: absolute;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border-radius: 20px;
+`;
+
 export const PlanCard = styled.TouchableOpacity<{
   recommended?: boolean;
   selected: boolean;
@@ -78,14 +119,7 @@ export const PlanCard = styled.TouchableOpacity<{
   position: relative;
 `;
 
-export const RecommendedBadge = styled.View`
-  position: absolute;
-  flex-direction: row;
-  align-items: center;
-  gap: 4px;
-  padding: 6px 12px;
-  border-radius: 20px;
-`;
+
 
 export const RecommendedText = styled.Text`
   color: ${({ theme }) => theme.colors.surface};

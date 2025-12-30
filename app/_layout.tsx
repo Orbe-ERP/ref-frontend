@@ -21,13 +21,11 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
 
     const isPrivateRoute = pathname.startsWith("/(private)") || pathname.startsWith("/(tabs)");
 
-    // Tentando acessar rota privada sem login
     if (isPrivateRoute && !user?.hasAuthenticatedUser) {
       router.replace("/login");
       return;
     }
 
-    // Usuário logado na tela de login
     if (pathname === "/login" && user?.hasAuthenticatedUser) {
       if (!hasPlan) {
         router.replace("/plans");
@@ -36,8 +34,6 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
       }
       return;
     }
-
-    // Tentando acessar plans sem estar logado
     if (pathname === "/plans" && !user?.hasAuthenticatedUser) {
       router.replace("/signup");
       return;
@@ -45,8 +41,9 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
   }, [loading, pathname, user, router, hasPlan]);
 
   const isStripeRoute = pathname.startsWith("/stripe");
-  if (isStripeRoute) return;
-
+  if (isStripeRoute) {
+  return <>{children}</>;
+}
   if (loading) {
     return <Loader size="large" />;
   }

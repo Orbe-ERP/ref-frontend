@@ -43,16 +43,18 @@ function normalizeKitchenItems(orders: Order[]) {
       if (orderProduct.status === "WAITING_DELIVERY") return;
 
       const productTotalQuantity = orderProduct.quantity;
+      const product = orderProduct.product;
 
-      orderProduct.product.compositions.forEach((comp) => {
-        if (!comp.kitchen?.showOnKitchen) return;
+      if (product.compositions.length === 0) {
+        const kitchen = product.kitchens?.[0];
+        if (!kitchen) return;
 
-        const kitchenId = comp.kitchen.id;
+        const kitchenId = kitchen.id;
 
         if (!kitchenMap[kitchenId]) {
           kitchenMap[kitchenId] = {
             items: [],
-            totalQuantity: productTotalQuantity,
+            totalQuantity: 0,
           };
         }
 
@@ -60,12 +62,44 @@ function normalizeKitchenItems(orders: Order[]) {
           orderId: order.id,
           orderProductId: orderProduct.id,
           tableName,
-          productName: orderProduct.product.name,
+          productName: product.name,
+          compositionName: "Item simples",
+          quantity: productTotalQuantity,
+          kitchen,
+          status: orderProduct.status,
+        });
+
+        kitchenMap[kitchenId].totalQuantity += productTotalQuantity;
+        return;
+      }
+
+      /** ===============================
+       *  CASO 2 — PRODUTO COM COMPOSIÇÃO
+       * =============================== */
+      product.compositions.forEach((comp) => {
+        if (!comp.kitchen?.showOnKitchen) return;
+
+        const kitchenId = comp.kitchen.id;
+
+        if (!kitchenMap[kitchenId]) {
+          kitchenMap[kitchenId] = {
+            items: [],
+            totalQuantity: 0,
+          };
+        }
+
+        kitchenMap[kitchenId].items.push({
+          orderId: order.id,
+          orderProductId: orderProduct.id,
+          tableName,
+          productName: product.name,
           compositionName: comp.stockItem.name,
           quantity: comp.quantity,
           kitchen: comp.kitchen,
           status: orderProduct.status,
         });
+
+        kitchenMap[kitchenId].totalQuantity += comp.quantity;
       });
     });
 
