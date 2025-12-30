@@ -12,9 +12,7 @@ export const ToastNotice = styled.View`
   padding: 14px;
   border-radius: 12px;
   margin-bottom: 16px;
-  background-color: ${({ theme }) => theme.colors.feedback.warning};
-  border-left-width: 4px;
-  border-left-color: ${({ theme }) => theme.colors.feedback.warning};
+  background-color: ${({ theme }) => theme.colors.surface};
 `;
 
 export const ToastIcon = styled.View`
