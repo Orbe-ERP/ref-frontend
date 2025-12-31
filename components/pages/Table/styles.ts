@@ -21,7 +21,7 @@ export const TableScroll = styled(ScrollView).attrs({
   contentContainerStyle: {
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "space-between",
+    justifyContent: "center",
     paddingTop: 20,
     paddingBottom: 40,
     gap: 15

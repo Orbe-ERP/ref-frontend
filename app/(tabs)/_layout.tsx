@@ -68,7 +68,6 @@ tabBarStyle: {
             name="dashboard"
             options={{
               title: "Dashboard",
-              href: isAdmin ? undefined : null,
               tabBarIcon: ({ color, size }) => (
                 <Ionicons name="stats-chart" size={size} color={color} />
               ),
@@ -79,7 +78,6 @@ tabBarStyle: {
             name="config"
             options={{
               title: "Opções",
-              href: isAdmin ? undefined : null,
               tabBarIcon: ({ color, size }) => (
                 <Ionicons name="settings" size={size} color={color} />
               ),

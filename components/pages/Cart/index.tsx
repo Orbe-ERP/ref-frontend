@@ -9,6 +9,7 @@ import React, { useEffect, useState } from "react";
 import { ScrollView, TouchableOpacity } from "react-native";
 import Toast from "react-native-toast-message";
 import * as S from "./styles";
+import { useResponsive } from "@/hooks/useResponsive";
 
 export default function CartPage() {
   const router = useRouter();
@@ -17,6 +18,8 @@ export default function CartPage() {
     tableId: string;
     addedProducts: string;
   }>();
+  const { isTablet, isDesktop, isWeb } = useResponsive();
+  const isWide = isTablet || isDesktop;
 
   const initialProducts = addedProducts ? JSON.parse(addedProducts) : [];
 
@@ -143,138 +146,150 @@ export default function CartPage() {
   };
 
   return (
-    <S.Container>
+    <S.Container isWeb={isWeb} isTablet={isTablet} isDesktop={isDesktop}>
       <Stack.Screen
         options={{
           title: "Comanda",
           headerStyle: { backgroundColor: theme.theme.colors.background },
           headerTintColor: theme.theme.colors.text.primary,
+          headerTitleStyle: {
+            fontSize: isDesktop ? 20 : isTablet ? 18 : 16,
+          },
           headerRight: () => (
             <Ionicons
               name="restaurant-outline"
               size={24}
-              color="white"
+              color={theme.theme.colors.text.primary}
               onPress={goToOppenedOrder}
             />
           ),
         }}
       />
 
-      {products.length === 0 ? (
-        <S.EmptyText>O carrinho está vazio.</S.EmptyText>
-      ) : (
-        <>
-          <ScrollView>
-            {products.map((product: any) => (
-              <S.Card key={product.cartItemId}>
-                <S.Label>{product.productName}</S.Label>
-                <S.Label>Quantidade: {product.quantity}</S.Label>
+      <S.ContentWrapper isTablet={isTablet} isDesktop={isDesktop}>
+        {products.length === 0 ? (
+          <S.EmptyText isWide={isWide}>O carrinho está vazio.</S.EmptyText>
+        ) : (
+          <>
+            <ScrollView
+              contentContainerStyle={
+                isWide ? { alignItems: 'center' } : undefined
+              }
+            >
+              {products.map((product: any) => (
+                <S.Card key={product.cartItemId} isWide={isWide}>
+                  <S.Label>{product.productName}</S.Label>
+                  <S.Label>Quantidade: {product.quantity}</S.Label>
 
-                <S.Input
-                  placeholder="Preço Especial (R$)"
-                  placeholderTextColor="#ccc"
-                  keyboardType="numeric"
-                  value={product.appliedPrice?.toString() ?? ""}
-                  onChangeText={(text: any) => {
-                    const value = parseFloat(text);
-                    setProducts((prev: any) =>
-                      prev.map((p: any) =>
-                        p.cartItemId === product.cartItemId
-                          ? {
-                              ...p,
-                              appliedPrice:
-                                isNaN(value) || value < 0 ? null : value,
-                            }
-                          : p
-                      )
-                    );
-                  }}
-                />
-
-                <S.Row>
-                  <TouchableOpacity
-                    onPress={() => handleQuantityChange(product.cartItemId, -1)}
-                  >
-                    <Ionicons name="remove-outline" size={24} color="#2BAE66" />
-                  </TouchableOpacity>
-
-                  <S.Label>{product.quantity}</S.Label>
-
-                  <TouchableOpacity
-                    onPress={() => handleQuantityChange(product.cartItemId, 1)}
-                  >
-                    <Ionicons name="add-outline" size={24} color="#2BAE66" />
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    onPress={() => handleRemoveProduct(product.cartItemId)}
-                  >
-                    <Ionicons name="trash-outline" size={24} color="#E74C3C" />
-                  </TouchableOpacity>
-                </S.Row>
-
-                {availableObservations[product.productId]?.length ? (
-                  <S.CheckboxContainer>
-                    {availableObservations[product.productId].map((obs) => {
-                      const isSelected = product.observations?.includes(obs.id);
-                      return (
-                        <S.CheckboxItem
-                          key={obs.id}
-                          selected={isSelected}
-                          onPress={() =>
-                            toggleObservation(product.cartItemId, obs.id)
-                          }
-                        >
-                          <S.CheckboxText>
-                            {isSelected ? "☑ " : "☐ "}
-                            {obs.description}
-                          </S.CheckboxText>
-                        </S.CheckboxItem>
+                  <S.Input
+                    placeholder="Preço Especial (R$)"
+                    placeholderTextColor="#ccc"
+                    keyboardType="numeric"
+                    value={product.appliedPrice?.toString() ?? ""}
+                    onChangeText={(text: any) => {
+                      const value = parseFloat(text);
+                      setProducts((prev: any) =>
+                        prev.map((p: any) =>
+                          p.cartItemId === product.cartItemId
+                            ? {
+                                ...p,
+                                appliedPrice:
+                                  isNaN(value) || value < 0 ? null : value,
+                              }
+                            : p
+                        )
                       );
-                    })}
-                  </S.CheckboxContainer>
-                ) : (
-                  <S.Label>Nenhuma observação disponível</S.Label>
-                )}
+                    }}
+                  />
 
-                <S.Input
-                  placeholder="Observação livre (max 20 chars)"
-                  placeholderTextColor="#ccc"
-                  value={product.customDescription}
-                  maxLength={20}
-                  onChangeText={(text) => {
-                    setProducts((prev: any) =>
-                      prev.map((p: any) =>
-                        p.cartItemId === product.cartItemId
-                          ? { ...p, customDescription: text }
-                          : p
-                      )
-                    );
-                  }}
-                />
-              </S.Card>
-            ))}
+                  <S.Row>
+                    <TouchableOpacity
+                      onPress={() => handleQuantityChange(product.cartItemId, -1)}
+                    >
+                      <Ionicons name="remove-outline" size={24} color="#2BAE66" />
+                    </TouchableOpacity>
 
-            <S.Input
-              placeholder="Responsável"
-              placeholderTextColor="#ccc"
-              value={responsible}
-              onChangeText={setResponsible}
-            />
+                    <S.Label>{product.quantity}</S.Label>
 
-            <S.Row>
-              <S.Label>Viagem?</S.Label>
-              <CustomSwitch value={toTake} onValueChange={setToTake} />
-            </S.Row>
-          </ScrollView>
+                    <TouchableOpacity
+                      onPress={() => handleQuantityChange(product.cartItemId, 1)}
+                    >
+                      <Ionicons name="add-outline" size={24} color="#2BAE66" />
+                    </TouchableOpacity>
 
-          <Button
-            label="Enviar Para Cozinha"
-            variant="secondary"
-            onPress={handleOrderSubmit}
-          />
-        </>
-      )}
+                    <TouchableOpacity
+                      onPress={() => handleRemoveProduct(product.cartItemId)}
+                    >
+                      <Ionicons name="trash-outline" size={24} color="#E74C3C" />
+                    </TouchableOpacity>
+                  </S.Row>
+
+                  {availableObservations[product.productId]?.length ? (
+                    <S.CheckboxContainer>
+                      {availableObservations[product.productId].map((obs) => {
+                        const isSelected = product.observations?.includes(obs.id);
+                        return (
+                          <S.CheckboxItem
+                            key={obs.id}
+                            selected={isSelected}
+                            onPress={() =>
+                              toggleObservation(product.cartItemId, obs.id)
+                            }
+                          >
+                            <S.CheckboxText>
+                              {isSelected ? "☑ " : "☐ "}
+                              {obs.description}
+                            </S.CheckboxText>
+                          </S.CheckboxItem>
+                        );
+                      })}
+                    </S.CheckboxContainer>
+                  ) : (
+                    <S.Label>Nenhuma observação disponível</S.Label>
+                  )}
+
+                  <S.Input
+                    placeholder="Observação livre (max 20 chars)"
+                    placeholderTextColor="#ccc"
+                    value={product.customDescription}
+                    maxLength={20}
+                    onChangeText={(text) => {
+                      setProducts((prev: any) =>
+                        prev.map((p: any) =>
+                          p.cartItemId === product.cartItemId
+                            ? { ...p, customDescription: text }
+                            : p
+                        )
+                      );
+                    }}
+                  />
+                </S.Card>
+              ))}
+
+              <S.Input
+                placeholder="Responsável"
+                placeholderTextColor="#ccc"
+                value={responsible}
+                onChangeText={setResponsible}
+                style={isWide ? { width: '100%' } : undefined}
+              />
+
+              <S.Row>
+                <S.Label>Viagem?</S.Label>
+                <CustomSwitch value={toTake} onValueChange={setToTake} />
+              </S.Row>
+            </ScrollView>
+
+            <S.ButtonContainer isWide={isWide}>
+              <Button
+                label="Enviar Para Cozinha"
+                variant="secondary"
+                onPress={handleOrderSubmit}
+              />
+            </S.ButtonContainer>
+          </>
+        )}
+      </S.ContentWrapper>
     </S.Container>
   );
 }

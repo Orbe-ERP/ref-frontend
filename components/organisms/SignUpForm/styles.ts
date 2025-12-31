@@ -48,7 +48,7 @@ export const Label = styled.Text`
 export const InputWrapper = styled.View`
   flex-direction: row;
   align-items: center;
-  border-width: 1px;
+  border-width: 1;
   border-color: ${({ theme }) => theme.colors.border};
   border-radius: 8px;
   background-color: ${({ theme }) => theme.colors.surface};
@@ -77,7 +77,7 @@ export const HintText = styled.Text`
 
 export const ErrorContainer = styled.View`
   background-color: ${({ theme }) => `${theme.colors.feedback.error}15`};
-  border-width: 1px;
+  border-width: 1;
   border-color: ${({ theme }) => `${theme.colors.feedback.error}30`};
   border-radius: 8px;
   padding: 12px;

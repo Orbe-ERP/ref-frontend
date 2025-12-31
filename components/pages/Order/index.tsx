@@ -7,6 +7,7 @@ import Button from "@/components/atoms/Button";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import * as S from "./styles";
 import { useAppTheme } from "@/context/ThemeProvider/theme";
+import { useResponsive } from "@/hooks/useResponsive";
 
 export default function OrderPage() {
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
@@ -17,6 +18,7 @@ export default function OrderPage() {
   const router = useRouter();
   const { tableId } = useLocalSearchParams();
   const { selectedRestaurant } = useRestaurant();
+  const { isTablet, isDesktop, isWeb } = useResponsive();
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -80,13 +82,15 @@ export default function OrderPage() {
   };
 
   return (
-    <S.Container>
+    <S.Container isWeb={isWeb} isTablet={isTablet} isDesktop={isDesktop}>
       <Stack.Screen
         options={{
           title: "Comanda",
           headerStyle: { backgroundColor: theme.theme.colors.background },
           headerTintColor: theme.theme.colors.text.primary,
-
+          headerTitleStyle: {
+            fontSize: isDesktop ? 20 : isTablet ? 18 : 16,
+          },
           headerRight: () => (
             <S.HeaderRightContainer>
               <S.CartContainer onPress={goToClosedOrders}>
@@ -106,23 +110,25 @@ export default function OrderPage() {
         }}
       />
 
-      <CategoryList
-        categories={categories}
-        expandedCategory={expandedCategory}
-        toggleCategory={toggleCategory}
-        selectedProducts={selectedProducts}
-        handleProductChange={handleProductChange}
-        handleQuantityChange={handleQuantityChange}
-        handleAddProduct={handleAddProduct}
-      />
-
-      <S.Footer>
-        <Button
-          label="Ver Comandas"
-          variant="primary"
-          onPress={handleTablePress}
+      <S.ContentWrapper isTablet={isTablet} isDesktop={isDesktop}>
+        <CategoryList
+          categories={categories}
+          expandedCategory={expandedCategory}
+          toggleCategory={toggleCategory}
+          selectedProducts={selectedProducts}
+          handleProductChange={handleProductChange}
+          handleQuantityChange={handleQuantityChange}
+          handleAddProduct={handleAddProduct}
         />
-      </S.Footer>
+
+        <S.Footer isTablet={isTablet} isDesktop={isDesktop}>
+          <Button
+            label="Ver Comandas"
+            variant="primary"
+            onPress={handleTablePress}
+          />
+        </S.Footer>
+      </S.ContentWrapper>
     </S.Container>
   );
 }

@@ -2,7 +2,8 @@ import styled from "styled-components/native";
 
 export const Card = styled.TouchableOpacity`
   border-radius: 10px;
-  flex: 1;
+  width: 160px;
+  height: 160px;
   align-items: center;
   justify-content: center;
   background-color: ${({ theme }) => theme.colors.surface};
@@ -13,7 +14,6 @@ export const Card = styled.TouchableOpacity`
   shadow-opacity: 0.2;
   shadow-radius: 4px;
   elevation: 6;
-  transition: all 0.2s ease-in-out;
 `;
 
 export const CardLabel = styled.Text`
@@ -23,4 +23,8 @@ export const CardLabel = styled.Text`
   font-weight: 700;
   text-align: center;
   letter-spacing: 0.5px;
+`;
+
+export const IconContainer = styled.View`
+  margin-bottom: 8px;
 `;

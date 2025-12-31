@@ -1,7 +1,6 @@
 import React from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { AddButton, AddLabel } from "./styles";
-import { useTheme } from "styled-components";
 import { useAppTheme } from "@/context/ThemeProvider/theme";
 
 interface AddExpertCardProps {

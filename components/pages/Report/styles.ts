@@ -6,14 +6,14 @@ export const Container = styled.View`
   padding: 16px;
 `;
 
-export const FilterContainer = styled.View`
-  margin-bottom: 20px;
+export const FilterContainer = styled.View<{ wide?: boolean }>`
+  gap: 12px;
 `;
 
-export const DateRow = styled.View`
-  flex-direction: row;
-  justify-content: space-between;
-  margin-bottom: 12px;
+export const DateRow = styled.View<{ wide?: boolean }>`
+  flex-direction: ${({ wide }) => (wide ? 'row' : 'column')};
+  gap: 8px;
+  align-items: ${({ wide }) => (wide ? 'center' : 'stretch')};
 `;
 
 export const DateInput = styled.TouchableOpacity`
@@ -31,11 +31,17 @@ export const LabelText = styled.Text`
   text-align: center;
 `;
 
-export const SearchButton = styled.TouchableOpacity<{ disabled?: boolean }>`
+export const SearchButton = styled.TouchableOpacity<{ $inline?: boolean }>`
   background-color: ${(props) => (props.disabled ? '#2BAE66' : '#2BAE66')};
-  padding: 14px;
+  padding: 12px 16px;
   border-radius: 8;
   align-items: center;
+  justify-content: center;
+  ${({ $inline }) =>
+    $inline &&
+    `
+    flex: 0.6;
+  `}
 `;
 
 export const SearchButtonText = styled.Text`

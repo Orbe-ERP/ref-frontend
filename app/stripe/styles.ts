@@ -69,7 +69,7 @@ export const PlanCard = styled.TouchableOpacity<{
     selected ? `${theme.colors.primary}15` : theme.colors.surface};
   border-radius: 16px;
   padding: 24px;
-  border-width: 2px;
+  border-width: 2;
   border-color: ${({ theme, selected, recommended }) => {
     if (selected) return theme.colors.primary;
     if (recommended) return theme.colors.accent;
@@ -153,7 +153,7 @@ export const SelectedPlanSummary = styled.View`
   background-color: ${({ theme }) => theme.colors.surface};
   border-radius: 16px;
   padding: 20px;
-  border-width: 1px;
+  border-width: 1;
   border-color: ${({ theme }) => theme.colors.border};
   margin-bottom: 24px;
 `;

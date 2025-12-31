@@ -4,6 +4,7 @@ import { HorizontalBarChart } from "./components/HorizontalBarChart";
 import { PieChart } from "./components/PieChart";
 import { SalesTimeRange, ChartType, ProductSales } from "@/services/types";
 import { SalesService } from "@/services/salesService";
+import { useResponsive } from "@/hooks/useResponsive";
 
 interface TopProductsChartProps {
   salesData: SalesTimeRange | null;
@@ -34,6 +35,8 @@ export const TopProductsChart: React.FC<TopProductsChartProps> = ({
   const topProduct = sortedData[0];
 
   const displayData = variant === "mini" ? salesData?.day || [] : currentData;
+
+  const { isDesktop } = useResponsive();
 
   return (
     <View style={[styles.container, variant === "mini" && styles.miniContainer]}>
@@ -114,9 +117,22 @@ export const TopProductsChart: React.FC<TopProductsChartProps> = ({
       </View>
 
       {showRefreshButton && onRefresh && (
-        <TouchableOpacity style={styles.refreshButton} onPress={onRefresh}>
-          <Text style={styles.refreshButtonText}>🔄 Atualizar Dados</Text>
-        </TouchableOpacity>
+        <View
+          style={{
+            width: isDesktop ? 240 : "100%",
+            alignSelf: "center",
+            marginTop: 12,
+          }}
+        >
+          <TouchableOpacity
+            style={styles.refreshButton}
+            onPress={onRefresh}
+          >
+            <Text style={styles.refreshButtonText}>
+              🔄 Atualizar Dados
+            </Text>
+          </TouchableOpacity>
+        </View>
       )}
     </View>
   );

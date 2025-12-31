@@ -2,14 +2,15 @@ import { FlatList, Switch, Alert } from "react-native";
 import { useState } from "react";
 import { Stack } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-
 import { usePrinters } from "@/hooks/usePrinters";
 import Button from "@/components/atoms/Button";
 import { useAppTheme } from "@/context/ThemeProvider/theme";
+import { useResponsive } from "@/hooks/useResponsive";
 import * as S from "./styles";
 
 export default function PrinterListScreen() {
   const theme = useAppTheme();
+  const { isTablet, isDesktop, isWeb } = useResponsive();
 
   const {
     printers,
@@ -71,89 +72,100 @@ export default function PrinterListScreen() {
           headerStyle: { backgroundColor: theme.theme.colors.background },
           headerTintColor: theme.theme.colors.text.primary,
           headerShadowVisible: false,
+          headerTitleStyle: {
+            fontSize: isDesktop ? 20 : isTablet ? 18 : 16,
+          },
         }}
       />
 
-      <S.Container>
-        <S.FormCard>
-          <S.FormTitle>
-            {editingPrinter ? "Editar impressora" : "Nova impressora"}
-          </S.FormTitle>
+      <S.Container isWeb={isWeb} isTablet={isTablet} isDesktop={isDesktop}>
+        <S.ContentWrapper isTablet={isTablet} isDesktop={isDesktop}>
+          <S.FormCard isTablet={isTablet} isDesktop={isDesktop}>
+            <S.FormTitle>
+              {editingPrinter ? "Editar impressora" : "Nova impressora"}
+            </S.FormTitle>
 
-          <S.Field>
-            <S.Label>IP da impressora</S.Label>
-            <S.Input
-              value={ip}
-              onChangeText={setIp}
-              placeholder="192.168.0.100"
-            />
-          </S.Field>
-
-          <S.Field>
-            <S.Label>Porta</S.Label>
-            <S.Input
-              value={port}
-              onChangeText={setPort}
-              keyboardType="numeric"
-              placeholder="9100"
-            />
-          </S.Field>
-
-          <S.SwitchRow>
-            <S.Label>Impressora padrão</S.Label>
-            <Switch value={isDefault} onValueChange={setIsDefault} />
-          </S.SwitchRow>
-
-          <S.Actions>
-            <Button
-              label="Cancelar"
-              onPress={resetForm}
-            />
-            <Button
-              label={editingPrinter ? "Salvar" : "Adicionar"}
-              onPress={handleSave}
-            />
-          </S.Actions>
-        </S.FormCard>
-
-        <FlatList
-          data={printers}
-          keyExtractor={(item) => item.id}
-          refreshing={loading}
-          contentContainerStyle={{ paddingBottom: 120 }}
-          renderItem={({ item }) => (
-            <S.Card>
-              <S.InfoContainer>
-                <S.Name>{item.name}</S.Name>
-                <S.Info>
-                  {item.ip}:{item.port}
-                </S.Info>
-              </S.InfoContainer>
-
-              <Button
-                label="Editar"
-                onPress={() => handleEdit(item)}
+            <S.Field>
+              <S.Label>IP da impressora</S.Label>
+              <S.Input
+                value={ip}
+                onChangeText={setIp}
+                placeholder="192.168.0.100"
               />
-            </S.Card>
-          )}
-        />
+            </S.Field>
 
-        <S.ToastNotice>
-            <S.ToastIcon>
-                <Ionicons
-                name="alert-circle-outline"
-                size={20}
-                color={theme.theme.colors.feedback.warning}
+            <S.Field>
+              <S.Label>Porta</S.Label>
+              <S.Input
+                value={port}
+                onChangeText={setPort}
+                keyboardType="numeric"
+                placeholder="9100"
+              />
+            </S.Field>
+
+            <S.SwitchRow>
+              <S.Label>Impressora padrão</S.Label>
+              <Switch value={isDefault} onValueChange={setIsDefault} />
+            </S.SwitchRow>
+
+            <S.Actions>
+              <Button
+                label="Cancelar"
+                onPress={resetForm}
+              />
+              <Button
+                label={editingPrinter ? "Salvar" : "Adicionar"}
+                onPress={handleSave}
+              />
+            </S.Actions>
+          </S.FormCard>
+
+          <FlatList
+            data={printers}
+            keyExtractor={(item) => item.id}
+            refreshing={loading}
+            contentContainerStyle={{ 
+              paddingBottom: 120,
+              ...(isTablet || isDesktop ? { 
+                width: '100%',
+                alignItems: 'center' 
+              } : {})
+            }}
+            renderItem={({ item }) => (
+              <S.Card isTablet={isTablet} isDesktop={isDesktop}>
+                <S.InfoContainer>
+                  <S.Name>{item.name}</S.Name>
+                  <S.Info>
+                    {item.ip}:{item.port}
+                  </S.Info>
+                </S.InfoContainer>
+
+                <Button
+                  label="Editar"
+                  onPress={() => handleEdit(item)}
                 />
-            </S.ToastIcon>
+              </S.Card>
+            )}
+          />
 
-            <S.ToastContent>
+          <S.ToastNotice isTablet={isTablet} isDesktop={isDesktop}>
+              <S.ToastIcon>
+                <Ionicons
+                  name="alert-circle-outline"
+                  size={20}
+                  color={theme.theme.colors.feedback.warning}
+                />
+              </S.ToastIcon>
+
+              <S.ToastContent>
                 <S.ToastTitle>Aviso importante</S.ToastTitle>
                 <S.ToastText>
-                    Para obter o IP da impressora, entre em contato com o suporte da impressora.
+                   Para obter o IP da impressora, entre em contato com o suporte da impressora.
                 </S.ToastText>
-            </S.ToastContent>
-        </S.ToastNotice>
+              </S.ToastContent>
+          </S.ToastNotice>
+        </S.ContentWrapper>
       </S.Container>
     </>
   );

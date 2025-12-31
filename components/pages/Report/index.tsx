@@ -7,6 +7,7 @@ import dayjs from 'dayjs';
 import { Stack } from 'expo-router';
 import { useAppTheme } from '@/context/ThemeProvider/theme';
 import * as S from './styles';
+import { useResponsive } from '@/hooks/useResponsive';
 
 export default function ReportScreen() {
   const { selectedRestaurant } = useRestaurant();
@@ -16,6 +17,8 @@ export default function ReportScreen() {
   const [reportData, setReportData] = useState<ReportData[]>([]);
   const [loading, setLoading] = useState(false);
   const {theme} = useAppTheme();
+  const { isTablet, isDesktop } = useResponsive();
+  const isWide = isTablet || isDesktop;
 
   useEffect(() => {
     if (selectedRestaurant?.id) {
@@ -69,24 +72,40 @@ export default function ReportScreen() {
 
         <S.Container>
             <ScrollView>
-                <S.FilterContainer>
-                    <S.DateRow>
-                        <S.DateInput onPress={() => setShowCalendarFor('start')}>
-                            <S.LabelText>
-                                De: {startDate ? dayjs(startDate).format('DD/MM/YYYY') : '--/--/----'}
-                            </S.LabelText>
-                        </S.DateInput>
+              <S.FilterContainer wide={isWide}>
+                <S.DateRow wide={isWide}>
+                  <S.DateInput onPress={() => setShowCalendarFor('start')}>
+                    <S.LabelText>
+                      De: {startDate ? dayjs(startDate).format('DD/MM/YYYY') : '--/--/----'}
+                    </S.LabelText>
+                  </S.DateInput>
 
-                        <S.DateInput onPress={() => setShowCalendarFor('end')}>
-                            <S.LabelText>
-                                Até: {endDate ? dayjs(endDate).format('DD/MM/YYYY') : '--/--/----'}
-                            </S.LabelText>
-                        </S.DateInput>
-                    </S.DateRow>
+                  <S.DateInput onPress={() => setShowCalendarFor('end')}>
+                    <S.LabelText>
+                      Até: {endDate ? dayjs(endDate).format('DD/MM/YYYY') : '--/--/----'}
+                    </S.LabelText>
+                  </S.DateInput>
 
+                    {isWide && (
+                      <S.SearchButton
+                        onPress={handleSearch}
+                        disabled={loading}
+                        $inline
+                      >
+                        <S.SearchButtonText>
+                          {loading ? 'Carregando...' : 'Buscar'}
+                        </S.SearchButtonText>
+                      </S.SearchButton>
+                    )}
+                  </S.DateRow>
+
+                  {!isWide && (
                     <S.SearchButton onPress={handleSearch} disabled={loading}>
-                        <S.SearchButtonText>{loading ? 'Carregando...' : 'Buscar'}</S.SearchButtonText>
+                      <S.SearchButtonText>
+                        {loading ? 'Carregando...' : 'Buscar'}
+                      </S.SearchButtonText>
                     </S.SearchButton>
+                  )}
                 </S.FilterContainer>
 
                 <Modal visible={!!showCalendarFor} transparent>

@@ -13,7 +13,14 @@ import {
 import ExpertCard from "@/components/molecules/ExpertCard";
 import AddExpertCard from "@/components/molecules/AddTableCard";
 import { useAppTheme } from "@/context/ThemeProvider/theme";
-import { ScreenContainer } from "./styles";
+import { useResponsive } from "@/hooks/useResponsive";
+import {
+  ScreenContainer,
+  ContentWrapper,
+  CategoriesGrid,
+  CardContainer,
+  ScrollContainer,
+} from "./styles";
 
 export default function CategoryPage() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -26,6 +33,8 @@ export default function CategoryPage() {
   );
   const { selectedRestaurant } = useRestaurant();
   const router = useRouter();
+  
+  const { isMobile, isTablet, isDesktop, isWeb } = useResponsive();
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -72,44 +81,84 @@ export default function CategoryPage() {
   };
 
   return (
-    <ScreenContainer>
+    <ScreenContainer isWeb={isWeb} isTablet={isTablet} isDesktop={isDesktop}>
       <Stack.Screen
         options={{
           title: "Categorias",
           headerStyle: { backgroundColor: theme.colors.background },
           headerTintColor: theme.colors.text.primary,
+          headerTitleStyle: {
+            fontSize: isDesktop ? 20 : isTablet ? 18 : 16,
+          },
         }}
       />
 
-      <ScrollView
-        contentContainerStyle={{
-          flexDirection: "row",
-          flexWrap: "wrap",
-          justifyContent: "space-between",
-          gap: "15px"
-        }}
-      >
-        {categories.map((category) => (
-          <ExpertCard
-            icon=""
-            key={category.id}
-            cardType={category}
-            onPress={() =>
-              router.push(`/create-product?categoryId=${category.id}`)
-            }
-            onEdit={() => {
-              setSelectedCategory(category);
-              setNewCategoryName(category.name);
-              setIsEditVisible(true);
+      <ContentWrapper isTablet={isTablet} isDesktop={isDesktop}>
+        {isTablet || isDesktop ? (
+          <ScrollContainer
+            showsVerticalScrollIndicator={isWeb}
+            isMobile={isMobile}
+            isTablet={isTablet}
+            isDesktop={isDesktop}
+          >
+            <CategoriesGrid isTablet={isTablet} isDesktop={isDesktop}>
+              {categories.map((category) => (
+                <CardContainer key={category.id} isTablet={isTablet} isDesktop={isDesktop}>
+                  <ExpertCard
+                    icon="fast-food"
+                    cardType={category}
+                    onPress={() =>
+                      router.push(`/create-product?categoryId=${category.id}`)
+                    }
+                    onEdit={() => {
+                      setSelectedCategory(category);
+                      setNewCategoryName(category.name);
+                      setIsEditVisible(true);
+                    }}
+                  />
+                </CardContainer>
+              ))}
+              
+              <CardContainer isTablet={isTablet} isDesktop={isDesktop}>
+                <AddExpertCard
+                  onPress={() => setIsCreateVisible(true)}
+                  label="Criar Categoria"
+                />
+              </CardContainer>
+            </CategoriesGrid>
+          </ScrollContainer>
+        ) : (
+          <ScrollView
+            contentContainerStyle={{
+              flexDirection: "row",
+              flexWrap: "wrap",
+              justifyContent: "space-between",
+              gap: 15
             }}
-          />
-        ))}
+          >
+            {categories.map((category) => (
+              <ExpertCard
+                icon="fast-food"
+                key={category.id}
+                cardType={category}
+                onPress={() =>
+                  router.push(`/create-product?categoryId=${category.id}`)
+                }
+                onEdit={() => {
+                  setSelectedCategory(category);
+                  setNewCategoryName(category.name);
+                  setIsEditVisible(true);
+                }}
+              />
+            ))}
 
-        <AddExpertCard
-          onPress={() => setIsCreateVisible(true)}
-          label="Criar Categoria"
-        />
-      </ScrollView>
+            <AddExpertCard
+              onPress={() => setIsCreateVisible(true)}
+              label="Criar Categoria"
+            />
+          </ScrollView>
+        )}
+      </ContentWrapper>
 
       <ExpertModal
         visible={isCreateVisible}
@@ -120,6 +169,9 @@ export default function CategoryPage() {
         onClose={() => setIsCreateVisible(false)}
         onConfirm={handleCreateCategory}
         confirmLabel="Criar Categoria"
+        showSwitch={false}
+        switchLabel=""
+        switchValue={false}
       />
 
       <ExpertModal
@@ -133,6 +185,9 @@ export default function CategoryPage() {
         confirmLabel="Atualizar"
         showDelete
         onDelete={handleDeleteCategory}
+        showSwitch={false}
+        switchLabel=""
+        switchValue={false}
       />
     </ScreenContainer>
   );

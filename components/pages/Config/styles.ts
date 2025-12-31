@@ -52,3 +52,14 @@ export const ConfigScroll = styled(ScrollView).attrs({
     
   },
 })``;
+
+export const ContentWrapper = styled.View<{ isMobile: boolean }>`
+  width: 100%;
+  align-self: center;
+  max-width: ${({ isMobile }) => (isMobile ? "100%" : "520px")};
+`;
+
+export const ScaleWrapper = styled.View<{ scale: number }>`
+  transform: ${({ scale }) => `scale(${scale})`};
+  transform-origin: top center;
+`;

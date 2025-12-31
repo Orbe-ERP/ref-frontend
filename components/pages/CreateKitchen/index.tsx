@@ -14,7 +14,8 @@ import {
 } from "@/services/kitchen";
 import Toast from "react-native-toast-message";
 import { useAppTheme } from "@/context/ThemeProvider/theme";
-import { ScreenContainer } from "./styles";
+import { CardWrapper, Grid, ScreenContainer } from "./styles";
+import { useResponsive } from "@/hooks/useResponsive";
 
 const AVAILABLE_COLORS = [
   "#FF5733",
@@ -35,6 +36,7 @@ export default function KitchenPage() {
   const [showOnKitchen, setShowOnKitchen] = useState(true);
   const [selectedColor, setSelectedColor] = useState(AVAILABLE_COLORS[0]);
   const { theme } = useAppTheme();
+  const { scale, isMobile } = useResponsive();
 
   const { selectedRestaurant } = useRestaurant();
 
@@ -134,54 +136,52 @@ export default function KitchenPage() {
         }}
       />
 
-      <ScrollView
-        contentContainerStyle={{
-          flexDirection: "row",
-          flexWrap: "wrap",
-          justifyContent: "space-between",
-          gap: "15px"
-        }}
-      >
-        {kitchens.length === 0 ? (
-          <Text
-            style={{
-              color: "white",
-              marginTop: 20,
-              marginBottom: 20,
-              textAlign: "center",
-              width: "100%",
-            }}
-          >
-            Nenhuma cozinha encontrada para este restaurante.
-          </Text>
-        ) : (
-          kitchens.map((kitchen) => (
-            <ExpertCard
-              icon="cube-outline"
-              key={kitchen.id}
-              cardType={kitchen}
-              onPress={() => console.log("Selecionou:", kitchen.name)}
-              onEdit={() => {
-                setSelectedKitchen(kitchen);
-                setNewKitchenName(kitchen.name);
-                setShowOnKitchen(kitchen.showOnKitchen ?? true);
-                setSelectedColor(kitchen.color ?? AVAILABLE_COLORS[0]);
-                setIsEditVisible(true);
+      <ScrollView contentContainerStyle={{ paddingBottom: 32 }}>
+        <Grid isMobile={isMobile}>
+          {kitchens.length === 0 ? (
+            <Text
+              style={{
+                color: "white",
+                marginTop: 20,
+                marginBottom: 20,
+                textAlign: "center",
+                width: "100%",
               }}
-            />
-          ))
-        )}
+            >
+              Nenhuma cozinha encontrada para este restaurante.
+            </Text>
+          ) : (
+            kitchens.map((kitchen) => (
+              <CardWrapper key={kitchen.id} isMobile={isMobile}>
+                <ExpertCard
+                  icon="cube-outline"
+                  cardType={kitchen}
+                  onPress={() => console.log("Selecionou:", kitchen.name)}
+                  onEdit={() => {
+                    setSelectedKitchen(kitchen);
+                    setNewKitchenName(kitchen.name);
+                    setShowOnKitchen(kitchen.showOnKitchen ?? true);
+                    setSelectedColor(kitchen.color ?? AVAILABLE_COLORS[0]);
+                    setIsEditVisible(true);
+                  }}
+                />
+              </CardWrapper>
+            ))
+          )}
 
-        <AddExpertCard
-          onPress={() => {
-            setSelectedKitchen(null);
-            setNewKitchenName("");
-            setShowOnKitchen(true);
-            setSelectedColor(AVAILABLE_COLORS[0]);
-            setIsCreateVisible(true);
-          }}
-          label="Criar Cozinha"
-        />
+          <CardWrapper isMobile={isMobile}>
+            <AddExpertCard
+              onPress={() => {
+                setSelectedKitchen(null);
+                setNewKitchenName("");
+                setShowOnKitchen(true);
+                setSelectedColor(AVAILABLE_COLORS[0]);
+                setIsCreateVisible(true);
+              }}
+              label="Criar Cozinha"
+            />
+          </CardWrapper>
+        </Grid>
       </ScrollView>
 
       <ExpertModal

@@ -24,11 +24,14 @@ import * as S from "./styles";
 import Toast from "react-native-toast-message";
 import { Pagination } from "@/components/organisms/Pagination";
 import { Loader } from "@/components/atoms/Loader";
+import { useResponsive } from "@/hooks/useResponsive";
 
 export default function CompletedOrdersPage() {
   const router = useRouter();
   const { selectedRestaurant } = useRestaurant();
   const { theme } = useAppTheme();
+  const { isTablet, isDesktop, } = useResponsive();
+  const isWide = isTablet || isDesktop;
 
   const [orders, setOrders] = useState<Order[]>([]);
   const [pagination, setPagination] = useState<PaginatedResponse<Order> | null>(null);
@@ -103,7 +106,6 @@ export default function CompletedOrdersPage() {
     }
     setShowCalendarFor(null);
   };
-
 
   const formatCurrency = (value: number): string =>
     new Intl.NumberFormat("pt-BR", {
@@ -193,34 +195,61 @@ export default function CompletedOrdersPage() {
     <>
       <Stack.Screen
         options={{
-          title: "Comandas Concluídas",
+          title: "Comandas Finalizadas",
           headerStyle: { backgroundColor: theme.colors.background },
           headerTintColor: theme.colors.text.primary,
+          headerTitleStyle: {
+            fontSize: isDesktop ? 20 : isTablet ? 18 : 16,
+          },
         }}
       />
 
       <S.Container>
-        <S.FilterContainer>
-          <S.DateRow>
-            <S.DateInput onPress={() => setShowCalendarFor("start")}>
-              <S.LabelText>
-                De: {dayjs(startDate).format("DD/MM/YYYY")}
-              </S.LabelText>
-            </S.DateInput>
+        {isWide ? (
+          <S.FilterContainerWide>
+            <S.DateRowWide>
+              <S.DateInput onPress={() => setShowCalendarFor("start")}>
+                <S.LabelText>
+                  De: {dayjs(startDate).format("DD/MM/YYYY")}
+                </S.LabelText>
+              </S.DateInput>
 
-            <S.DateInput onPress={() => setShowCalendarFor("end")}>
-              <S.LabelText>
-                Até: {dayjs(endDate).format("DD/MM/YYYY")}
-              </S.LabelText>
-            </S.DateInput>
-          </S.DateRow>
+              <S.DateInput onPress={() => setShowCalendarFor("end")}>
+                <S.LabelText>
+                  Até: {dayjs(endDate).format("DD/MM/YYYY")}
+                </S.LabelText>
+              </S.DateInput>
 
-          <S.SearchButton onPress={handleSearch} disabled={loading}>
-            <S.SearchButtonText>
-              {"Buscar"}
-            </S.SearchButtonText>
-          </S.SearchButton>
-        </S.FilterContainer>
+              <S.SearchButtonWide onPress={handleSearch} disabled={loading}>
+                <S.SearchButtonText>
+                  {"Buscar"}
+                </S.SearchButtonText>
+              </S.SearchButtonWide>
+            </S.DateRowWide>
+          </S.FilterContainerWide>
+        ) : (
+          <S.FilterContainerMobile>
+            <S.DateRowMobile>
+              <S.DateInputMobile onPress={() => setShowCalendarFor("start")}>
+                <S.LabelText>
+                  De: {dayjs(startDate).format("DD/MM/YYYY")}
+                </S.LabelText>
+              </S.DateInputMobile>
+
+              <S.DateInputMobile onPress={() => setShowCalendarFor("end")}>
+                <S.LabelText>
+                  Até: {dayjs(endDate).format("DD/MM/YYYY")}
+                </S.LabelText>
+              </S.DateInputMobile>
+            </S.DateRowMobile>
+
+            <S.SearchButtonMobile onPress={handleSearch} disabled={loading}>
+              <S.SearchButtonText>
+                {"Buscar"}
+              </S.SearchButtonText>
+            </S.SearchButtonMobile>
+          </S.FilterContainerMobile>
+        )}
 
         <Modal visible={!!showCalendarFor} transparent>
           <S.ModalContainer>

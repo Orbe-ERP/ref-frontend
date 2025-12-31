@@ -11,7 +11,7 @@ export const Card = styled.View`
   padding: 16px;
   border-radius: 12px;
   margin-bottom: 12px;
-  border-width: 1px;
+  border-width: 1;
   border-color: ${({ theme }) => theme.colors.border};
 `;
 
