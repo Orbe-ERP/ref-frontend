@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, ActivityIndicator } from "react-native";
+import { View, ActivityIndicator, Platform, KeyboardAvoidingView } from "react-native";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import Toast from "react-native-toast-message";
 import { EditRestaurantForm } from "@/components/organisms/EditRestaurantForm";
@@ -94,7 +94,11 @@ export default function EditRestaurantScreen() {
           headerTintColor: theme.colors.text.primary,
         }}
       />
-      <View style={{ flex: 1, backgroundColor: "#041224" }}>
+      <KeyboardAvoidingView
+        style={{ flex: 1, backgroundColor: theme.colors.background }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
+      >
         <EditRestaurantForm
           initialValues={{
             name: restaurant.name || "",
@@ -111,7 +115,7 @@ export default function EditRestaurantScreen() {
           onSubmit={handleSubmit}
           loading={saving}
         />
-      </View>
+      </KeyboardAvoidingView>
     </>
   );
 }

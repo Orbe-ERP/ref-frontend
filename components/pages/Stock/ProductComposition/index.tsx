@@ -18,6 +18,7 @@ import useRestaurant from '@/hooks/useRestaurant';
 
 import { getCategories } from '@/services/category';
 import {
+  deleteComposition,
   getCompositionsByProduct,
   ProductComposition,
 } from '@/services/product-composition';
@@ -47,7 +48,6 @@ export default function ProductCompositions() {
     });
   };
 
-  // 🔹 Carrega categorias
   useEffect(() => {
     async function loadCategories() {
       if (!selectedRestaurant?.id) return;
@@ -67,7 +67,6 @@ export default function ProductCompositions() {
     loadCategories();
   }, [selectedRestaurant]);
 
-  // 🔹 Carrega composição do produto selecionado
   const loadCompositions = useCallback(async () => {
     if (!selectedProduct?.id) {
       setCompositions([]);
@@ -96,56 +95,46 @@ export default function ProductCompositions() {
     loadCompositions();
   }, [selectedProduct]);
 
-  // Função para refresh manual
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     await loadCompositions();
   }, [loadCompositions]);
 
-  // Handle category selection
   const handleCategorySelect = (category: any) => {
     setSelectedCategory(category);
     setSelectedProduct(null);
     setCompositions([]);
   };
 
-  // Handle product selection
   const handleProductSelect = (product: any) => {
     setSelectedProduct(product);
-    showToast('info', `Visualizando: ${product.name}`);
   };
 
-  // Handle back to categories
+
+  const handleDeleteComposition = async (compositionId: string) => {
+  try {
+    await deleteComposition(compositionId);
+    showToast('success', 'Ingrediente removido da composição');
+    loadCompositions();
+  } catch (error) {
+    console.error(error);
+    showToast('error', 'Erro ao remover ingrediente');
+  }
+};
+
   const handleBackToCategories = () => {
     setSelectedCategory(null);
     setSelectedProduct(null);
     setCompositions([]);
   };
 
-  // Handle back to products
   const handleBackToProducts = () => {
     setSelectedProduct(null);
     setCompositions([]);
   };
 
-  const handleEditComposition = (item: ProductComposition) => {
-    if (!item.stockItem?.name) {
-      showToast('warning', 'Ingrediente não disponível para edição');
-      return;
-    }
-    
-    router.push({
-      pathname: '/stock/product-composition/edit',
-      params: { 
-        id: item.id,
-        quantity: item.quantity,
-        productName: selectedProduct?.name,
-        ingredientName: item.stockItem.name
-      },
-    });
-  };
 
-  // Handle add new composition
+
   const handleAddComposition = () => {
     if (!selectedProduct) return;
     
@@ -158,76 +147,63 @@ export default function ProductCompositions() {
     });
   };
 
-  // Calculate total items for summary - REMOVIDO hasCompositions pois não é usado
   const totalIngredients = compositions.length;
 
-  function renderCompositionItem({ item }: { item: ProductComposition }) {
-    const stockItemName = item.stockItem?.name ?? 'Ingrediente não encontrado';
-    const quantityText = `${item.quantity} ${item.unit || 'un'}`;
-    const isItemValid = item.stockItem?.name;
+function renderCompositionItem({ item }: { item: ProductComposition }) {
+  const stockItemName = item.stockItem?.name ?? 'Ingrediente não encontrado';
+  const quantityText = `${item.quantity} ${item.unit || 'un'}`;
+  const isItemValid = item.stockItem?.name;
 
-    return (
+  return (
+    <S.Card>
+      <View style={{ flex: 1 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
+          <S.ItemName
+            style={{
+              color: isItemValid
+                ? theme.colors.text.primary
+                : theme.colors.feedback.error,
+              flex: 1,
+            }}
+          >
+            {stockItemName}
+          </S.ItemName>
+
+          {!isItemValid && (
+            <Ionicons
+              name="warning-outline"
+              size={16}
+              color={theme.colors.feedback.warning}
+              style={{ marginLeft: 8 }}
+            />
+          )}
+        </View>
+
+        <S.ItemInfo>
+          Quantidade:{' '}
+          <Text style={{ fontWeight: '600' }}>{quantityText}</Text>
+        </S.ItemInfo>
+      </View>
+
+      {/* 🔴 AÇÕES */}
       <TouchableOpacity
-        activeOpacity={0.7}
-        onPress={() => handleEditComposition(item)}
+        onPress={() => handleDeleteComposition(item.id)}
+        style={{
+          padding: 6,
+          borderRadius: 6,
+          backgroundColor: theme.colors.feedback.error + '15',
+        }}
       >
-        <S.Card>
-          <View style={{ flex: 1 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
-              <S.ItemName style={{ 
-                color: isItemValid ? theme.colors.text.primary : theme.colors.feedback.error,
-                flex: 1 
-              }}>
-                {stockItemName}
-              </S.ItemName>
-              {!isItemValid && (
-                <Ionicons 
-                  name="warning-outline" 
-                  size={16} 
-                  color={theme.colors.feedback.warning} 
-                  style={{ marginLeft: 8 }}
-                />
-              )}
-            </View>
-
-            <S.ItemInfo>
-              Quantidade: <Text style={{ fontWeight: '600' }}>{quantityText}</Text>
-            </S.ItemInfo>
-          </View>
-
-          <View style={{ 
-            flexDirection: 'row', 
-            alignItems: 'center',
-            gap: 12 
-          }}>
-            {!isItemValid && (
-              <Text style={{ 
-                fontSize: 10, 
-                color: theme.colors.feedback.error,
-                fontStyle: 'italic'
-              }}>
-                Inválido
-              </Text>
-            )}
-            <TouchableOpacity
-              onPress={() => handleEditComposition(item)}
-              style={{
-                padding: 8,
-                borderRadius: 6,
-                backgroundColor: theme.colors.primary + '10'
-              }}
-            >
-              <Ionicons
-                name="create-outline"
-                size={20}
-                color={theme.colors.primary}
-              />
-            </TouchableOpacity>
-          </View>
-        </S.Card>
+        <Ionicons
+          name="trash-outline"
+          size={18}
+          color={theme.colors.feedback.error}
+        />
       </TouchableOpacity>
-    );
-  }
+    </S.Card>
+  );
+}
+
 
   function renderCategoryItem({ item }: { item: any }) {
     return (

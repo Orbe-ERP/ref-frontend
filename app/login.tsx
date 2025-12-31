@@ -152,7 +152,8 @@ export default function Login() {
   return (
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: COLORS.background }}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
     >
       <ScrollView
         contentContainerStyle={{
@@ -162,6 +163,7 @@ export default function Login() {
           padding: 24,
         }}
         keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
       >
         <Stack.Screen options={{ title: "Login" }} />
 
@@ -197,25 +199,25 @@ export default function Login() {
                 <ErrorText>{errors.email}</ErrorText>
               )}
 
-<PasswordContainer>
-  <Input
-    placeholder="Senha"
-    placeholderTextColor="#718096"
-    secureTextEntry={!showPassword}
-    onChangeText={handleChange("password")}
-    onBlur={handleBlur("password")}
-    value={values.password}
-    style={{ paddingRight: 44 }} // espaço pro ícone
-  />
+              <PasswordContainer>
+                <Input
+                  placeholder="Senha"
+                  placeholderTextColor="#718096"
+                  secureTextEntry={!showPassword}
+                  onChangeText={handleChange("password")}
+                  onBlur={handleBlur("password")}
+                  value={values.password}
+                  style={{ paddingRight: 44 }} // espaço pro ícone
+                />
 
-  <EyeButton onPress={() => setShowPassword(!showPassword)}>
-    <Ionicons
-      name={showPassword ? "eye-off" : "eye"}
-      size={22}
-      color="#94a3b8"
-    />
-  </EyeButton>
-</PasswordContainer>
+                <EyeButton onPress={() => setShowPassword(!showPassword)}>
+                  <Ionicons
+                    name={showPassword ? "eye-off" : "eye"}
+                    size={22}
+                    color="#94a3b8"
+                  />
+                </EyeButton>
+              </PasswordContainer>
 
               {errors.password && touched.password && (
                 <ErrorText>{errors.password}</ErrorText>

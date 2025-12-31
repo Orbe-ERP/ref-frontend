@@ -28,7 +28,7 @@ export const IconsContainer = styled.View`
 `;
 
 export const IconButton = styled.TouchableOpacity`
-  background-color: ${({ theme }) => theme.colors.background};
+  background-color: ${({ theme }) => theme.colors.overlay};
   padding: 5px;
   border-radius: 50px;
   justify-content: center;

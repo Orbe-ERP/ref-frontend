@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View } from "react-native";
+import { KeyboardAvoidingView, Platform, View } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import Toast from "react-native-toast-message";
 import { CreateRestaurantForm } from "@/components/organisms/CreateRestaurantForm";
@@ -9,7 +9,7 @@ import { useAppTheme } from "@/context/ThemeProvider/theme";
 export default function RestaurantScreen() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const {theme} = useAppTheme()
+  const { theme } = useAppTheme();
 
   const initialValues = {
     name: "",
@@ -53,13 +53,19 @@ export default function RestaurantScreen() {
           headerTintColor: theme.colors.text.primary,
         }}
       />
-      <View style={{ flex: 1, backgroundColor: "#041224" }}>
+
+      <KeyboardAvoidingView
+        style={{ flex: 1, backgroundColor: theme.colors.background }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
+      >
+        {" "}
         <CreateRestaurantForm
           initialValues={initialValues}
           onSubmit={handleSubmit}
           loading={loading}
         />
-      </View>
+      </KeyboardAvoidingView>
     </>
   );
 }

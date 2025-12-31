@@ -12,7 +12,7 @@ export const PickerContainer = styled.View`
   border-radius: 12px;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.3);
-  background-color: #1e293b;
+  background-color: ${({ theme }) => theme.colors.background};
   border-color: ${({ theme }) => theme.colors.border};
   elevation: 2;
 `;

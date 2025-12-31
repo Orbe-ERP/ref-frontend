@@ -15,7 +15,10 @@ export default function ConfigPage() {
       <S.Header>
         <Title>Configurações</Title>
       </S.Header>
-      <S.ConfigScroll style={{ flex: 1 }}>
+      <S.ConfigScroll
+  style={{ flex: 1 }}
+  showsVerticalScrollIndicator={false}
+>
         <S.ItemRow onPress={() => router.push("/select-restaurant")}>
           <Ionicons
             name="albums"

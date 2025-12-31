@@ -225,8 +225,9 @@ export default function KitchenPage() {
           <Picker
             selectedValue={selectedKitchenId}
             onValueChange={setSelectedKitchenId}
-            style={{ color: "#fff", backgroundColor: "#274980" }}
-            dropdownIconColor="#fff"
+            style={{ color: theme.theme.colors.text.primary, backgroundColor: theme.theme.colors.surface }}
+              itemStyle={{ color: theme.theme.colors.text.primary }} 
+            dropdownIconColor={theme.theme.colors.text.primary}
           >
             <Picker.Item label="Todas as cozinhas" value="null" />
             {kitchens
@@ -236,7 +237,6 @@ export default function KitchenPage() {
                   key={k.id}
                   label={k.name}
                   value={k.id}
-                  color="#fff"
                 />
               ))}
           </Picker>

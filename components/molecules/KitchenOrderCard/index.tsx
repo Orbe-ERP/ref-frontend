@@ -40,32 +40,24 @@ export default function KitchenOrderCard({
 
   const kitchen = items[0].kitchen;
   const kitchenColor = kitchen?.color ?? "#CBD5E1";
+const isPreparing = items.some(
+  (item) => item.status === "WORK_IN_PROGRESS"
+);
 
   return (
-    <Card
-      style={{
-        borderLeftWidth: 6,
-        borderLeftColor: kitchenColor,
-        paddingTop: 16,
-      }}
-    >
-      <View style={{ position: "absolute", top: 8, right: 8, zIndex: 10 }}>
-        <View
-          style={{
-            backgroundColor: "#FBBF24",
-            borderRadius: 16,
-            paddingHorizontal: 12,
-            paddingVertical: 6,
-            minWidth: 32,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Text weight="bold" color="#000">
-            {totalQuantity}
-          </Text>
-        </View>
-      </View>
+<Card
+  style={{
+    borderLeftWidth: 6,
+    borderLeftColor: kitchenColor,
+    paddingTop: 16,
+
+    ...(isPreparing && {
+      borderWidth: 2,
+      borderColor: "#FACC15",
+    }),
+  }}
+>
+
 
       <View style={{ position: "absolute", top: 8, left: 8 }}>
         <KitchenLabel color={kitchenColor}>{kitchen.name}</KitchenLabel>

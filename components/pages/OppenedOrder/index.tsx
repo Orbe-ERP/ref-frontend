@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useMemo } from "react";
-import { ScrollView, TextInput, Dimensions, Alert, Modal } from "react-native";
+import React, { useEffect, useState } from "react";
+import { ScrollView, TextInput, Dimensions, Modal } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { Checkbox } from "react-native-paper";
@@ -283,7 +283,7 @@ export default function OppenedOrderPage() {
           </S.NoOrdersText>
         )}
 
-      <ScrollView style={{ width: "100%" }}>
+      <ScrollView style={{ width: "100%" }} showsVerticalScrollIndicator={false}>
         {filteredOrders.map((order) => {
           const total = order.products.reduce(
             (sum, item) =>

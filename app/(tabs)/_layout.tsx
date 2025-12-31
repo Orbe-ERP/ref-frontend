@@ -33,13 +33,15 @@ export default function TabLayout() {
         tabBarIconStyle: {
           marginBottom: -2,
         },
-        tabBarStyle: {
-          backgroundColor: theme.colors.background,
-          borderTopWidth: 0,
-          elevation: 0,
-          paddingBottom: Platform.OS === "ios" ? insets.bottom + 10 : 8,
-          position: "absolute",
-        },
+tabBarStyle: {
+  backgroundColor: theme.colors.background,
+  borderTopWidth: 0,
+  elevation: 0,
+
+  paddingBottom: Platform.OS === "ios" ? insets.bottom : 6,
+  paddingTop: 6,
+  height: Platform.OS === "ios" ? 60 + insets.bottom : 58,
+},
       }}
     >
       <Tabs.Screen

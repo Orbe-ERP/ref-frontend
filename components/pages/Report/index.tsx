@@ -61,7 +61,7 @@ export default function ReportScreen() {
     <>
         <Stack.Screen
             options={{
-            title: "Relatório",
+            title: "Relatórios",
             headerStyle: { backgroundColor: theme.colors.background },
             headerTintColor: theme.colors.text.primary,
             }}

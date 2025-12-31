@@ -49,7 +49,7 @@ export default function SelectRestaurantScreen() {
   const { selectRestaurant, selectedRestaurant } = useRestaurant();
   const { isAdmin } = usePermissions();
   const router = useRouter();
-  const { theme } = useAppTheme(); 
+  const { theme } = useAppTheme();
 
   useEffect(() => {
     const fetchRestaurants = async () => {
@@ -65,7 +65,7 @@ export default function SelectRestaurantScreen() {
 
   const handleSelectRestaurant = (restaurant: any) => {
     selectRestaurant(restaurant);
-    router.replace('/(tabs)');
+    router.replace("/(tabs)");
   };
 
   const handleEditRestaurant = (restaurant: any) => {
@@ -126,15 +126,13 @@ export default function SelectRestaurantScreen() {
       />
       <Container>
         <Subtitle>Restaurantes Disponíveis</Subtitle>
-        
-        {/* Botão de criar restaurante com borda tracejada */}
+
         {isAdmin && (
           <CreateButton onPress={handleCreateRestaurant}>
             <CreateButtonText>+ Criar Novo Restaurante</CreateButtonText>
           </CreateButton>
         )}
-        
-        {/* Lista de restaurantes */}
+
         <RestaurantList
           restaurants={restaurants}
           selectedRestaurant={selectedRestaurant}

@@ -192,6 +192,7 @@ export const PaymentButton = styled.TouchableOpacity<{ selected?: boolean }>`
   justify-content: center;
   align-items: center;
   padding: 12px 10px;
+  flex-basis: 48%;
   border-radius: 8px;
   margin-bottom: 10px;
   background-color: ${({ selected, theme }) =>

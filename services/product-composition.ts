@@ -48,8 +48,9 @@ export async function updateComposition(
 
 export async function deleteComposition(id: string) {
   if (!id) throw new Error("id required");
-
-  await api.delete(`/products/composition/${id}`);
+  const request = await api.delete(`/products/composition/${id}`);
+  const response = request.data;
+  return response;
 }
 
 export async function updateProductCost(productId: string) {

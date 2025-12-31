@@ -117,14 +117,15 @@ export default function SignUpForm({ onSuccess }: SignUpFormProps) {
 
   return (
     <S.Container>
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}
-      >
+<KeyboardAvoidingView
+  style={{ flex: 1, backgroundColor: theme.colors.background }}
+  behavior={Platform.OS === "ios" ? "padding" : "height"}
+  keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
+>
         <ScrollView 
           keyboardShouldPersistTaps="handled"
-          contentContainerStyle={{ paddingBottom: 32 }}
+          contentContainerStyle={{ paddingBottom: 32,     flexGrow: 1,
+ }}
           showsVerticalScrollIndicator={false}
         >
           {/* Header */}
