@@ -32,7 +32,6 @@ export async function createModifierCategory(data: CreateModifierCategoryInput) 
 
 export async function getModifierCategories(restaurantId: string | undefined) {
   if (!restaurantId) throw new Error("No restaurant selected");
-  console.log(restaurantId);
   try {
     const response = await api.get<ModifierCategory[]>(
       `/modifier-categories/restaurant/${restaurantId}`

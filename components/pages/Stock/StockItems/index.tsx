@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { 
-  FlatList, 
-  Alert, 
-  RefreshControl, 
+import {
+  FlatList,
+  Alert,
+  RefreshControl,
   ActivityIndicator,
-  View 
+  View,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Stack, useRouter, useLocalSearchParams } from "expo-router";
@@ -16,7 +16,7 @@ import { useAppTheme } from "@/context/ThemeProvider/theme";
 import useRestaurant from "@/hooks/useRestaurant";
 import useAuth from "@/hooks/useAuth";
 import { getStockItems, deleteStockItem, StockItem } from "@/services/stock";
-import { api } from "@/services/api";
+import Toast from "react-native-toast-message";
 
 type StockStatus = "ok" | "warning" | "critical";
 
@@ -33,92 +33,77 @@ export default function StockItems() {
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
-  
-  // Estados de paginação
+
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
-  const limit = 20; // Itens por página
+  const limit = 20;
 
-  const loadStock = useCallback(async (page = 1, isRefreshing = false) => {
-    if (!selectedRestaurant?.id) return;
+  const loadStock = useCallback(
+    async (page = 1, isRefreshing = false) => {
+      if (!selectedRestaurant?.id) return;
 
-    try {
-      if (page === 1) {
-        if (isRefreshing) {
-          setRefreshing(true);
+      try {
+        if (page === 1) {
+          if (isRefreshing) {
+            setRefreshing(true);
+          } else {
+            setLoading(true);
+          }
         } else {
-          setLoading(true);
+          setLoadingMore(true);
         }
-      } else {
-        setLoadingMore(true);
+
+        const response = await getStockItems(
+          selectedRestaurant.id,
+          page,
+          limit
+        );
+
+        let itemsData: StockItem[] = [];
+        let totalPagesData = 1;
+        let totalItemsData = 0;
+
+        if (Array.isArray(response)) {
+          itemsData = response;
+          totalItemsData = response.length;
+          totalPagesData = Math.ceil(response.length / limit);
+        } else if (response && typeof response === "object") {
+          itemsData = response.items || response.data || [];
+          totalItemsData = response.total || response.count || itemsData.length;
+          totalPagesData =
+            response.totalPages ||
+            response.pages ||
+            Math.ceil(totalItemsData / limit);
+        } else {
+        }
+
+        setItems(itemsData);
+        setCurrentPage(page);
+        setTotalPages(totalPagesData);
+        setTotalItems(totalItemsData);
+      } catch (error: any) {
+        Toast.show({
+          type: "error",
+          text1: "Erro interno",
+          text2: "Erro ao carregar estoque",
+          position: "top",
+          visibilityTime: 3000,
+        });
+
+        if (page === 1) {
+        }
+      } finally {
+        setLoading(false);
+        setRefreshing(false);
+        setLoadingMore(false);
       }
-
-      console.log(`📦 Carregando página ${page}...`);
-      
-      // Chama o service com paginação
-      const response = await getStockItems(selectedRestaurant.id, page, limit);
-      
-      // LOG IMPORTANTE para debug
-      console.log("=== DEBUG API RESPONSE ===");
-      console.log("Full response:", response);
-      console.log("Type:", typeof response);
-      console.log("Is array:", Array.isArray(response));
-      if (response && typeof response === 'object' && !Array.isArray(response)) {
-        console.log("Object keys:", Object.keys(response));
-        console.log("Has items?", 'items' in response);
-        console.log("Has data?", 'data' in response);
-        console.log("Total?", response.total || response.count);
-      }
-      console.log("=== END DEBUG ===");
-
-      let itemsData: StockItem[] = [];
-      let totalPagesData = 1;
-      let totalItemsData = 0;
-
-      // Verifica o formato da resposta
-      if (Array.isArray(response)) {
-        // Se for array direto (backend sem paginação)
-        itemsData = response;
-        totalItemsData = response.length;
-        totalPagesData = Math.ceil(response.length / limit);
-        console.log(`📦 Backend retornou array com ${response.length} itens`);
-      } else if (response && typeof response === 'object') {
-        // Se for objeto com paginação
-        itemsData = response.items || response.data || [];
-        totalItemsData = response.total || response.count || itemsData.length;
-        totalPagesData = response.totalPages || response.pages || 
-                         Math.ceil(totalItemsData / limit);
-        console.log(`📦 Backend retornou objeto paginado: ${itemsData.length} itens, total ${totalItemsData}`);
-      } else {
-        console.error("❌ Formato de resposta desconhecido:", response);
-      }
-
-      // Atualiza os itens (sempre substitui na paginação tradicional)
-      setItems(itemsData);
-      setCurrentPage(page);
-      setTotalPages(totalPagesData);
-      setTotalItems(totalItemsData);
-
-      console.log(`📦 ${itemsData.length} itens carregados (Página ${page}/${totalPagesData})`);
-
-    } catch (error: any) {
-      console.error("❌ Erro ao carregar estoque:", error);
-      if (page === 1) {
-        Alert.alert("Erro", error.message || "Não foi possível carregar o estoque");
-      }
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-      setLoadingMore(false);
-    }
-  }, [selectedRestaurant?.id]);
+    },
+    [selectedRestaurant?.id]
+  );
 
   useEffect(() => {
-    console.log("🔄 useEffect triggered:", { 
-      selectedRestaurantId: selectedRestaurant?.id, 
-      refresh
-    });
+
     loadStock(1);
   }, [selectedRestaurant?.id, refresh]);
 
@@ -138,64 +123,44 @@ export default function StockItems() {
     }
   }, [currentPage, totalPages, loadStock]);
 
-function handleDelete(id: string) {
-  console.log("🗑️ Iniciando delete para:", id);
-  
-  const itemToDelete = items.find(item => item.id === id);
+async function handleDelete(id: string) {
+  const itemToDelete = items.find((item) => item.id === id);
+
   if (!itemToDelete) {
-    console.error("❌ Item não encontrado no estado local");
-    Alert.alert("Erro", "Item não encontrado");
+    Toast.show({
+      type: "error",
+      text1: "Item não encontrado",
+      position: "top",
+      visibilityTime: 3000,
+    });
     return;
   }
-  
-  Alert.alert(
-    `Excluir "${itemToDelete.name}"`,
-    `Deseja excluir ${itemToDelete.quantity} ${itemToDelete.unit} de ${itemToDelete.name}?`,
-    [
-      { text: "Cancelar", style: "cancel" },
-      {
-        text: "Excluir",
-        style: "destructive",
-        onPress: async () => {
-          try {
-            console.log(`🗑️ Excluindo: ${itemToDelete.name} (${id})`);
-            
-            // REQUISIÇÃO
-            await deleteStockItem(id);
-            console.log("✅ Backend confirmou exclusão");
-            
-            // ATUALIZAÇÃO DE ESTADO
-            const newItems = items.filter(item => item.id !== id);
-            setItems(newItems);
-            setTotalItems(prev => prev - 1);
-            
-            console.log(`🗑️ Estado atualizado. Restam: ${newItems.length} itens`);
-            
-            // Feedback
-            Alert.alert(
-              "Sucesso", 
-              `${itemToDelete.name} excluído`,
-              [{ text: "OK" }]
-            );
-            
-          } catch (error: any) {
-            console.error("❌ Falha na exclusão:", error);
-            
-            // Recarrega tudo em caso de erro
-            Alert.alert(
-              "Erro",
-              "Não foi possível excluir. Recarregando dados...",
-              [{ 
-                text: "OK", 
-                onPress: () => loadStock(currentPage) 
-              }]
-            );
-          }
-        }
-      }
-    ]
-  );
+
+  try {
+    await deleteStockItem(id);
+
+    setItems((prev) => prev.filter((item) => item.id !== id));
+    setTotalItems((prev) => Math.max(prev - 1, 0));
+
+    Toast.show({
+      type: "success",
+      text1: "Item removido",
+      text2: `${itemToDelete.name} foi excluído do estoque`,
+      position: "top",
+      visibilityTime: 3000,
+    });
+  } catch (error) {
+    Toast.show({
+      type: "error",
+      text1: "Erro ao remover item",
+      text2: "Tente novamente",
+      position: "top",
+      visibilityTime: 3000,
+    });
+  }
 }
+
+
   function getStatus(item: StockItem): StockStatus {
     if (!item.minimum) return "ok";
     if (item.quantity <= item.minimum) return "critical";
@@ -216,9 +181,7 @@ function handleDelete(id: string) {
           </S.StockInfo>
 
           {item.minimum !== undefined && (
-            <S.StockMinimum>
-              Mínimo: {item.minimum}
-            </S.StockMinimum>
+            <S.StockMinimum>Mínimo: {item.minimum}</S.StockMinimum>
           )}
         </S.InfoContainer>
 
@@ -269,13 +232,10 @@ function handleDelete(id: string) {
 
   const renderFooter = () => {
     if (!loadingMore) return null;
-    
+
     return (
-      <View style={{ padding: 20, alignItems: 'center' }}>
-        <ActivityIndicator 
-          size="small" 
-          color={theme.colors.primary} 
-        />
+      <View style={{ padding: 20, alignItems: "center" }}>
+        <ActivityIndicator size="small" color={theme.colors.primary} />
       </View>
     );
   };
@@ -283,11 +243,8 @@ function handleDelete(id: string) {
   const renderHeader = () => {
     if (loading && !refreshing) {
       return (
-        <View style={{ padding: 20, alignItems: 'center' }}>
-          <ActivityIndicator 
-            size="large" 
-            color={theme.colors.primary} 
-          />
+        <View style={{ padding: 20, alignItems: "center" }}>
+          <ActivityIndicator size="large" color={theme.colors.primary} />
         </View>
       );
     }
@@ -296,9 +253,11 @@ function handleDelete(id: string) {
 
   if (loading && !refreshing) {
     return (
-      <S.ScreenContainer style={{ justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" color={theme.colors.primary} />
-        <S.EmptyText style={{ marginTop: 16 }}>Carregando estoque...</S.EmptyText>
+      <S.ScreenContainer showsVerticalScrollIndicator={false}>
+        <S.EmptyContainer>
+          <ActivityIndicator size="large" color={theme.colors.primary} />
+          <S.EmptyText>Carregando estoque...</S.EmptyText>
+        </S.EmptyContainer>
       </S.ScreenContainer>
     );
   }
@@ -307,7 +266,7 @@ function handleDelete(id: string) {
     <>
       <Stack.Screen
         options={{
-          title: `Estoque ${totalItems > 0 ? `(${totalItems})` : ''}`,
+          title: `Estoque ${totalItems > 0 ? `(${totalItems})` : ""}`,
           headerStyle: { backgroundColor: theme.colors.background },
           headerTintColor: theme.colors.text.primary,
         }}
@@ -319,9 +278,7 @@ function handleDelete(id: string) {
             <Button
               label="Novo Item"
               icon={<Ionicons name="add" size={18} color="#fff" />}
-              onPress={() =>
-                router.push("/(private)/stock/items/create-stock")
-              }
+              onPress={() => router.push("/(private)/stock/items/create-stock")}
             />
           </S.Header>
         )}
@@ -343,14 +300,8 @@ function handleDelete(id: string) {
           ListEmptyComponent={
             !loading && !refreshing ? (
               <S.EmptyContainer>
-                <Ionicons
-                  name="cube-outline"
-                  size={48}
-                  color="#999"
-                />
-                <S.EmptyText>
-                  Nenhum item no estoque
-                </S.EmptyText>
+                <Ionicons name="cube-outline" size={48} color="#999" />
+                <S.EmptyText>Nenhum item no estoque</S.EmptyText>
                 {isAdmin && (
                   <Button
                     label="Adicionar Primeiro Item"
@@ -364,20 +315,21 @@ function handleDelete(id: string) {
           }
           contentContainerStyle={{
             flexGrow: 1,
-            paddingBottom: 20
+            paddingBottom: 20,
           }}
           style={{ flex: 1 }}
         />
 
-        {/* Componente de paginação */}
         {totalPages > 1 && items.length > 0 && (
-          <View style={{ 
-            paddingHorizontal: 16, 
-            paddingVertical: 12,
-            borderTopWidth: 1,
-            borderTopColor: theme.colors.border,
-            backgroundColor: theme.colors.background
-          }}>
+          <View
+            style={{
+              paddingHorizontal: 16,
+              paddingVertical: 12,
+              borderTopWidth: 1,
+              borderTopColor: theme.colors.border,
+              backgroundColor: theme.colors.background,
+            }}
+          >
             <Pagination
               page={currentPage}
               totalPages={totalPages}

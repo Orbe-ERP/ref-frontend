@@ -130,13 +130,6 @@ export async function getCompletedOrdersByTable(
 ) {
   if (!tableId) throw new Error("Table Id not defined");
 
-  console.log("Fetching completed orders for table:", tableId, {
-    page,
-    limit,
-    startDate,
-    endDate,
-  });
-
   try {
     const response = await api.get(`/orders/table/completed/${tableId}`, {
       params: {
@@ -146,8 +139,6 @@ export async function getCompletedOrdersByTable(
         endDate,
       },
     });
-
-    console.log("Received response:", response.data);
 
     return response.data;
   } catch (error) {

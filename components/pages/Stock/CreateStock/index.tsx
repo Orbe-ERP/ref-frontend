@@ -160,6 +160,7 @@ export default function CreateStock() {
         <ScrollView 
           contentContainerStyle={{ padding: 16, paddingBottom: 32 }}
           showsVerticalScrollIndicator={false}
+          
         >
           <View style={{ marginBottom: 16 }}>
             <Text style={{ 

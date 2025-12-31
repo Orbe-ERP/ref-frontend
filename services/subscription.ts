@@ -69,13 +69,11 @@ export async function confirmPayment(
   token: string
 ): Promise<PaymentConfirmationResponse> {
   try {
-    console.log("Confirming payment with token:", token);
 
     try {
       const { data } = await api.get(`/subscription/confirm?token=${token}`);
       return data;
     } catch (getError: any) {
-      console.log("GET failed, trying POST...");
       const { data } = await api.post("/subscription/confirm", { token });
       return data;
     }

@@ -12,7 +12,7 @@ export const FilterContainerMobile = styled.View`
 
 export const DateRowMobile = styled.View`
   flex-direction: row;
-  justify-content: space-between;
+  gap: 12px;
   margin-bottom: 12px;
 `;
 
@@ -22,8 +22,7 @@ export const DateInputMobile = styled.TouchableOpacity`
   border-width: 1px;
   border-color: ${({ theme }) => theme.colors.border};
   border-radius: 8px;
-  margin: 0 6px;
-  background-color: ${({ theme }) => theme.colors.background};
+  background-color: ${({ theme }) => theme.colors.surface};
 `;
 
 export const SearchButtonMobile = styled.TouchableOpacity<{ disabled?: boolean }>`
@@ -71,7 +70,7 @@ export const LabelText = styled.Text`
 `;
 
 export const SearchButtonText = styled.Text`
-  color: #ffffff;
+  color: #fff;
   font-size: 16px;
   font-weight: bold;
 `;
@@ -85,9 +84,8 @@ export const ModalContainer = styled.View`
 
 export const CalendarWrapper = styled.View`
   background-color: ${({ theme }) => theme.colors.background};
-  border-radius: 10px;
-  padding: 10px;
-  elevation: 5;
+  border-radius: 12px;
+  padding: 12px;
 `;
 
 export const OrderCard = styled.View`
@@ -100,8 +98,7 @@ export const OrderCard = styled.View`
 `;
 
 export const OrderHeader = styled.View`
-  flex-direction: row;
-  justify-content: space-between;
+  margin-bottom: 8px;
 `;
 
 export const OrderInfoContainer = styled.View``;
@@ -177,6 +174,7 @@ export const TotalValue = styled.Text`
 `;
 
 export const EmptyState = styled.View`
+  flex: 1;
   align-items: center;
   justify-content: center;
   padding: 40px;

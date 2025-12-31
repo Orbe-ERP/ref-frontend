@@ -81,11 +81,9 @@ export const AuthProvider = ({ children }: IAuthProvider) => {
         defaultRestaurantId: response.payload.defaultRestaurantId,
         restaurantName: response.payload.restaurantName,
       };
-
       
       setUser(payload);
       await setUserAsyncStorage(payload);
-      console.log(payload)
       
       if (payload.defaultRestaurantId) {
         const restaurant = await getRestaurantById(payload.defaultRestaurantId);

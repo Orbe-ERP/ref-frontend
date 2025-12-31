@@ -49,8 +49,6 @@ export async function getUserById(id: string) {
 }
 
 export async function updateUser(data: UpdateUser) {
-
-  console.log(data)
 try {
     const response = await api.patch<User>("/users/update", data);
   return response.data;

@@ -42,7 +42,6 @@ export async function updateComposition(
 
   const response = await api.patch(`/product/composition/${id}`, data);
 
-  console.log(response.data)
   return response.data;
 }
 

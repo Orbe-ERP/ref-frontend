@@ -1,18 +1,16 @@
 import React, { useState, useEffect } from "react";
 import {
   View,
-  Text,
   FlatList,
-  ActivityIndicator,
   RefreshControl,
   Modal,
-  Button,
   TouchableOpacity,
 } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { Calendar } from "react-native-calendars";
 import dayjs from "dayjs";
+
 import {
   getCompletedOrdersByDateRange,
   Order,
@@ -34,25 +32,27 @@ export default function CompletedOrdersPage() {
   const isWide = isTablet || isDesktop;
 
   const [orders, setOrders] = useState<Order[]>([]);
-  const [pagination, setPagination] = useState<PaginatedResponse<Order> | null>(null);
+  const [pagination, setPagination] =
+    useState<PaginatedResponse<Order> | null>(null);
 
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  const [startDate, setStartDate] = useState<string>(
+  const [startDate, setStartDate] = useState(
     dayjs().subtract(30, "day").format("YYYY-MM-DD")
   );
-  const [endDate, setEndDate] = useState<string>(
+  const [endDate, setEndDate] = useState(
     dayjs().format("YYYY-MM-DD")
   );
 
-  const [showCalendarFor, setShowCalendarFor] = useState<"start" | "end" | null>(null);
+  const [showCalendarFor, setShowCalendarFor] =
+    useState<"start" | "end" | null>(null);
 
-  const loadOrders = async (
-    page: number = 1,
-    sd: string = startDate,
-    ed: string = endDate
-  ) => {
+  async function loadOrders(
+    page = 1,
+    sd = startDate,
+    ed = endDate
+  ) {
     try {
       if (!selectedRestaurant?.id) return;
 
@@ -63,14 +63,12 @@ export default function CompletedOrdersPage() {
         page,
         20,
         sd,
-        ed,
+        ed
       );
-
-      console.log(response);
 
       setOrders(response.data);
       setPagination(response);
-    } catch (err) {
+    } catch {
       Toast.show({
         type: "error",
         text1: "Erro",
@@ -81,13 +79,13 @@ export default function CompletedOrdersPage() {
       setLoading(false);
       setRefreshing(false);
     }
-  };
+  }
 
   useEffect(() => {
     if (selectedRestaurant?.id) {
       loadOrders(1);
     }
-  }, [selectedRestaurant]);
+  }, [selectedRestaurant?.id]);
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -101,7 +99,7 @@ export default function CompletedOrdersPage() {
   const handleDateSelect = (day: { dateString: string }) => {
     if (showCalendarFor === "start") {
       setStartDate(day.dateString);
-    } else if (showCalendarFor === "end") {
+    } else {
       setEndDate(day.dateString);
     }
     setShowCalendarFor(null);
@@ -113,7 +111,7 @@ export default function CompletedOrdersPage() {
       currency: "BRL",
     }).format(value);
 
-  const formatDate = (dateString: string): string => {
+  const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return (
       date.toLocaleDateString("pt-BR") +
@@ -125,30 +123,25 @@ export default function CompletedOrdersPage() {
     );
   };
 
-  const calculateOrderTotal = (order: Order): number =>
-    order.products.reduce(
-      (total, p) => total + (p.appliedPrice || p.product.price) * p.quantity,
-      0
-    ) + (order.additional || 0);
-
   const renderOrderItem = ({ item }: { item: Order }) => {
-    const orderTotal = calculateOrderTotal(item);
-
     return (
       <S.OrderCard>
         <TouchableOpacity
-          onPress={() => router.push({
-            pathname: "/print-order",
-            params: { identifier: item.identifier }
-          })}
-          style={{position: "absolute", top: 10, right: 10, zIndex: 10, }}
+          onPress={() =>
+            router.push({
+              pathname: "/print-order",
+              params: { identifier: item.identifier },
+            })
+          }
+          style={S.printButton}
         >
           <Ionicons
             name="print-outline"
-            size={24}
+            size={22}
             color={theme.colors.primary}
           />
         </TouchableOpacity>
+
         <S.OrderHeader>
           <S.OrderInfoContainer>
             <S.OrderId>Comanda #{item.id.slice(-6)}</S.OrderId>
@@ -157,11 +150,13 @@ export default function CompletedOrdersPage() {
         </S.OrderHeader>
 
         <S.OrderInfo>
-          <S.OrderText>Mesa: {item.table.name}</S.OrderText>
-          <S.OrderText>Responsável: {item.responsible || "Não informado"}</S.OrderText>
+          <S.OrderText>Mesa: {item.tableName}</S.OrderText>
+          <S.OrderText>
+            Responsável: {item.responsibles?.[0] ?? "Não informado"}
+          </S.OrderText>
           <S.OrderText>Pagamento: {item.paymentMethod}</S.OrderText>
 
-          {item.additional && item.additional > 0 && (
+          {item.additional > 0 && (
             <S.OrderText>
               Taxa adicional: {formatCurrency(item.additional)}
             </S.OrderText>
@@ -169,23 +164,27 @@ export default function CompletedOrdersPage() {
         </S.OrderInfo>
 
         {item.products.map((p) => {
-          const price = p.appliedPrice || p.product.price;
-          const total = price * p.quantity;
+          const total = p.price * p.quantity;
 
           return (
             <S.ProductItem key={p.id}>
               <View style={{ flexDirection: "row" }}>
-                <S.ProductName>{p.product.name}</S.ProductName>
+                <S.ProductName>{p.productName}</S.ProductName>
                 <S.ProductQuantity>(x{p.quantity})</S.ProductQuantity>
               </View>
-              <S.ProductPrice>{formatCurrency(total)}</S.ProductPrice>
+
+              <S.ProductPrice>
+                {formatCurrency(total)}
+              </S.ProductPrice>
             </S.ProductItem>
           );
         })}
 
         <S.TotalContainer>
           <S.TotalLabel>Total:</S.TotalLabel>
-          <S.TotalValue>{formatCurrency(orderTotal)}</S.TotalValue>
+          <S.TotalValue>
+            {formatCurrency(item.totalValue)}
+          </S.TotalValue>
         </S.TotalContainer>
       </S.OrderCard>
     );
@@ -251,82 +250,83 @@ export default function CompletedOrdersPage() {
           </S.FilterContainerMobile>
         )}
 
-        <Modal visible={!!showCalendarFor} transparent>
+        <Modal visible={!!showCalendarFor} transparent animationType="fade">
           <S.ModalContainer>
             <S.CalendarWrapper>
               <Calendar
                 onDayPress={handleDateSelect}
-                markingType="period"
                 markedDates={{
-                  [startDate]: {
-                    startingDay: true,
-                    selected: true,
-                    color: "#2BAE66",
-                    textColor: "white",
-                  },
-                  [endDate]: {
-                    endingDay: true,
-                    selected: true,
-                    color: "#2BAE66",
-                    textColor: "white",
-                  },
+                  [startDate]: { selected: true },
+                  [endDate]: { selected: true },
                 }}
                 theme={{
-                  backgroundColor: "#041224",
-                  calendarBackground: "#041224",
-                  textSectionTitleColor: "#ffffff",
-                  dayTextColor: "#ffffff",
-                  todayTextColor: "#ffd700",
-                  selectedDayTextColor: "#ffffff",
-                  monthTextColor: "#ffffff",
-                  arrowColor: "#ffffff",
+                  backgroundColor: theme.colors.background,
+                  calendarBackground: theme.colors.background,
+                  dayTextColor: theme.colors.text.primary,
+                  monthTextColor: theme.colors.text.primary,
+                  arrowColor: theme.colors.primary,
                 }}
               />
-              <Button title="Fechar" onPress={() => setShowCalendarFor(null)} />
             </S.CalendarWrapper>
           </S.ModalContainer>
         </Modal>
 
         <FlatList
           data={orders}
-          renderItem={renderOrderItem}
           keyExtractor={(item) => item.id}
+          renderItem={renderOrderItem}
           refreshControl={
-            <RefreshControl 
-              refreshing={refreshing} 
-              onRefresh={onRefresh} 
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
               colors={[theme.colors.primary]}
               tintColor={theme.colors.primary}
             />
           }
           ListEmptyComponent={
-            <S.EmptyState>
-              <Ionicons 
-                name="receipt-outline" 
-                size={48} 
-                color={theme.colors.text.secondary}
-              />
-              <S.EmptyText>
-                {loading ? "Carregando..." : "Nenhuma comanda encontrada no período."}
-              </S.EmptyText>
-            </S.EmptyState>
+            !loading && (
+              <S.EmptyState>
+                <Ionicons
+                  name="receipt-outline"
+                  size={48}
+                  color={theme.colors.text.secondary}
+                />
+                <S.EmptyText>
+                  Nenhuma comanda encontrada no período.
+                </S.EmptyText>
+              </S.EmptyState>
+            )
           }
           contentContainerStyle={
-            orders.length === 0 ? { flex: 1 } : { paddingBottom: 20 }
+            orders.length === 0 ? { flex: 1 } : { paddingBottom: 24 }
           }
         />
-        
+
         {pagination && pagination.totalPages > 1 && (
           <Pagination
             page={pagination.page}
             totalPages={pagination.totalPages}
-            onPrev={() => loadOrders(pagination.page - 1)}
-            onNext={() => loadOrders(pagination.page + 1)}
+            onPrev={() =>
+              loadOrders(
+                pagination.page - 1,
+                startDate,
+                endDate
+              )
+            }
+            onNext={() =>
+              loadOrders(
+                pagination.page + 1,
+                startDate,
+                endDate
+              )
+            }
             isLoading={loading || refreshing}
           />
         )}
-        
-        {loading && <Loader size="large" />}
+
+        {loading && orders.length === 0 && (
+          <Loader size="large" />
+        )}
       </S.Container>
     </>
   );

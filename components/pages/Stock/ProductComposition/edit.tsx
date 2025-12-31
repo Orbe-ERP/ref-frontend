@@ -34,8 +34,6 @@ export default function EditComposition() {
         quantity: parsedQuantity,
       });
 
-      console.log(id, parsedQuantity);
-
       router.back();
     } catch (error) {
       console.error("Erro ao atualizar ingrediente", error);
@@ -47,7 +45,6 @@ export default function EditComposition() {
   async function handleDelete() {
     try {
       setIsSubmitting(true);
-      console.log(id);
       await deleteComposition(id);
       router.back();
     } catch (error) {

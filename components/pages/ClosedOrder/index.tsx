@@ -46,7 +46,6 @@ export default function ClosedOrdersPage() {
       setLoading(true);
 
       const response = await getCompletedOrdersByTable(tableId, pageNum, 10, sd, ed);
-      console.log(response);
 
       setOrders(response.data);
       setPage(response.page);
@@ -128,7 +127,6 @@ export default function ClosedOrdersPage() {
   const printOrder = async (order: Order) =>
     new Promise((resolve) => {
       setTimeout(() => {
-        console.log("Imprimindo comanda:", order.id);
         resolve(true);
       }, 1000);
     });

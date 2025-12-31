@@ -8,7 +8,7 @@ const statusToFeedback = {
   critical: "error",
 } as const;
 
-export const ScreenContainer = styled.View`
+export const ScreenContainer = styled.ScrollView`
   flex: 1;
   padding: 16px;
   background-color: ${({ theme }) => theme.colors.background};

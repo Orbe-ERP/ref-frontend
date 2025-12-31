@@ -108,6 +108,7 @@ export default function AccountEditScreen() {
           <ScrollView
             contentContainerStyle={{ flexGrow: 1 }}
             keyboardShouldPersistTaps="handled"
+             showsVerticalScrollIndicator={false}
           >
             <AccountForm
               name={name}
