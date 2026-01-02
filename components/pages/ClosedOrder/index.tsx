@@ -231,7 +231,6 @@ export default function ClosedOrdersPage() {
         }}
       />
 
-      {/* Filtro de Data */}
       <S.FilterContainer>
         <S.DateRow>
           <S.DateInput onPress={() => setShowCalendarFor("start")}>
@@ -253,8 +252,6 @@ export default function ClosedOrdersPage() {
           </S.SearchButtonText>
         </S.SearchButton>
       </S.FilterContainer>
-
-      {/* Modal do Calendário */}
       <Modal visible={!!showCalendarFor} transparent animationType="fade">
         <S.ModalOverlay>
           <S.CalendarWrapper>

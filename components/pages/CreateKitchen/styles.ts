@@ -12,10 +12,12 @@ export const Grid = styled.View<{ isMobile: boolean }>`
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: ${({ isMobile }) =>
-    isMobile ? "space-between" : "center"};
+    isMobile ? "center" : "center"};
   gap: 16px;
 `;
 
 export const CardWrapper = styled.View<{ isMobile: boolean }>`
-  width: ${({ isMobile }) => (isMobile ? "48%" : "330px")};
+display: flex;
+align-items: center;
+justify-content: center;
 `;

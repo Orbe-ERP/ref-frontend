@@ -24,7 +24,7 @@ const ExpertCard: React.FC<ExpertCardProps> = ({
   const { theme } = useAppTheme();
 
   return (
-    <View style={{ position: "relative", width: 160, height: 160 }}>
+    <View style={{ position: "relative", width: 120, height: 120 }}>
       <Card onPress={onPress}>
         <IconContainer>
           <Ionicons name={icon as any} size={40} color={theme.colors.primary} />

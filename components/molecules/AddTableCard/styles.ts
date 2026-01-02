@@ -4,8 +4,8 @@ export const AddButton = styled.TouchableOpacity`
   border-width: 2;
   border-color: ${({ theme }) => theme.colors.primary};
   border-style: dashed;
-  width: 160;
-  height: 160;
+  width: 120;
+  height: 120;
   justify-content: center;
   align-items: center;
   border-radius: 10px;

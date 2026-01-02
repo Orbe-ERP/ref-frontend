@@ -2,8 +2,8 @@ import styled from "styled-components/native";
 
 export const Card = styled.TouchableOpacity`
   border-radius: 10px;
-  width: 160px;
-  height: 160px;
+  width: 120px;
+  height: 120px;
   align-items: center;
   justify-content: center;
   background-color: ${({ theme }) => theme.colors.surface};

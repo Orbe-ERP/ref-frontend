@@ -27,6 +27,7 @@ import {
   getModifierCategories,
   createModifierCategory,
   ModifierCategory,
+  deleteModifierCategory,
 } from "@/services/modifierCategory";
 
 const TABS = {
@@ -171,9 +172,9 @@ export default function ProductDetailsTabs() {
     }
   };
 
-  const handleDeleteCategory = async (id: string) => {
+  const handleDeleteCategory = async (id: string, restaurantId: string) => {
     try {
-      //await deleteModifierCategory(id);
+      await deleteModifierCategory(id, restaurantId);
       await loadCategories();
       Toast.show({
         type: "success",
@@ -262,24 +263,25 @@ export default function ProductDetailsTabs() {
               )}
             </View>
             <View style={{ flexDirection: "row" }}>
+<TouchableOpacity
+  style={{ padding: 8, marginLeft: 8 }}
+  onPress={() =>
+    router.push({
+      pathname: "/stock/modifiers/[categoryId]",
+      params: { categoryId: item.id },
+    })
+  }
+>
+  <Ionicons
+    name="create-outline"
+    size={20}
+    color={theme.colors.primary}
+  />
+</TouchableOpacity>
+
               <TouchableOpacity
                 style={{ padding: 8, marginLeft: 8 }}
-                onPress={() =>
-                  router.push({
-                    pathname: "/stock/modifiers/create-modifier",
-                    params: { categoryId: item.id },
-                  })
-                }
-              >
-                <Ionicons
-                  name="create-outline"
-                  size={20}
-                  color={theme.colors.primary}
-                />
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={{ padding: 8, marginLeft: 8 }}
-                onPress={() => handleDeleteCategory(item.id)}
+                onPress={() => handleDeleteCategory(item.id, selectedRestaurant?.id!)}
               >
                 <Ionicons
                   name="trash-outline"

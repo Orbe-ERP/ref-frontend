@@ -20,8 +20,8 @@ const TableCard: React.FC<TableCardProps> = ({ table, onPress, onEdit, showEditB
     <View
       style={{
         position: "relative",
-        width: 160,
-        height: 160,  
+        width: 120,
+        height: 120,  
       }}
     >
       <Card onPress={onPress} activeOpacity={0.8}>

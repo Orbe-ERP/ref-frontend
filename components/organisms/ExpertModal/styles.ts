@@ -44,6 +44,7 @@ export const ActionButton = styled.TouchableOpacity<ActionButtonProps>`
 `;
 
 export const ActionText = styled.Text`
-  color: ${({ theme }) => theme.colors.text.primary};  
+  color: ${({ theme }) => theme.colors.text.primary};
   font-weight: bold;
+  text-align: center;
 `;

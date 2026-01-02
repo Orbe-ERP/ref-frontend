@@ -42,6 +42,16 @@ export async function getModifierCategories(restaurantId: string | undefined) {
   }
 }
 
+export async function getModifiersByCategory(
+  restaurantId: string,
+  categoryId: string
+) {
+  const categories = await getModifierCategories(restaurantId);
+  const category = categories.find(c => c.id === categoryId);
+  return category?.modifiers ?? [];
+}
+
+
 export async function getModifierCategoryById(
   id: string,
   restaurantId: string

@@ -116,7 +116,7 @@ const ExpertModal: React.FC<ExpertModalProps> = ({
             <ActionText>Cancelar</ActionText>
           </ActionButton>
           <ActionButton backgroundColor="#2BAE66" onPress={onConfirm}>
-            <ActionText>{confirmLabel}</ActionText>
+            <ActionText numberOfLines={1} ellipsizeMode="clip">{confirmLabel}</ActionText>
           </ActionButton>
         </Actions>
       </ModalContent>

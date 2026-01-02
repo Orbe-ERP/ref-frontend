@@ -78,7 +78,7 @@ export default function ProductScreen() {
         contentContainerStyle={{
           flexDirection: "row",
           flexWrap: "wrap",
-          justifyContent: "space-between",
+          justifyContent: "center",
           gap: "15px"
         }}
       >
