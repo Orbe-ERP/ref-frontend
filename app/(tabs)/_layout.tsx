@@ -5,15 +5,11 @@ import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { HapticTab } from "@/components/HapticTab";
 import TabBarBackground from "@/components/ui/TabBarBackground";
-import useAuth from "@/hooks/useAuth";
 import { useAppTheme } from "@/context/ThemeProvider/theme";
 
 export default function TabLayout() {
   const insets = useSafeAreaInsets();
-  const { user } = useAuth();
   const { theme } = useAppTheme();
-
-  const isAdmin = user?.role === "ADMIN";
 
   return (
     <Tabs
@@ -62,29 +58,15 @@ export default function TabLayout() {
           ),
         }}
       />
-      {isAdmin && (
-        <>
-          <Tabs.Screen
-            name="dashboard"
-            options={{
-              title: "Dashboard",
-              tabBarIcon: ({ color, size }) => (
-                <Ionicons name="stats-chart" size={size} color={color} />
-              ),
-            }}
-          />
-
-          <Tabs.Screen
-            name="config"
-            options={{
-              title: "Opções",
-              tabBarIcon: ({ color, size }) => (
-                <Ionicons name="settings" size={size} color={color} />
-              ),
-            }}
-          />
-        </>
-      )}
+      <Tabs.Screen
+        name="config"
+        options={{
+          title: 'Opções',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="settings" size={size} color={color} />
+          ),
+        }}
+      />
     </Tabs>
   );
 }
