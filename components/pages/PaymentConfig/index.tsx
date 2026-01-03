@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Alert, FlatList } from "react-native";
+import { FlatList } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import {
   getPaymentConfigs,

@@ -66,45 +66,31 @@ export const SecurityText = styled.Text`
 export const ButtonGroup = styled.View`
   width: 100%;
   gap: 12px;
-  margin-top: 32px;
+  margin-top: 24px;
 `;
 
-export const RetryButton = styled.TouchableOpacity`
+export const PrimaryButton = styled.TouchableOpacity`
   background-color: ${({ theme }) => theme.colors.primary};
   border-radius: 12px;
   padding: 16px;
   align-items: center;
 `;
 
-export const RetryButtonText = styled.Text`
+export const PrimaryButtonText = styled.Text`
   color: ${({ theme }) => theme.colors.surface};
   font-size: 16px;
   font-weight: 600;
 `;
 
-export const HomeButton = styled.TouchableOpacity`
+export const SecondaryButton = styled.TouchableOpacity`
   background-color: ${({ theme }) => theme.colors.overlay};
   border-radius: 12px;
   padding: 16px;
   align-items: center;
 `;
 
-export const HomeButtonText = styled.Text`
+export const SecondaryButtonText = styled.Text`
   color: ${({ theme }) => theme.colors.text.secondary};
-  font-size: 16px;
-  font-weight: 600;
-`;
-
-export const PlanButton = styled.TouchableOpacity`
-  background-color: ${({ theme }) => theme.colors.accent};
-  border-radius: 12px;
-  padding: 16px;
-  align-items: center;
-  margin-top: 8px;
-`;
-
-export const PlanButtonText = styled.Text`
-  color: ${({ theme }) => theme.colors.surface};
   font-size: 16px;
   font-weight: 600;
 `;

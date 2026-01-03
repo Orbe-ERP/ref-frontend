@@ -1,5 +1,5 @@
-import PaymentConfirmation from '@/components/organisms/PaymentConfirmation';
+import EmailConfirmationScreen from "@/components/pages/EmailConfirmation";
 
-export default function ConfirmScreen() {
-  return <PaymentConfirmation />;
+export default function EmailConfirmation() {
+  return <EmailConfirmationScreen />;
 }
