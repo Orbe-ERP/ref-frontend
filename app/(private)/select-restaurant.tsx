@@ -12,6 +12,8 @@ import { Stack, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import Toast from "react-native-toast-message";
 import styled from "styled-components/native";
+import { Ionicons } from "@expo/vector-icons";
+import { Pressable } from "react-native-gesture-handler";
 
 const Container = styled.View`
   flex: 1;
@@ -122,7 +124,21 @@ export default function SelectRestaurantScreen() {
           title: "Selecionar Restaurante",
           headerStyle: { backgroundColor: theme.colors.background },
           headerTintColor: theme.colors.text.primary,
+    headerLeft: () => (
+      <Pressable
+        onPress={() => router.replace("/(tabs)")}
+        style={{ paddingHorizontal: 16 }}
+      >
+        <Ionicons
+          name="arrow-back"
+          size={24}
+          color={theme.colors.text.primary}
+        />
+      </Pressable>
+    ),
+          
         }}
+        
       />
       <Container>
         <Subtitle>Restaurantes Disponíveis</Subtitle>

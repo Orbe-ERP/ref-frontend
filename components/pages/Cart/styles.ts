@@ -12,20 +12,25 @@ export const Container = styled.View<ResponsiveProps>`
   flex: 1;
   background-color: ${({ theme }) => theme.colors.background};
   padding: 20px;
-  
-  ${({ isWeb, isTablet, isDesktop }) => 
-    (isTablet || isDesktop) && isWeb ? `
+
+  ${({ isWeb, isTablet, isDesktop }) =>
+    (isTablet || isDesktop) && isWeb
+      ? `
     align-items: center;
-  ` : ''}
+  `
+      : ""}
 `;
 
 export const ContentWrapper = styled.View<ResponsiveProps>`
-  ${({ isTablet, isDesktop }) => 
-    (isTablet || isDesktop) ? `
+  flex: 1;
+  ${({ isTablet, isDesktop }) =>
+    isTablet || isDesktop
+      ? `
     max-width: 600px;
     width: 100%;
     align-self: center;
-  ` : ''}
+  `
+      : ""}
 `;
 
 export const Card = styled.View<ResponsiveProps>`
@@ -38,11 +43,13 @@ export const Card = styled.View<ResponsiveProps>`
   shadow-radius: 4px;
   shadow-offset: 0px 2px;
   elevation: 3;
-  
-  ${({ isWide }) => 
-    isWide ? `
+
+  ${({ isWide }) =>
+    isWide
+      ? `
     width: 100%;
-  ` : ''}
+  `
+      : ""}
 `;
 
 export const Label = styled.Text`
@@ -62,11 +69,13 @@ export const Input = styled.TextInput<ResponsiveProps>`
   font-size: 15px;
   border-width: 1.5px;
   border-color: ${({ theme }) => theme.colors.border};
-  
-  ${({ isWide }) => 
-    isWide ? `
+
+  ${({ isWide }) =>
+    isWide
+      ? `
     width: 100%;
-  ` : ''}
+  `
+      : ""}
 `;
 
 export const Row = styled.View<ResponsiveProps>`
@@ -75,11 +84,13 @@ export const Row = styled.View<ResponsiveProps>`
   justify-content: flex-start;
   gap: 14px;
   margin-bottom: 18px;
-  
-  ${({ isWide }) => 
-    isWide ? `
+
+  ${({ isWide }) =>
+    isWide
+      ? `
     justify-content: center;
-  ` : ''}
+  `
+      : ""}
 `;
 
 export const CheckboxContainer = styled.View`
@@ -117,18 +128,22 @@ export const EmptyText = styled.Text<ResponsiveProps>`
   text-align: center;
   margin-top: 80px;
   opacity: 0.8;
-  
-  ${({ isWide }) => 
-    isWide ? `
+
+  ${({ isWide }) =>
+    isWide
+      ? `
     margin-top: 120px;
     font-size: 18px;
-  ` : ''}
+  `
+      : ""}
 `;
 
 export const ButtonContainer = styled.View<ResponsiveProps>`
-  ${({ isWide }) => 
-    isWide ? `
+  ${({ isWide }) =>
+    isWide
+      ? `
     align-items: center;
     margin-top: 20px;
-  ` : ''}
+  `
+      : ""}
 `;

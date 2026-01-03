@@ -4,7 +4,7 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
-import { IContext, IAuthProvider, IUser } from "./types";
+import { IContext, IAuthProvider, IUser, AuthResult } from "./types";
 import {
   LoginRequest,
   ValidateToken,
@@ -13,6 +13,7 @@ import {
 } from "./utils";
 import useRestaurant from "@/hooks/useRestaurant";
 import { getRestaurantById } from "@/services/restaurant";
+import axios from "axios";
 
 export const AuthContext = createContext<IContext>({} as IContext);
 
@@ -32,21 +33,25 @@ export const AuthProvider = ({ children }: IAuthProvider) => {
       if (storedUser) {
         const isTokenValid = await validateToken(storedUser.token);
 
-        if (isTokenValid) {
-          setUser(storedUser);
+if (isTokenValid) {
+  setUser(storedUser);
 
-          if (storedUser.defaultRestaurantId) {
-            const restaurant = await getRestaurantById(
-              storedUser.defaultRestaurantId
-            );
+  if (storedUser.defaultRestaurantId && storedUser.token) {
+    try {
+      const restaurant = await getRestaurantById(
+        storedUser.defaultRestaurantId
+      );
+      if (restaurant) {
+        selectRestaurant(restaurant);
+      }
+    } catch (err) {
+      console.warn("Não foi possível carregar restaurante", err);
+    }
+  }
+} else {
+  await logout();
+}
 
-            if (restaurant) {
-              selectRestaurant(restaurant);
-            }
-          }
-        } else {
-          await logout();
-        }
       }
       setLoading(false);
     };
@@ -65,10 +70,16 @@ export const AuthProvider = ({ children }: IAuthProvider) => {
     }
   }, []);
 
-  const authenticate = useCallback(async (email: string, password: string) => {
+const authenticate = useCallback(
+  async (email: string, password: string) => {
     try {
       const response = await LoginRequest(email, password);
-      if (!response || !response.payload) return false;
+
+        console.log("Authenticate response:", response);
+
+      if (!response) {
+        return { success: false, message: "Erro ao autenticar" };
+      }
 
       const payload: IUser = {
         role: response.payload.role,
@@ -81,28 +92,37 @@ export const AuthProvider = ({ children }: IAuthProvider) => {
         defaultRestaurantId: response.payload.defaultRestaurantId,
         restaurantName: response.payload.restaurantName,
       };
-      
+
       setUser(payload);
       await setUserAsyncStorage(payload);
-      
-      if (payload.defaultRestaurantId) {
-        const restaurant = await getRestaurantById(payload.defaultRestaurantId);
 
-        if (restaurant) {
-          selectRestaurant(restaurant);
-        }
+      return { success: true };
+    } catch (error: any) {
+      if (axios.isAxiosError(error)) {
+        return {
+          success: false,
+          message:
+            error.response?.data?.message ??
+            "E-mail ou senha inválidos",
+        };
       }
-      return true;
-    } catch (error) {
-      console.error("Erro ao autenticar", error);
-      return false;
-    }
-  }, []);
 
-  const logout = useCallback(async () => {
-    setUser(null);
-    await setUserAsyncStorage(null);
-  }, []);
+      return {
+        success: false,
+        message: "Erro inesperado",
+      };
+    }
+  },
+  []
+);
+
+
+const logout = useCallback(async () => {
+  setUser(null);
+  selectRestaurant(null);
+  await setUserAsyncStorage(null);
+}, []);
+
 
   return (
     <AuthContext.Provider

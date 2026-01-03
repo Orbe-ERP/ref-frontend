@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { View } from "react-native";
 import Card from "@/components/atoms/Card";
 import Title from "@/components/atoms/Title";
 import { Text } from "@/components/atoms/Text";
 import Button from "@/components/atoms/Button";
 import KitchenLabel from "@/components/atoms/KitchenLabel";
+import ConfirmActionModal from "../ConfirmModal";
 
 export interface KitchenCompositionItem {
   orderId: string;
@@ -21,6 +22,8 @@ export interface KitchenCompositionItem {
   status: string;
 }
 
+type ModalType = "prepare" | "ready" | "cancel" | null;
+
 interface KitchenOrderCardProps {
   tableName: string;
   items: KitchenCompositionItem[];
@@ -29,6 +32,38 @@ interface KitchenOrderCardProps {
   onCancelOrder?: (orderId: string) => void;
 }
 
+const MODAL_CONFIG: Record<
+  Exclude<ModalType, null>,
+  {
+    title: string;
+    description: string;
+    confirmLabel: string;
+    variant: "primary" | "secondary" | "danger";
+  }
+> = {
+  prepare: {
+    title: "Iniciar preparo?",
+    description:
+      "Isso marcará como em preparo todos itens desse prato.",
+    confirmLabel: "Sim, preparar",
+    variant: "secondary",
+  },
+  ready: {
+    title: "Pedido pronto?",
+    description:
+      "O prato será marcado como pronto para entrega ao cliente.",
+    confirmLabel: "Sim, finalizar",
+    variant: "primary",
+  },
+  cancel: {
+    title: "Cancelar pedido?",
+    description:
+      "Essa ação irá cancelar o prato inteiro e não poderá ser desfeito.",
+    confirmLabel: "Sim, cancelar",
+    variant: "danger",
+  },
+};
+
 export default function KitchenOrderCard({
   tableName,
   items,
@@ -36,86 +71,116 @@ export default function KitchenOrderCard({
   onUpdateStatus,
   onCancelOrder,
 }: KitchenOrderCardProps) {
+  const [modalType, setModalType] = useState<ModalType>(null);
+
   if (!items.length) return null;
 
   const kitchen = items[0].kitchen;
   const kitchenColor = kitchen?.color ?? "#CBD5E1";
-const isPreparing = items.some(
-  (item) => item.status === "WORK_IN_PROGRESS"
-);
+
+  const isPreparing = items.some(
+    (item) => item.status === "WORK_IN_PROGRESS"
+  );
+
+  const handleConfirm = () => {
+    if (modalType === "prepare") {
+      items.forEach((item) =>
+        onUpdateStatus(item.orderProductId, "WORK_IN_PROGRESS")
+      );
+    }
+
+    if (modalType === "ready") {
+      items.forEach((item) =>
+        onUpdateStatus(item.orderProductId, "WAITING_DELIVERY")
+      );
+    }
+
+    if (modalType === "cancel" && onCancelOrder) {
+      onCancelOrder(items[0].orderId);
+    }
+
+    setModalType(null);
+  };
+
+  const modalConfig = modalType ? MODAL_CONFIG[modalType] : null;
 
   return (
-<Card
-  style={{
-    borderLeftWidth: 6,
-    borderLeftColor: kitchenColor,
-    paddingTop: 16,
+    <>
+      <Card
+        style={{
+          borderLeftWidth: 6,
+          borderLeftColor: kitchenColor,
+          paddingTop: 16,
+          ...(isPreparing && {
+            borderWidth: 2,
+            borderColor: "#FACC15",
+          }),
+        }}
+      >
+        <View style={{ position: "absolute", top: 8, left: 8 }}>
+          <KitchenLabel color={kitchenColor}>{kitchen.name}</KitchenLabel>
+        </View>
 
-    ...(isPreparing && {
-      borderWidth: 2,
-      borderColor: "#FACC15",
-    }),
+        <Title style={{ textAlign: "center", marginBottom: 4 }}>
+          Mesa {tableName}
+        </Title>
+
+        <Text color="#6B7280">
+          Pedido #{items[0].orderId.slice(0, 4)}
+        </Text>
+
+        {items.map((item, index) => (
+          <View key={index} style={{ marginBottom: 12 }}>
+            <Text weight="bold">{item.productName}</Text>
+            <Text color="#6B7280" weight="bold" size={20}>
+              ↳ {item.compositionName}
+            </Text>
+          </View>
+        ))}
+
+<View
+  style={{
+    flexDirection: "column",
+    marginTop: 8,
   }}
 >
 
-
-      <View style={{ position: "absolute", top: 8, left: 8 }}>
-        <KitchenLabel color={kitchenColor}>{kitchen.name}</KitchenLabel>
-      </View>
-      <Title style={{ textAlign: "center", marginBottom: 4 }}>
-        Mesa {tableName}
-      </Title>
-
-      <Text color="#6B7280">Pedido #{items[0].orderId.slice(0, 4)}</Text>
-
-      {items.map((item, index) => (
-        <View key={index} style={{ marginBottom: 12 }}>
-          <Text weight="bold">{item.productName}</Text>
-          <Text color="#6B7280" weight="bold" size={20}>
-            ↳ {item.compositionName}
-          </Text>
-        </View>
-      ))}
-      <View
-        style={{
-          flexDirection: "row",
-          flexWrap: "wrap",
-          alignContent: "center",
-          gap: 8,
-          marginTop: 12,
-        }}
-      >
-        <Button
-          hasFlex1
-          label="Preparar"
-          variant="secondary"
-          onPress={() =>
-            items.forEach((item) =>
-              onUpdateStatus(item.orderProductId, "WORK_IN_PROGRESS")
-            )
-          }
-        />
-
-        <Button
-          hasFlex1
-          label="Pedido Pronto"
-          variant="primary"
-          onPress={() =>
-            items.forEach((item) =>
-              onUpdateStatus(item.orderProductId, "WAITING_DELIVERY")
-            )
-          }
-        />
-
-        {onCancelOrder && (
           <Button
             hasFlex1
-            label="Cancelar Pedido"
-            variant="danger"
-            onPress={() => onCancelOrder(items[0].orderId)}
+            label="Preparar"
+            variant="secondary"
+            onPress={() => setModalType("prepare")}
           />
-        )}
-      </View>
-    </Card>
+
+          <Button
+            hasFlex1
+            label="Pedido Pronto"
+            variant="primary"
+            onPress={() => setModalType("ready")}
+          />
+
+          {onCancelOrder && (
+            <Button
+              hasFlex1
+              label="Cancelar Pedido"
+              variant="danger"
+              onPress={() => setModalType("cancel")}
+            />
+          )}
+        </View>
+      </Card>
+
+      {modalConfig && (
+        <ConfirmActionModal
+          visible
+          title={modalConfig.title}
+          description={modalConfig.description}
+          confirmLabel={modalConfig.confirmLabel}
+          variant={modalConfig.variant}
+          onCancel={() => setModalType(null)}
+          onConfirm={handleConfirm}
+        />
+      )}
+    </>
   );
 }

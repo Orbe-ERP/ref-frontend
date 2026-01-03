@@ -47,6 +47,7 @@ function normalizeKitchenItems(orders: Order[]) {
 
       if (product.compositions.length === 0) {
         const kitchen = product.kitchens?.[0];
+        if (!kitchen.showOnKitchen) return;
         if (!kitchen) return;
 
         const kitchenId = kitchen.id;
@@ -73,9 +74,6 @@ function normalizeKitchenItems(orders: Order[]) {
         return;
       }
 
-      /** ===============================
-       *  CASO 2 — PRODUTO COM COMPOSIÇÃO
-       * =============================== */
       product.compositions.forEach((comp) => {
         if (!comp.kitchen?.showOnKitchen) return;
 
@@ -129,6 +127,8 @@ export default function KitchenPage() {
   const [loading, setLoading] = useState(true);
   const { selectedRestaurant } = useRestaurant();
   const theme = useAppTheme();
+
+  console.log(orders);
 
   useEffect(() => {
     if (!selectedRestaurant) return;
@@ -225,19 +225,18 @@ export default function KitchenPage() {
           <Picker
             selectedValue={selectedKitchenId}
             onValueChange={setSelectedKitchenId}
-            style={{ color: theme.theme.colors.text.primary, backgroundColor: theme.theme.colors.surface }}
-              itemStyle={{ color: theme.theme.colors.text.primary }} 
+            style={{
+              color: theme.theme.colors.text.primary,
+              backgroundColor: theme.theme.colors.surface,
+            }}
+            itemStyle={{ color: theme.theme.colors.text.primary }}
             dropdownIconColor={theme.theme.colors.text.primary}
           >
             <Picker.Item label="Todas as cozinhas" value="null" />
             {kitchens
               .filter((k) => k.showOnKitchen)
               .map((k) => (
-                <Picker.Item
-                  key={k.id}
-                  label={k.name}
-                  value={k.id}
-                />
+                <Picker.Item key={k.id} label={k.name} value={k.id} />
               ))}
           </Picker>
         </S.PickerContainer>

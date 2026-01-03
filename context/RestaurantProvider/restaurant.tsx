@@ -3,7 +3,7 @@ import { IRestaurant } from "./types";
 
 export interface IContext {
   selectedRestaurant: IRestaurant | null;
-  selectRestaurant: (restaurant: IRestaurant) => void;
+  selectRestaurant: (restaurant: IRestaurant | null) => void;
 }
 
 export const RestaurantContext = createContext<IContext | undefined>(undefined);
@@ -22,8 +22,7 @@ export const RestaurantProvider = ({ children }: RestaurantProviderProps) => {
 
   return (
     <RestaurantContext.Provider
-      value={{ selectedRestaurant, selectRestaurant }}
-    >
+      value={{ selectedRestaurant, selectRestaurant }}>
       {children}
     </RestaurantContext.Provider>
   );

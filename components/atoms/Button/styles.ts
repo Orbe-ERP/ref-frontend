@@ -15,9 +15,9 @@ export const StyledButton = styled.TouchableOpacity<{
       : theme.colors.feedback.error};
 
   border-radius: 12px;
-  padding-vertical: 14px;
+  padding-vertical: 16px;
   padding-horizontal: 18px;
-  margin-vertical: 8px;
+  margin-vertical: 4px;
   shadow-color: #000;
   shadow-offset: 0px 3px;
   shadow-opacity: 0.2;

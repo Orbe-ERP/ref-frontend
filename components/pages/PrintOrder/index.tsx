@@ -2,10 +2,17 @@ import React, { useEffect, useState } from "react";
 import { ActivityIndicator, ScrollView, Alert } from "react-native";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import Toast from "react-native-toast-message";
-import Button from "@/components/atoms/Button"; 
+import Button from "@/components/atoms/Button";
 import { getOrderSummaryByIdentifier } from "@/services/order";
 import { useAppTheme } from "@/context/ThemeProvider/theme";
 import * as S from "./styles";
+
+const paymentMethodLabelMap: Record<string, string> = {
+  CASH: "Dinheiro",
+  CREDIT_CARD: "Cartão de Crédito",
+  DEBIT_CARD: "Cartão de Débito",
+  PIX: "PIX",
+};
 
 export default function PrintOrderScreen() {
   const { identifier } = useLocalSearchParams<{ identifier: string }>();
@@ -74,7 +81,8 @@ export default function PrintOrderScreen() {
   if (!orderSummary) return null;
 
   const products = Object.values(orderSummary.totalProducts);
-  const subtotal = orderSummary.totalAmount - (orderSummary.additionalAmount || 0);
+  const subtotal =
+    orderSummary.totalAmount - (orderSummary.additionalAmount || 0);
 
   return (
     <S.Container>
@@ -90,11 +98,13 @@ export default function PrintOrderScreen() {
       <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
         <S.TicketCard>
           <S.Header>
-            <S.RestaurantTitle>{orderSummary.restaurant.name}</S.RestaurantTitle>
+            <S.RestaurantTitle>
+              {orderSummary.restaurant.name}
+            </S.RestaurantTitle>
             <S.Subtitle>{orderSummary.restaurant.tradeName}</S.Subtitle>
             <S.MetaInfo>CNPJ: {orderSummary.restaurant.cnpj}</S.MetaInfo>
             <S.Divider />
-            
+
             <S.RowInfo>
               <S.Label>Comanda:</S.Label>
               <S.Value>#{orderSummary.orderIdentifier.slice(-6)}</S.Value>
@@ -110,16 +120,18 @@ export default function PrintOrderScreen() {
           </S.Header>
 
           <S.SectionTitle>Itens do Pedido</S.SectionTitle>
-          
+
           {products.map((item: any) => (
             <S.ProductRow key={item.productId || item.id}>
               <S.QuantityBox>
                 <S.QuantityText>{item.quantity}x</S.QuantityText>
               </S.QuantityBox>
-              
+
               <S.ProductInfo>
                 <S.ProductName>{item.productName}</S.ProductName>
-                <S.ProductUnitVal>{formatCurrency(item.price)}</S.ProductUnitVal>
+                <S.ProductUnitVal>
+                  {formatCurrency(item.price)}
+                </S.ProductUnitVal>
               </S.ProductInfo>
 
               <S.ProductTotal>{formatCurrency(item.totalPrice)}</S.ProductTotal>
@@ -137,33 +149,36 @@ export default function PrintOrderScreen() {
             {orderSummary.additionalAmount > 0 && (
               <S.RowSummary>
                 <S.SummaryLabel>Taxa Adicional</S.SummaryLabel>
-                <S.SummaryValue>{formatCurrency(orderSummary.additionalAmount)}</S.SummaryValue>
+                <S.SummaryValue>
+                  {formatCurrency(orderSummary.additionalAmount)}
+                </S.SummaryValue>
               </S.RowSummary>
             )}
 
             <S.TotalRow>
               <S.TotalLabel>TOTAL</S.TotalLabel>
-              <S.TotalValue>{formatCurrency(orderSummary.totalAmount)}</S.TotalValue>
+              <S.TotalValue>
+                {formatCurrency(orderSummary.totalAmount)}
+              </S.TotalValue>
             </S.TotalRow>
           </S.SummaryContainer>
 
           <S.FooterInfo>
             <S.PaymentTitle>Pagamento</S.PaymentTitle>
-            <S.PaymentInfo>Método: {orderSummary.paymentMethod}</S.PaymentInfo>
-            {orderSummary.feePercent > 0 && (
-               <S.MetaInfo>Taxa Serviço: {orderSummary.feePercent}%</S.MetaInfo>
-            )}
+            <S.PaymentInfo>
+              Método:{" "}
+              {paymentMethodLabelMap[orderSummary.paymentMethod] ??
+                "Não informado"}
+            </S.PaymentInfo>
           </S.FooterInfo>
         </S.TicketCard>
       </ScrollView>
 
-      {/* Botão fixo no rodapé */}
       <S.BottomButtonContainer>
         <Button
           label="Imprimir Comanda"
-          variant="primary" // Ou 'secondary' se preferir verde igual ao carrinho
+          variant="primary"
           onPress={handlePrint}
-          // icon={<Ionicons name="print-outline" size={20} color="#fff" />}
         />
       </S.BottomButtonContainer>
     </S.Container>

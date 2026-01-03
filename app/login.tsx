@@ -89,7 +89,6 @@ const EyeButton = styled.TouchableOpacity`
   top: 18px;
 `;
 
-
 const LoginSchema = Yup.object().shape({
   email: Yup.string().email("E-mail inválido").required("E-mail obrigatório"),
   password: Yup.string()
@@ -122,31 +121,40 @@ export default function Login() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
 
-
   const handleLogin = async (values: { email: string; password: string }) => {
     setLoading(true);
-    const success = await authenticate(values.email, values.password);
 
-    if (!success) {
-      Toast.show({
-        type: "error",
-        text1: "Erro",
-        text2: "E-mail ou senha inválidos",
-        position: "top",
-        visibilityTime: 3000,
-      });
-    } else {
+    try {
+      const result = await authenticate(values.email, values.password);
+
+      if (!result.success) {
+        Toast.show({
+          type: "error",
+          text1: "Erro ao entrar",
+          text2: result.message ?? "E-mail ou senha inválidos",
+          position: "top",
+          visibilityTime: 4000,
+        });
+        return;
+      }
+
       Toast.show({
         type: "success",
         text1: "Sucesso",
         text2: "Login realizado com sucesso!",
         position: "top",
-        visibilityTime: 2000,
       });
-    }
 
-    setLoading(false);
-    router.replace("/(tabs)");
+      router.replace("/(tabs)");
+    } catch {
+      Toast.show({
+        type: "error",
+        text1: "Erro inesperado",
+        text2: "Tente novamente.",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -207,7 +215,7 @@ export default function Login() {
                   onChangeText={handleChange("password")}
                   onBlur={handleBlur("password")}
                   value={values.password}
-                  style={{ paddingRight: 44 }} // espaço pro ícone
+                  style={{ paddingRight: 44 }}
                 />
 
                 <EyeButton onPress={() => setShowPassword(!showPassword)}>

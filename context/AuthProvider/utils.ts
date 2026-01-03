@@ -25,7 +25,6 @@ export async function getUserAsyncStorage(): Promise<IUser | null> {
     return null;
   }
 }
-
 export async function LoginRequest(
   email: string,
   password: string
@@ -40,14 +39,9 @@ export async function LoginRequest(
     email: string;
     plan: string;
   };
-} | null> {
-  try {
-    const request = await api.post("signin", { email, password });
-    return request.data;
-  } catch (error) {
-    console.error("Erro no login", error);
-    return null;
-  }
+}> {
+  const request = await api.post("signin", { email, password });
+  return request.data;
 }
 
 export async function ValidateToken(): Promise<{

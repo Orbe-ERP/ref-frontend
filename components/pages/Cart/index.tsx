@@ -172,9 +172,13 @@ export default function CartPage() {
         ) : (
           <>
             <ScrollView
-              contentContainerStyle={
-                isWide ? { alignItems: 'center' } : undefined
-              }
+              style={{ flex: 1 }}
+              contentContainerStyle={{
+                paddingBottom: 120,
+                alignItems: isWide ? "center" : "stretch",
+              }}
+              keyboardShouldPersistTaps="handled"
+              showsVerticalScrollIndicator={false}
             >
               {products.map((product: any) => (
                 <S.Card key={product.cartItemId} isWide={isWide}>
@@ -204,15 +208,23 @@ export default function CartPage() {
 
                   <S.Row>
                     <TouchableOpacity
-                      onPress={() => handleQuantityChange(product.cartItemId, -1)}
+                      onPress={() =>
+                        handleQuantityChange(product.cartItemId, -1)
+                      }
                     >
-                      <Ionicons name="remove-outline" size={24} color="#2BAE66" />
+                      <Ionicons
+                        name="remove-outline"
+                        size={24}
+                        color="#2BAE66"
+                      />
                     </TouchableOpacity>
 
                     <S.Label>{product.quantity}</S.Label>
 
                     <TouchableOpacity
-                      onPress={() => handleQuantityChange(product.cartItemId, 1)}
+                      onPress={() =>
+                        handleQuantityChange(product.cartItemId, 1)
+                      }
                     >
                       <Ionicons name="add-outline" size={24} color="#2BAE66" />
                     </TouchableOpacity>
@@ -220,14 +232,20 @@ export default function CartPage() {
                     <TouchableOpacity
                       onPress={() => handleRemoveProduct(product.cartItemId)}
                     >
-                      <Ionicons name="trash-outline" size={24} color="#E74C3C" />
+                      <Ionicons
+                        name="trash-outline"
+                        size={24}
+                        color="#E74C3C"
+                      />
                     </TouchableOpacity>
                   </S.Row>
 
                   {availableObservations[product.productId]?.length ? (
                     <S.CheckboxContainer>
                       {availableObservations[product.productId].map((obs) => {
-                        const isSelected = product.observations?.includes(obs.id);
+                        const isSelected = product.observations?.includes(
+                          obs.id
+                        );
                         return (
                           <S.CheckboxItem
                             key={obs.id}
@@ -271,7 +289,7 @@ export default function CartPage() {
                 placeholderTextColor="#ccc"
                 value={responsible}
                 onChangeText={setResponsible}
-                style={isWide ? { width: '100%' } : undefined}
+                style={isWide ? { width: "100%" } : undefined}
               />
 
               <S.Row>
