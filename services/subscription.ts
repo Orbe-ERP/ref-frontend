@@ -116,7 +116,7 @@ export async function cancelSubscription(): Promise<{
   }
 }
 
-export async function getMySubscription(): Promise<SubscriptionData> {
+export async function getMySubscription(): Promise<any> {
   try {
     const { data } = await api.get("/subscription/me");
     return data;

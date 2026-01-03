@@ -18,7 +18,6 @@ export default function DashboardScreen() {
   const [error, setError] = useState<string | null>(null);
 
   const theme = useAppTheme();
-
   const loadSalesData = async () => {
     try {
       setLoading(true);

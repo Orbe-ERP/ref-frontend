@@ -119,7 +119,22 @@ export const PlanCard = styled.TouchableOpacity<{
   position: relative;
 `;
 
+export const SubscriptionTimerText = styled.Text`
+  color: ${({ theme }) => theme.colors.feedback.warning};
+  font-weight: 600;
+  font-size: 14px;
+`;
 
+export const SubscriptionTimer = styled.View`
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 12px;
+
+  background-color: ${({ theme }) => theme.colors.feedback.warning + "20"};
+  border: 1px solid ${({ theme }) => theme.colors.feedback.warning};
+
+  margin-bottom: 16px;
+`;
 
 export const RecommendedText = styled.Text`
   color: ${({ theme }) => theme.colors.surface};

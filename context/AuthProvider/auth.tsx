@@ -75,8 +75,6 @@ const authenticate = useCallback(
     try {
       const response = await LoginRequest(email, password);
 
-        console.log("Authenticate response:", response);
-
       if (!response) {
         return { success: false, message: "Erro ao autenticar" };
       }

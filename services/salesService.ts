@@ -32,10 +32,6 @@ export class SalesService {
 
     return Array.from(productSalesMap.values());
   }
-
-
-
-  /** 🔹 Filtra pedidos entre duas datas */
   static filterByTimeRange(orders: Order[], startDate: Date, endDate: Date): Order[] {
     return orders.filter((order) => {
       const orderDate = new Date(order.createdAt);
@@ -43,7 +39,6 @@ export class SalesService {
     });
   }
 
-  /** 🔹 Retorna vendas do dia, semana e mês */
   static getSalesByTimeRange(orders: Order[]): SalesTimeRange {
     const now = new Date();
 
@@ -63,7 +58,6 @@ export class SalesService {
     };
   }
 
-  /** 🔹 Rótulos dos filtros de tempo */
   static getTimeRanges() {
     return [
       { label: "Hoje", value: "day" as const },

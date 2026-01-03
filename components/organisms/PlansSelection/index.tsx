@@ -17,6 +17,7 @@ import {
 
 import * as S from "./styles";
 import { LoadingContainer } from "@/components/pages/ClosedOrder/styles";
+import useSubscriptionStatus from "@/context/SubscriptionProvider/subscription";
 
 const PLAN_FEATURES: Record<Plan["name"], string[]> = {
   starter: [
@@ -44,10 +45,12 @@ const PLAN_FEATURES: Record<Plan["name"], string[]> = {
   ],
 };
 
+
 export default function PlansSelection() {
   const { theme } = useAppTheme();
   const router = useRouter();
   const auth = useAuth();
+  const { status, loadingStatus } = useSubscriptionStatus();
 
   const [plans, setPlans] = useState<Plan[]>([]);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
@@ -150,13 +153,19 @@ export default function PlansSelection() {
       </S.Header>
 
       <ScrollView showsVerticalScrollIndicator={false}>
+
+      {auth.user?.role === "ADMIN" && status?.isExpiringSoon && (
+        <S.SubscriptionTimer>
+          Seu plano expira em {status.expiresInDays} dias
+        </S.SubscriptionTimer>
+      )}
+        
         <S.Content>
           <S.TitleContainer>
             <S.Title>Encontre o plano perfeito</S.Title>
             <S.Subtitle>14 dias grátis. Cancele quando quiser.</S.Subtitle>
           </S.TitleContainer>
 
-          {/* Planos */}
           <S.PlansGrid>
             {plans.map((plan) => {
               const isSelected = selectedPlan === plan.id;
@@ -233,7 +242,6 @@ export default function PlansSelection() {
             })}
           </S.PlansGrid>
 
-          {/* Resumo */}
           {selectedPlanData && (
             <S.SelectedPlanSummary>
               <S.SummaryHeader>

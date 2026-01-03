@@ -15,8 +15,9 @@ import styled from "styled-components/native";
 import { useAppTheme } from "@/context/ThemeProvider/theme";
 import Title from "@/components/atoms/Title";
 import { useResponsive } from "@/hooks/useResponsive";
+import useSubscriptionStatus from "@/context/SubscriptionProvider/subscription";
+import useAuth from "@/hooks/useAuth";
 
-// Interfaces para as props responsivas
 interface ResponsiveProps {
   isMobile?: boolean;
   isTablet?: boolean;
@@ -28,11 +29,13 @@ interface ResponsiveProps {
 const Container = styled.View<ResponsiveProps>`
   flex: 1;
   background-color: ${({ theme }) => theme.colors.background};
-  
-  ${({ isWeb, isTablet, isDesktop }) => 
-    (isTablet || isDesktop) && isWeb ? `
+
+  ${({ isWeb, isTablet, isDesktop }) =>
+    (isTablet || isDesktop) && isWeb
+      ? `
     align-items: center;
-  ` : ''}
+  `
+      : ""}
 `;
 
 const ScrollContent = styled(ScrollView).attrs((props: ResponsiveProps) => ({
@@ -57,21 +60,23 @@ const LogoutContainer = styled.View<ResponsiveProps>`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: ${({ isMobile }) => isMobile ? 12 : 20}px;
+  margin-bottom: ${({ isMobile }) => (isMobile ? 12 : 20)}px;
   width: 100%;
-  
-  ${({ isTablet, isDesktop }) => 
-    (isTablet || isDesktop) ? `
+
+  ${({ isTablet, isDesktop }) =>
+    isTablet || isDesktop
+      ? `
     max-width: 800px;
     align-self: center;
-  ` : ''}
+  `
+      : ""}
 `;
 
 const ChartSection = styled.View<ResponsiveProps>`
   background-color: ${({ theme }) => theme.colors.surface};
-  border-radius: ${({ isMobile }) => isMobile ? 16 : 20}px;
-  padding: ${({ isMobile }) => isMobile ? 16 : 24}px;
-  margin-bottom: ${({ isMobile }) => isMobile ? 20 : 24}px;
+  border-radius: ${({ isMobile }) => (isMobile ? 16 : 20)}px;
+  padding: ${({ isMobile }) => (isMobile ? 16 : 24)}px;
+  margin-bottom: ${({ isMobile }) => (isMobile ? 20 : 24)}px;
   border-width: 1;
   border-color: rgba(255, 255, 255, 0.1);
   width: 100%;
@@ -81,13 +86,13 @@ const SectionHeader = styled.View<ResponsiveProps>`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: ${({ isMobile }) => isMobile ? 12 : 16}px;
+  margin-bottom: ${({ isMobile }) => (isMobile ? 12 : 16)}px;
   flex-wrap: wrap;
-  gap: ${({ isMobile }) => isMobile ? 8 : 12}px;
+  gap: ${({ isMobile }) => (isMobile ? 8 : 12)}px;
 `;
 
 const SectionTitle = styled.Text<ResponsiveProps>`
-  font-size: ${({ isMobile, isTablet, isDesktop }) => 
+  font-size: ${({ isMobile, isTablet, isDesktop }) =>
     isMobile ? 16 : isTablet ? 18 : 20}px;
   font-weight: bold;
   color: ${({ theme }) => theme.colors.text.primary};
@@ -96,42 +101,42 @@ const SectionTitle = styled.Text<ResponsiveProps>`
 `;
 
 const SalesCount = styled.Text<ResponsiveProps>`
-  font-size: ${({ isMobile }) => isMobile ? 14 : 16}px;
+  font-size: ${({ isMobile }) => (isMobile ? 14 : 16)}px;
   color: ${({ theme }) => theme.colors.text.secondary};
   text-align: right;
 `;
 
 const RefreshButton = styled.TouchableOpacity<ResponsiveProps>`
-  padding: ${({ isMobile }) => isMobile ? 6 : 8}px;
+  padding: ${({ isMobile }) => (isMobile ? 6 : 8)}px;
 `;
 
 const EmptyState = styled.View<ResponsiveProps>`
-  padding: ${({ isMobile }) => isMobile ? 24 : 32}px;
+  padding: ${({ isMobile }) => (isMobile ? 24 : 32)}px;
   align-items: center;
   background-color: ${({ theme }) => theme.colors.surface};
-  border-radius: ${({ isMobile }) => isMobile ? 12 : 16}px;
+  border-radius: ${({ isMobile }) => (isMobile ? 12 : 16)}px;
   border-width: 1;
   border-color: ${({ theme }) => theme.colors.border};
-  margin: ${({ isMobile }) => isMobile ? 0 : 16}px 0;
+  margin: ${({ isMobile }) => (isMobile ? 0 : 16)}px 0;
 `;
 
 const EmptyText = styled.Text<ResponsiveProps>`
   color: ${({ theme }) => theme.colors.text.accent};
   text-align: center;
-  margin-bottom: ${({ isMobile }) => isMobile ? 10 : 16}px;
-  font-size: ${({ isMobile }) => isMobile ? 14 : 16}px;
+  margin-bottom: ${({ isMobile }) => (isMobile ? 10 : 16)}px;
+  font-size: ${({ isMobile }) => (isMobile ? 14 : 16)}px;
   font-weight: 500;
 `;
 
 const StatusSection = styled.View<ResponsiveProps>`
   background-color: ${({ theme }) => theme.colors.surface};
-  border-radius: ${({ isMobile }) => isMobile ? 16 : 20}px;
-  padding: ${({ isMobile }) => isMobile ? 16 : 24}px;
+  border-radius: ${({ isMobile }) => (isMobile ? 16 : 20)}px;
+  padding: ${({ isMobile }) => (isMobile ? 16 : 24)}px;
   flex-direction: row;
   justify-content: space-around;
   border-width: 1;
   border-color: rgba(255, 255, 255, 0.1);
-  margin-bottom: ${({ isMobile }) => isMobile ? 20 : 24}px;
+  margin-bottom: ${({ isMobile }) => (isMobile ? 20 : 24)}px;
   width: 100%;
 `;
 
@@ -141,32 +146,32 @@ const StatusItem = styled.View`
 `;
 
 const StatusLabel = styled.Text<ResponsiveProps>`
-  font-size: ${({ isMobile }) => isMobile ? 11 : 13}px;
+  font-size: ${({ isMobile }) => (isMobile ? 11 : 13)}px;
   color: ${({ theme }) => theme.colors.text.secondary};
-  margin-bottom: ${({ isMobile }) => isMobile ? 4 : 6}px;
+  margin-bottom: ${({ isMobile }) => (isMobile ? 4 : 6)}px;
   font-weight: 500;
 `;
 
 const StatusValue = styled.Text<ResponsiveProps>`
-  font-size: ${({ isMobile }) => isMobile ? 14 : 18}px;
+  font-size: ${({ isMobile }) => (isMobile ? 14 : 18)}px;
   font-weight: bold;
   color: ${({ theme }) => theme.colors.text.primary};
 `;
 
 const ActionsRow = styled.View<ResponsiveProps>`
   flex-direction: row;
-  gap: ${({ isMobile }) => isMobile ? 8 : 12}px;
+  gap: ${({ isMobile }) => (isMobile ? 8 : 12)}px;
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
-  margin-top: ${({ hasMarginTop }) => hasMarginTop ? '16px' : '0'};
+  margin-top: ${({ hasMarginTop }) => (hasMarginTop ? "16px" : "0")};
 `;
 
 const MenuSection = styled.View<ResponsiveProps>`
   background-color: ${({ theme }) => theme.colors.surface};
-  border-radius: ${({ isMobile }) => isMobile ? 10 : 16}px;
-  padding: ${({ isMobile }) => isMobile ? 10 : 20}px;
-  margin-bottom: ${({ isMobile }) => isMobile ? 16 : 24}px;
+  border-radius: ${({ isMobile }) => (isMobile ? 10 : 16)}px;
+  padding: ${({ isMobile }) => (isMobile ? 10 : 20)}px;
+  margin-bottom: ${({ isMobile }) => (isMobile ? 16 : 24)}px;
   border-width: 1;
   border-color: rgba(255, 255, 255, 0.08);
   width: 100%;
@@ -174,41 +179,66 @@ const MenuSection = styled.View<ResponsiveProps>`
 
 const MenuColumn = styled.View<ResponsiveProps>`
   flex-direction: column;
-  gap: ${({ isMobile }) => isMobile ? 6 : 10}px;
-  margin-top: ${({ isMobile }) => isMobile ? 8 : 12}px;
-  
-  ${({ isTablet, isDesktop }) => 
-    (isTablet || isDesktop) ? `
+  gap: ${({ isMobile }) => (isMobile ? 6 : 10)}px;
+  margin-top: ${({ isMobile }) => (isMobile ? 8 : 12)}px;
+
+  ${({ isTablet, isDesktop }) =>
+    isTablet || isDesktop
+      ? `
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
-  ` : ''}
+  `
+      : ""}
 `;
 
 const GridContainer = styled.View<ResponsiveProps>`
-  ${({ isTablet, isDesktop }) => 
-    (isTablet || isDesktop) ? `
+  ${({ isTablet, isDesktop }) =>
+    isTablet || isDesktop
+      ? `
     flex-direction: row;
     flex-wrap: wrap;
     gap: 24px;
     margin-top: 16px;
-  ` : ''}
+  `
+      : ""}
 `;
 
 const GridItem = styled.View<ResponsiveProps>`
-  ${({ isTablet, isDesktop }) => 
-    (isTablet || isDesktop) ? `
-    flex: ${isTablet ? '1 0 45%' : '1 0 30%'};
-    min-width: ${isTablet ? '300px' : '350px'};
-  ` : ''}
+  ${({ isTablet, isDesktop }) =>
+    isTablet || isDesktop
+      ? `
+    flex: ${isTablet ? "1 0 45%" : "1 0 30%"};
+    min-width: ${isTablet ? "300px" : "350px"};
+  `
+      : ""}
 `;
 
 const ButtonWrapper = styled.View<ResponsiveProps>`
-  ${({ isTablet, isDesktop }) => 
-    (isTablet || isDesktop) ? `
+  ${({ isTablet, isDesktop }) =>
+    isTablet || isDesktop
+      ? `
     flex: 1;
     min-width: 200px;
-  ` : ''}
+  `
+      : ""}
+`;
+
+export const SubscriptionTimerText = styled.Text`
+  color: ${({ theme }) => theme.colors.feedback.warning};
+  font-weight: 600;
+  font-size: 14px;
+`;
+
+export const SubscriptionTimer = styled.View`
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 12px;
+
+  background-color: ${({ theme }) => theme.colors.feedback.warning + "20"};
+  border: 1px solid ${({ theme }) => theme.colors.feedback.warning};
+
+  margin-bottom: 16px;
 `;
 
 interface HorizontalBarChartWrapperProps {
@@ -216,12 +246,17 @@ interface HorizontalBarChartWrapperProps {
   scale?: number;
 }
 
-const HorizontalBarChartWrapper: React.FC<HorizontalBarChartWrapperProps> = ({ data, scale = 1 }) => {
+const HorizontalBarChartWrapper: React.FC<HorizontalBarChartWrapperProps> = ({
+  data,
+  scale = 1,
+}) => {
   return <HorizontalBarChart data={data} />;
 };
 
 export default function IndexScreen() {
   const [salesData, setSalesData] = useState<ProductSales[]>([]);
+  const { status, loadingStatus } = useSubscriptionStatus();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { selectedRestaurant } = useRestaurant();
@@ -233,7 +268,7 @@ export default function IndexScreen() {
   } = usePermissions();
   const router = useRouter();
   const { theme } = useAppTheme();
-  
+
   const { isMobile, isTablet, isDesktop, isWeb } = useResponsive();
 
   useEffect(() => {
@@ -277,19 +312,29 @@ export default function IndexScreen() {
           title: "Início",
           headerStyle: { backgroundColor: theme.colors.background },
           headerTintColor: theme.colors.text.primary,
-          headerTitleStyle: { 
+          headerTitleStyle: {
             color: theme.colors.text.primary,
             fontSize: isDesktop ? 20 : isTablet ? 18 : 16,
           },
         }}
       />
-      <ScrollContent 
+
+      {user?.role === "ADMIN" && status?.isExpiringSoon && (
+        <SubscriptionTimer>
+          Seu plano expira em {status.expiresInDays} dias
+        </SubscriptionTimer>
+      )}
+      <ScrollContent
         showsVerticalScrollIndicator={isWeb}
         isMobile={isMobile}
         isTablet={isTablet}
         isDesktop={isDesktop}
       >
-        <LogoutContainer isMobile={isMobile} isTablet={isTablet} isDesktop={isDesktop}>
+        <LogoutContainer
+          isMobile={isMobile}
+          isTablet={isTablet}
+          isDesktop={isDesktop}
+        >
           <ThemeToggle />
           <Title variant="restaurant">
             {selectedRestaurant?.name || "Nenhum restaurante selecionado"}
@@ -300,22 +345,30 @@ export default function IndexScreen() {
         <GridContainer isTablet={isTablet} isDesktop={isDesktop}>
           {canViewAdvancedCharts && (
             <GridItem isTablet={isTablet} isDesktop={isDesktop}>
-              <ChartSection isMobile={isMobile} isTablet={isTablet} isDesktop={isDesktop}>
+              <ChartSection
+                isMobile={isMobile}
+                isTablet={isTablet}
+                isDesktop={isDesktop}
+              >
                 <SectionHeader isMobile={isMobile}>
-                  <SectionTitle isMobile={isMobile} isTablet={isTablet} isDesktop={isDesktop}>
+                  <SectionTitle
+                    isMobile={isMobile}
+                    isTablet={isTablet}
+                    isDesktop={isDesktop}
+                  >
                     📊 Pratos Mais Vendidos Hoje
                   </SectionTitle>
                   <ActionsRow isMobile={isMobile}>
                     {selectedRestaurant && (
                       <SalesCount isMobile={isMobile}>
                         {totalProducts}{" "}
-                        {totalProducts === 1 ? "produto" : "produtos"} diferentes
-                        vendidos
+                        {totalProducts === 1 ? "produto" : "produtos"}{" "}
+                        diferentes vendidos
                       </SalesCount>
                     )}
-                    <RefreshButton 
-                      isMobile={isMobile} 
-                      onPress={refreshData} 
+                    <RefreshButton
+                      isMobile={isMobile}
+                      onPress={refreshData}
                       disabled={loading}
                     >
                       <Ionicons
@@ -334,21 +387,24 @@ export default function IndexScreen() {
                     </EmptyText>
                     <Button
                       label="🍴 Selecionar Restaurante"
-                      onPress={() => router.push("/(private)/select-restaurant")}
+                      onPress={() =>
+                        router.push("/(private)/select-restaurant")
+                      }
                     />
                   </EmptyState>
                 ) : loading ? (
-                  <EmptyText isMobile={isMobile}>Carregando vendas...</EmptyText>
+                  <EmptyText isMobile={isMobile}>
+                    Carregando vendas...
+                  </EmptyText>
                 ) : error ? (
                   <EmptyText isMobile={isMobile}>{error}</EmptyText>
                 ) : (
                   <>
-                    {/* Use o wrapper ou modifique o HorizontalBarChart */}
-                    <HorizontalBarChartWrapper 
-                      data={salesData} 
-                      scale={isDesktop ? 0.9 : isTablet ? 0.95 : 1} 
+                    <HorizontalBarChartWrapper
+                      data={salesData}
+                      scale={isDesktop ? 0.9 : isTablet ? 0.95 : 1}
                     />
-                    
+
                     {canAccessDashboard && (
                       <ActionsRow isMobile={isMobile} hasMarginTop>
                         <Button
@@ -364,8 +420,16 @@ export default function IndexScreen() {
           )}
 
           <GridItem isTablet={isTablet} isDesktop={isDesktop}>
-            <MenuSection isMobile={isMobile} isTablet={isTablet} isDesktop={isDesktop}>
-              <MenuColumn isMobile={isMobile} isTablet={isTablet} isDesktop={isDesktop}>
+            <MenuSection
+              isMobile={isMobile}
+              isTablet={isTablet}
+              isDesktop={isDesktop}
+            >
+              <MenuColumn
+                isMobile={isMobile}
+                isTablet={isTablet}
+                isDesktop={isDesktop}
+              >
                 {canAccessKitchen && (
                   <ButtonWrapper isTablet={isTablet} isDesktop={isDesktop}>
                     <Button
@@ -385,7 +449,7 @@ export default function IndexScreen() {
                   </ButtonWrapper>
                 )}
                 <ButtonWrapper isTablet={isTablet} isDesktop={isDesktop}>
-                  <Button 
+                  <Button
                     label={isMobile ? "Planos" : "💳 Planos"}
                     onPress={() => router.push("/plans")}
                   />
@@ -394,12 +458,14 @@ export default function IndexScreen() {
             </MenuSection>
 
             {canViewAdvancedCharts && selectedRestaurant && (
-              <StatusSection isMobile={isMobile} isTablet={isTablet} isDesktop={isDesktop}>
+              <StatusSection
+                isMobile={isMobile}
+                isTablet={isTablet}
+                isDesktop={isDesktop}
+              >
                 <StatusItem>
                   <StatusLabel isMobile={isMobile}>Vendas Hoje</StatusLabel>
-                  <StatusValue isMobile={isMobile}>
-                    {totalSales}
-                  </StatusValue>
+                  <StatusValue isMobile={isMobile}>{totalSales}</StatusValue>
                 </StatusItem>
                 <StatusItem>
                   <StatusLabel isMobile={isMobile}>Produtos</StatusLabel>
