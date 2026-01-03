@@ -41,22 +41,53 @@ export class SalesService {
 
   static getSalesByTimeRange(orders: Order[]): SalesTimeRange {
     const now = new Date();
-
     const startOfDay = new Date(now);
     startOfDay.setHours(0, 0, 0, 0);
 
+    const endOfDay = new Date(now);
+    endOfDay.setHours(23, 59, 59, 999);
+    const dayOfWeek = now.getDay();
+    const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+
     const startOfWeek = new Date(now);
-    startOfWeek.setDate(now.getDate() - now.getDay());
+    startOfWeek.setDate(now.getDate() + diffToMonday);
     startOfWeek.setHours(0, 0, 0, 0);
 
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6);
+    endOfWeek.setHours(23, 59, 59, 999);
+
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    startOfMonth.setHours(0, 0, 0, 0);
+
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    endOfMonth.setHours(23, 59, 59, 999);
 
     return {
-      day: this.processProductSales(this.filterByTimeRange(orders, startOfDay, now)),
-      week: this.processProductSales(this.filterByTimeRange(orders, startOfWeek, now)),
-      month: this.processProductSales(this.filterByTimeRange(orders, startOfMonth, now)),
+      day: this.processProductSales(this.filterByTimeRange(orders, startOfDay, endOfDay)),
+      week: this.processProductSales(this.filterByTimeRange(orders, startOfWeek, endOfWeek)),
+      month: this.processProductSales(this.filterByTimeRange(orders, startOfMonth, endOfMonth)),
     };
   }
+
+  // static getSalesByTimeRange(orders: Order[]): SalesTimeRange {
+  //   const now = new Date();
+
+  //   const startOfDay = new Date(now);
+  //   startOfDay.setHours(0, 0, 0, 0);
+
+  //   const startOfWeek = new Date(now);
+  //   startOfWeek.setDate(now.getDate() - now.getDay());
+  //   startOfWeek.setHours(0, 0, 0, 0);
+
+  //   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+  //   return {
+  //     day: this.processProductSales(this.filterByTimeRange(orders, startOfDay, now)),
+  //     week: this.processProductSales(this.filterByTimeRange(orders, startOfWeek, now)),
+  //     month: this.processProductSales(this.filterByTimeRange(orders, startOfMonth, now)),
+  //   };
+  // }
 
   static getTimeRanges() {
     return [
