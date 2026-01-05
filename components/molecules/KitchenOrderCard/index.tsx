@@ -20,6 +20,13 @@ export interface KitchenCompositionItem {
     color?: string;
   };
   status: string;
+  customObservation?: string;
+  modifiers?: {
+    modifierId: string;
+    name: string;
+    quantity: number;
+    textValue?: string;
+  }[];
 }
 
 type ModalType = "prepare" | "ready" | "cancel" | null;
@@ -43,15 +50,13 @@ const MODAL_CONFIG: Record<
 > = {
   prepare: {
     title: "Iniciar preparo?",
-    description:
-      "Isso marcará como em preparo todos itens desse prato.",
+    description: "Isso marcará como em preparo todos itens desse prato.",
     confirmLabel: "Sim, preparar",
     variant: "secondary",
   },
   ready: {
     title: "Pedido pronto?",
-    description:
-      "O prato será marcado como pronto para entrega ao cliente.",
+    description: "O prato será marcado como pronto para entrega ao cliente.",
     confirmLabel: "Sim, finalizar",
     variant: "primary",
   },
@@ -78,9 +83,7 @@ export default function KitchenOrderCard({
   const kitchen = items[0].kitchen;
   const kitchenColor = kitchen?.color ?? "#CBD5E1";
 
-  const isPreparing = items.some(
-    (item) => item.status === "WORK_IN_PROGRESS"
-  );
+  const isPreparing = items.some((item) => item.status === "WORK_IN_PROGRESS");
 
   const handleConfirm = () => {
     if (modalType === "prepare") {
@@ -96,7 +99,7 @@ export default function KitchenOrderCard({
     }
 
     if (modalType === "cancel" && onCancelOrder) {
-      onCancelOrder(items[0].orderId);
+      onCancelOrder(items[0].orderProductId);
     }
 
     setModalType(null);
@@ -111,10 +114,7 @@ export default function KitchenOrderCard({
           borderLeftWidth: 6,
           borderLeftColor: kitchenColor,
           paddingTop: 16,
-          ...(isPreparing && {
-            borderWidth: 2,
-            borderColor: "#FACC15",
-          }),
+          ...(isPreparing && { borderWidth: 2, borderColor: "#FACC15" }),
         }}
       >
         <View style={{ position: "absolute", top: 8, left: 8 }}>
@@ -122,43 +122,47 @@ export default function KitchenOrderCard({
         </View>
 
         <Title style={{ textAlign: "center", marginBottom: 4 }}>
-          Mesa {tableName}
+          {tableName}
         </Title>
-
-        <Text color="#6B7280">
-          Pedido #{items[0].orderId.slice(0, 4)}
-        </Text>
+        <Text color="#6B7280">Pedido #{items[0].orderId.slice(0, 4)}</Text>
 
         {items.map((item, index) => (
           <View key={index} style={{ marginBottom: 12 }}>
             <Text weight="bold">{item.productName}</Text>
             <Text color="#6B7280" weight="bold" size={20}>
-              ↳ {item.compositionName}
+              ↳ {item.compositionName} x{item.quantity}
             </Text>
+
+            {item.customObservation && (
+              <Text color="#6B7280">Observação: {item.customObservation}</Text>
+            )}
+
+            {item.modifiers && item.modifiers.length > 0 && (
+              <View>
+                {item.modifiers.map((m, i) => (
+                  <Text key={i} color="#F97316">
+                    {m.name} {m.quantity > 1 ? `x${m.quantity}` : ""}
+                    {m.textValue ? ` (${m.textValue})` : ""}
+                  </Text>
+                ))}
+              </View>
+            )}
           </View>
         ))}
 
-<View
-  style={{
-    flexDirection: "column",
-    marginTop: 8,
-  }}
->
-
+        <View style={{ flexDirection: "column", marginTop: 8 }}>
           <Button
             hasFlex1
             label="Preparar"
             variant="secondary"
             onPress={() => setModalType("prepare")}
           />
-
           <Button
             hasFlex1
             label="Pedido Pronto"
             variant="primary"
             onPress={() => setModalType("ready")}
           />
-
           {onCancelOrder && (
             <Button
               hasFlex1

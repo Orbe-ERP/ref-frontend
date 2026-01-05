@@ -3,86 +3,98 @@ import { api } from "./api";
 export interface Modifier {
   id: string;
   name: string;
-  type: 'ADD' | 'REMOVE';
-  quantity: number;
   priceChange: number;
   stockItemId: string;
-  categoryId?: string;
+  trackStock: boolean;
+  allowFreeText: boolean;
+  createdAt: string;
+  updatedAt: string;
+  stockItem?: {
+    id: string;
+    name: string;
+  } | null;
   restaurantId: string;
 }
 
 export interface CreateModifierInput {
   name: string;
-  type: 'ADD' | 'REMOVE';
-  quantity: number;
   priceChange?: number;
-  stockItemId: string;
-  categoryId?: string | null;
+  stockItemId?: string | null;
+  allowFreeText: boolean;
   restaurantId: string;
+  trackStock: boolean;
 }
 
-export async function createModifier(data: CreateModifierInput) {
-  try {
-    const response = await api.post("/modifiers", data);
-    return response.data;
-  } catch (error) {
-    throw new Error(`Error creating modifier: ${error}`);
-  }
-}
-
-export async function getModifierById(id: string) {
-  try {
-    const response = await api.get(`/modifiers/${id}`);
-    return response.data;
-  } catch (error) {
-    throw new Error(`Error fetching modifier: ${error}`);
-  }
-}
-
-export async function updateModifier(id: string, data: Partial<CreateModifierInput>) {
-  try {
-    const response = await api.patch(`/modifiers/${id}`, data);
-    return response.data;
-  } catch (error) {
-    throw new Error(`Error updating modifier: ${error}`);
-  }
-}
-
-export async function deleteModifier(id: string, restaurantId: string) {
-  try {
-    await api.delete(`/modifiers/${id}`, { 
-      data: { restaurantId }
-    });
-    return;
-  } catch (error) {
-    throw new Error(`Error deleting modifier: ${error}`);
-  }
-}
-
-export async function getModifiersByProductIds(productIds: string[]) {
-  try {
-    const response = await api.post("/modifiers/product-modifiers", {
-      productIds,
-    });
-    return response.data;
-  } catch (error) {
-    throw new Error(`Error fetching modifiers for products: ${error}`);
-  }
+export interface AddModifierToProductOpts {
+  required?: boolean;
+  limit?: number | null;
+  default?: boolean;
 }
 
 export async function addModifierToProduct(
-  modifierId: string, 
-  productId: string,
   restaurantId: string,
-  opts?: { required?: boolean; limit?: number; default?: boolean }
+  productId: string,
+  modifierId: string,
+  opts?: AddModifierToProductOpts
 ) {
-  try {
-    const response = await api.post(
-      `/modifiers/${restaurantId}/${modifierId}/add-to-product/${productId}`,
-      opts
-    );
-    return response.data;
-  } catch (error) {
-    throw new Error(`Error adding modifier to product: ${error}`);
+  const response = await api.post(
+    `/modifiers/${restaurantId}/${modifierId}/add-to-product/${productId}`,
+    opts
+  );
+  return response.data;
+}
+
+
+export async function createModifier(data: CreateModifierInput) {
+  const response = await api.post("/modifiers", data);
+  return response.data;
+}
+
+export async function getModifierById(id: string) {
+  if (!id) throw new Error("Modifier id é obrigatório");
+
+  const response = await api.get(`/modifiers/${id}`);
+  return response.data;
+}
+
+
+export async function getModifiersProduct(productId: string) {
+  if (!productId) throw new Error("Product id é obrigatório");
+
+  const response = await api.get(`/modifiers/product/${productId}`);
+
+  return response.data;
+}
+
+export async function updateModifier(
+  id: string,
+  data: Partial<CreateModifierInput>
+) {
+  if (!id) throw new Error("Modifier id é obrigatório");
+
+  const response = await api.patch(`/modifiers/${id}`, data);
+  return response.data;
+}
+
+export async function deleteModifier(
+  id: string,
+) {
+  if (!id) {
+    throw new Error("id é obrigatórios");
   }
+
+  await api.delete(`/modifiers/${id}`);
+}
+
+
+
+export async function getModifiersByProductIds(productIds: string[]) {
+  if (!productIds?.length) return [];
+
+  const response = await api.post(
+    "/modifiers/product-modifiers",
+    { productIds }
+  );
+
+  return response.data;
 }

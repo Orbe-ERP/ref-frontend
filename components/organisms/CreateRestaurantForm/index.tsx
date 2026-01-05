@@ -120,7 +120,7 @@ export const CreateRestaurantForm: React.FC<Props> = ({
               <SectionTitle>Dados do Restaurante</SectionTitle>
 
               <Input
-                placeholder="Nome no CNPJ"
+                placeholder="Razal Social"
                 value={values.name}
                 onChangeText={handleChange("name")}
                 onBlur={handleBlur("name")}

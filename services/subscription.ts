@@ -144,7 +144,7 @@ export async function getSubscriptionCredentials(): Promise<{
 } | null> {
   try {
     const email = await AsyncStorage.getItem("user_email");
-    const password = await AsyncStorage.getItem("subscription_password"); // Você precisa salvar isso durante o cadastro
+    const password = await AsyncStorage.getItem("subscription_password"); 
 
     if (email && password) {
       return { email, password };

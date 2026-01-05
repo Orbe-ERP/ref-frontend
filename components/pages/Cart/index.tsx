@@ -1,15 +1,29 @@
+import React, { useEffect, useState, useRef } from "react";
+import {
+  ScrollView,
+  TouchableOpacity,
+  View,
+  Text,
+  Animated,
+  Easing,
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import Toast from "react-native-toast-message";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+
+import { useAppTheme } from "@/context/ThemeProvider/theme";
+import { useResponsive } from "@/hooks/useResponsive";
 import Button from "@/components/atoms/Button";
 import CustomSwitch from "@/components/atoms/CustomSwitch";
-import { useAppTheme } from "@/context/ThemeProvider/theme";
+
 import { createOrder, NewOrder } from "@/services/order";
-import { getObservationsByProduct } from "@/services/product";
-import { Ionicons } from "@expo/vector-icons";
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
-import { ScrollView, TouchableOpacity } from "react-native";
-import Toast from "react-native-toast-message";
+import { getModifiersProduct, Modifier } from "@/services/modifier";
+
 import * as S from "./styles";
-import { useResponsive } from "@/hooks/useResponsive";
+
+interface ProductWithModifiers {
+  modifiersSelected: Record<string, { selected: boolean; customText: string }>;
+}
 
 export default function CartPage() {
   const router = useRouter();
@@ -23,59 +37,110 @@ export default function CartPage() {
 
   const initialProducts = addedProducts ? JSON.parse(addedProducts) : [];
 
-  const [availableObservations, setAvailableObservations] = useState<
-    Record<string, any[]>
-  >({});
-  const [products, setProducts] = useState(() =>
+  const [products, setProducts] = useState<ProductWithModifiers[]>(() =>
     initialProducts.map((p: any) => ({
       ...p,
       cartItemId: `${p.productId}-${Date.now()}-${Math.random()}`,
-      observations: p.observations || [],
-      appliedPrice: p.appliedPrice ?? null,
-      customDescription: "",
+      quantity: p.quantity || 1,
+      customDescription: p.customDescription || "",
+      modifiersSelected: {},
     }))
   );
 
-  const [responsible, setResponsible] = useState("");
+  const [modifiersMap, setModifiersMap] = useState<Record<string, Modifier[]>>(
+    {}
+  );
   const [toTake, setToTake] = useState(false);
+  const [responsible, setResponsible] = useState("");
 
-  const toggleObservation = (cartItemId: string, obsId: string) => {
+  const [expandedModifierByProduct, setExpandedModifierByProduct] = useState<
+    Record<string, string | null>
+  >({});
+
+  const animationRefs = useRef<Record<string, Animated.Value>>({});
+
+  useEffect(() => {
+    (async () => {
+      const map: Record<string, Modifier[]> = {};
+      for (const p of initialProducts) {
+        try {
+          const mods = await getModifiersProduct(p.productId);
+          map[p.productId] = mods;
+          mods.forEach((mod: any) => {
+            animationRefs.current[mod.id] = new Animated.Value(0);
+          });
+        } catch {
+          map[p.productId] = [];
+        }
+      }
+      setModifiersMap(map);
+    })();
+  }, []);
+
+  // Toggle selected
+  const toggleModifier = (productId: string, modifierId: string) => {
     setProducts((prev: any) =>
       prev.map((p: any) => {
-        if (p.cartItemId !== cartItemId) return p;
-        const alreadySelected = p.observations?.includes(obsId);
+        if (p.productId !== productId) return p;
+        const current = p.modifiersSelected[modifierId] || {
+          selected: false,
+          customText: "",
+        };
         return {
           ...p,
-          observations: alreadySelected
-            ? p.observations.filter((o: string) => o !== obsId)
-            : [...(p.observations || []), obsId],
+          modifiersSelected: {
+            ...p.modifiersSelected,
+            [modifierId]: { ...current, selected: !current.selected },
+          },
         };
       })
     );
   };
 
-  useEffect(() => {
-    (async () => {
-      const map: Record<string, any[]> = {};
-      for (const product of initialProducts) {
-        try {
-          const obsList = await getObservationsByProduct(product.productId);
-          map[product.productId] = obsList;
-        } catch (err) {
-          Toast.show({
-            type: "error",
-            text1: "Erro ao carregar observações",
-            text2: `Não foi possível carregar as observações para ${product.productName}.`,
-          });
-          map[product.productId] = [];
-        }
-      }
-      setAvailableObservations(map);
-    })();
-  }, []);
+  const setModifierCustomText = (
+    productId: string,
+    modifierId: string,
+    text: string
+  ) => {
+    setProducts((prev: any) =>
+      prev.map((p: any) => {
+        if (p.productId !== productId) return p;
+        const current = p.modifiersSelected[modifierId] || {
+          selected: false,
+          customText: "",
+        };
+        return {
+          ...p,
+          modifiersSelected: {
+            ...p.modifiersSelected,
+            [modifierId]: { ...current, customText: text },
+          },
+        };
+      })
+    );
+  };
+
+  const toggleModifierExpansion = (productId: string, modifierId: string) => {
+    const currentExpanded = expandedModifierByProduct[productId];
+
+    setExpandedModifierByProduct((prev) => ({
+      ...prev,
+      [productId]: currentExpanded === modifierId ? null : modifierId,
+    }));
+
+    const animValue = animationRefs.current[modifierId];
+    if (animValue) {
+      Animated.timing(animValue, {
+        toValue: currentExpanded === modifierId ? 0 : 1,
+        duration: 200,
+        useNativeDriver: false,
+        easing: Easing.out(Easing.ease),
+      }).start();
+    }
+  };
 
   const handleQuantityChange = (cartItemId: string, delta: number) => {
-    setProducts((prev: any) =>
+    setProducts((prev) =>
       prev.map((p: any) =>
         p.cartItemId === cartItemId
           ? { ...p, quantity: Math.max(1, p.quantity + delta) }
@@ -105,44 +170,33 @@ export default function CartPage() {
       });
       return;
     }
-
     const newOrder: NewOrder = {
       tableId,
       toTake,
       responsible: responsible || "Não informado",
-      products: products.map((product: any) => ({
-        productId: product.productId,
-        quantity: product.quantity,
-        appliedPrice: product.appliedPrice ?? null,
-        observations: product.observations || [],
-        customObservation: product.customDescription || "",
+      products: products.map((p: any) => ({
+        productId: p.productId,
+        quantity: p.quantity,
+        customObservation: p.customDescription,
+        modifiers: Object.entries(p.modifiersSelected)
+          .filter(([_, mod]: any) => mod.selected)
+          .map(([modifierId, mod]: any) => ({
+            modifierId,
+            customText: mod.customText || null,
+          })),
       })),
     };
     try {
       await createOrder(newOrder);
-      setProducts([]);
-      setResponsible("");
-      setToTake(false);
-      router.replace({
-        pathname: "/(tabs)/table",
-        params: {},
-      });
-      Toast.show({
-        type: "success",
-        text1: "Pedido enviado!",
-      });
-    } catch (error) {
+      Toast.show({ type: "success", text1: "Pedido enviado!" });
+      router.replace({ pathname: "/(tabs)/table", params: {} });
+    } catch {
       Toast.show({
         type: "error",
         text1: "Erro ao enviar pedido",
         text2: "Tente novamente.",
       });
-      console.error(error);
     }
-  };
-
-  const goToOppenedOrder = () => {
-    router.push({ pathname: "/oppened-order", params: { tableId } });
   };
 
   return (
@@ -152,17 +206,6 @@ export default function CartPage() {
           title: "Comanda",
           headerStyle: { backgroundColor: theme.theme.colors.background },
           headerTintColor: theme.theme.colors.text.primary,
-          headerTitleStyle: {
-            fontSize: isDesktop ? 20 : isTablet ? 18 : 16,
-          },
-          headerRight: () => (
-            <Ionicons
-              name="restaurant-outline"
-              size={24}
-              color={theme.theme.colors.text.primary}
-              onPress={goToOppenedOrder}
-            />
-          ),
         }}
       />
 
@@ -170,41 +213,19 @@ export default function CartPage() {
         {products.length === 0 ? (
           <S.EmptyText isWide={isWide}>O carrinho está vazio.</S.EmptyText>
         ) : (
-          <>
-            <ScrollView
-              style={{ flex: 1 }}
-              contentContainerStyle={{
-                paddingBottom: 120,
-                alignItems: isWide ? "center" : "stretch",
-              }}
-              keyboardShouldPersistTaps="handled"
-              showsVerticalScrollIndicator={false}
-            >
-              {products.map((product: any) => (
+          <ScrollView
+            style={{ flex: 1 }}
+            contentContainerStyle={{
+              paddingBottom: 140,
+              alignItems: isWide ? "center" : "stretch",
+            }}
+          >
+            {products.map((product: any) => {
+              const productModifiers = modifiersMap[product.productId] || [];
+              return (
                 <S.Card key={product.cartItemId} isWide={isWide}>
                   <S.Label>{product.productName}</S.Label>
                   <S.Label>Quantidade: {product.quantity}</S.Label>
-
-                  <S.Input
-                    placeholder="Preço Especial (R$)"
-                    placeholderTextColor="#ccc"
-                    keyboardType="numeric"
-                    value={product.appliedPrice?.toString() ?? ""}
-                    onChangeText={(text: any) => {
-                      const value = parseFloat(text);
-                      setProducts((prev: any) =>
-                        prev.map((p: any) =>
-                          p.cartItemId === product.cartItemId
-                            ? {
-                                ...p,
-                                appliedPrice:
-                                  isNaN(value) || value < 0 ? null : value,
-                              }
-                            : p
-                        )
-                      );
-                    }}
-                  />
 
                   <S.Row>
                     <TouchableOpacity
@@ -218,9 +239,7 @@ export default function CartPage() {
                         color="#2BAE66"
                       />
                     </TouchableOpacity>
-
                     <S.Label>{product.quantity}</S.Label>
-
                     <TouchableOpacity
                       onPress={() =>
                         handleQuantityChange(product.cartItemId, 1)
@@ -228,7 +247,6 @@ export default function CartPage() {
                     >
                       <Ionicons name="add-outline" size={24} color="#2BAE66" />
                     </TouchableOpacity>
-
                     <TouchableOpacity
                       onPress={() => handleRemoveProduct(product.cartItemId)}
                     >
@@ -240,73 +258,125 @@ export default function CartPage() {
                     </TouchableOpacity>
                   </S.Row>
 
-                  {availableObservations[product.productId]?.length ? (
-                    <S.CheckboxContainer>
-                      {availableObservations[product.productId].map((obs) => {
-                        const isSelected = product.observations?.includes(
-                          obs.id
-                        );
-                        return (
-                          <S.CheckboxItem
-                            key={obs.id}
-                            selected={isSelected}
-                            onPress={() =>
-                              toggleObservation(product.cartItemId, obs.id)
-                            }
-                          >
-                            <S.CheckboxText>
-                              {isSelected ? "☑ " : "☐ "}
-                              {obs.description}
-                            </S.CheckboxText>
-                          </S.CheckboxItem>
-                        );
-                      })}
-                    </S.CheckboxContainer>
-                  ) : (
-                    <S.Label>Nenhuma observação disponível</S.Label>
-                  )}
-
                   <S.Input
-                    placeholder="Observação livre (max 20 chars)"
+                    placeholder="Observação livre do produto"
                     placeholderTextColor="#ccc"
                     value={product.customDescription}
-                    maxLength={20}
-                    onChangeText={(text) => {
-                      setProducts((prev: any) =>
+                    maxLength={50}
+                    onChangeText={(text) =>
+                      setProducts((prev) =>
                         prev.map((p: any) =>
                           p.cartItemId === product.cartItemId
                             ? { ...p, customDescription: text }
                             : p
                         )
-                      );
-                    }}
+                      )
+                    }
                   />
+
+                  {productModifiers.length > 0 && (
+                    <View
+                      style={{
+                        marginTop: 12,
+                        borderTopWidth: 1,
+                        borderTopColor: "#eee",
+                      }}
+                    >
+                      {productModifiers.map((mod) => {
+                        const modState = product.modifiersSelected[mod.id] || {
+                          selected: false,
+                          customText: "",
+                        };
+
+                        return (
+                          <View
+                            key={mod.id}
+                            style={{
+                              paddingVertical: 6,
+                              flexDirection: "row",
+                              alignItems: "center",
+                            }}
+                          >
+                            {/* Quadradinho de seleção */}
+                            <TouchableOpacity
+                              onPress={() =>
+                                toggleModifier(product.productId, mod.id)
+                              }
+                              style={{
+                                width: 24,
+                                height: 24,
+                                borderWidth: 2,
+                                borderColor: "#2BAE66",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                marginRight: 8,
+                              }}
+                            >
+                              {modState.selected && (
+                                <Text
+                                  style={{
+                                    color: "#2BAE66",
+                                    fontWeight: "bold",
+                                  }}
+                                >
+                                  V
+                                </Text>
+                              )}
+                            </TouchableOpacity>
+
+                            {/* Nome do modifier */}
+                            <View style={{ flex: 1 }}>
+                              <Text style={{ fontSize: 16 }}>{mod.name}</Text>
+
+                              {/* Texto livre do modifier */}
+                              {modState.selected && mod.allowFreeText && (
+                                <S.Input
+                                  placeholder="Texto livre do modifier"
+                                  placeholderTextColor="#ccc"
+                                  value={modState.customText}
+                                  maxLength={50}
+                                  onChangeText={(text) =>
+                                    setModifierCustomText(
+                                      product.productId,
+                                      mod.id,
+                                      text
+                                    )
+                                  }
+                                  style={{ marginTop: 4, paddingLeft: 0 }}
+                                />
+                              )}
+                            </View>
+                          </View>
+                        );
+                      })}
+                    </View>
+                  )}
                 </S.Card>
-              ))}
+              );
+            })}
 
-              <S.Input
-                placeholder="Responsável"
-                placeholderTextColor="#ccc"
-                value={responsible}
-                onChangeText={setResponsible}
-                style={isWide ? { width: "100%" } : undefined}
-              />
+            <S.Input
+              placeholder="Responsável"
+              placeholderTextColor="#ccc"
+              value={responsible}
+              onChangeText={setResponsible}
+              style={isWide ? { width: "100%" } : undefined}
+            />
 
-              <S.Row>
-                <S.Label>Viagem?</S.Label>
-                <CustomSwitch value={toTake} onValueChange={setToTake} />
-              </S.Row>
-            </ScrollView>
-
-            <S.ButtonContainer isWide={isWide}>
-              <Button
-                label="Enviar Para Cozinha"
-                variant="secondary"
-                onPress={handleOrderSubmit}
-              />
-            </S.ButtonContainer>
-          </>
+            <S.Row>
+              <S.Label>Viagem?</S.Label>
+              <CustomSwitch value={toTake} onValueChange={setToTake} />
+            </S.Row>
+          </ScrollView>
         )}
+
+        <S.ButtonContainer isWide={isWide}>
+          <Button
+            label="Enviar Para Cozinha"
+            variant="secondary"
+            onPress={handleOrderSubmit}
+          />
+        </S.ButtonContainer>
       </S.ContentWrapper>
     </S.Container>
   );

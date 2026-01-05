@@ -1,5 +1,5 @@
-import Observation from "@/components/pages/Observation";
+import ObservationPage from "@/components/pages/Modifiers";
 
 export default function ObservationScreen() {
-  return <Observation />;
+  return <ObservationPage />;
 }

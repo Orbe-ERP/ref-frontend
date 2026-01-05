@@ -19,78 +19,91 @@ export interface UpdateModifierCategoryInput {
   name?: string;
 }
 
-export async function createModifierCategory(data: CreateModifierCategoryInput) {
+export async function createModifierCategory(
+  data: CreateModifierCategoryInput
+) {
   if (!data) throw new Error("Need data to create category");
 
-  try {
-    const response = await api.post("/modifier-categories", data);
-    return response.data;
-  } catch (error) {
-    throw new Error(`Error creating modifier category: ${error}`);
-  }
+  const response = await api.post("/modifier-categories", data);
+  return response.data;
 }
 
-export async function getModifierCategories(restaurantId: string | undefined) {
-  if (!restaurantId) throw new Error("No restaurant selected");
-  try {
-    const response = await api.get<ModifierCategory[]>(
-      `/modifier-categories/restaurant/${restaurantId}`
-    );
-    return response.data;
-  } catch (error) {
-    throw new Error(`Error fetching modifier categories: ${error}`);
+export async function getModifierCategories(restaurantId: string) {
+  if (!restaurantId) {
+    throw new Error("restaurantId é obrigatório");
   }
+
+  const response = await api.get<ModifierCategory[]>(
+    `/modifier-categories/restaurant/${restaurantId}`
+  );
+
+
+  return response.data;
 }
+
+export async function getProductModifierCategories(productId: string) {
+  if (!productId) {
+    throw new Error("productId é obrigatório");
+  }
+
+  const response = await api.get<ModifierCategory[]>(
+    `/products/${productId}/modifier-categories`
+  );
+
+  return response.data;
+}
+
 
 export async function getModifiersByCategory(
   restaurantId: string,
   categoryId: string
 ) {
   const categories = await getModifierCategories(restaurantId);
-  const category = categories.find(c => c.id === categoryId);
+  const category = categories.find((c) => c.id === categoryId);
+
   return category?.modifiers ?? [];
 }
-
 
 export async function getModifierCategoryById(
   id: string,
   restaurantId: string
 ) {
-  if (!id || !restaurantId) throw new Error("ID and restaurantId are required");
-  try {
-    const response = await api.get(
-      `/modifier-categories/${id}/${restaurantId}`
-    );
-    return response.data;
-  } catch (error) {
-    throw new Error(`Error fetching modifier category: ${error}`);
+  if (!id || !restaurantId) {
+    throw new Error("ID e restaurantId são obrigatórios");
   }
+
+  const response = await api.get(
+    `/modifier-categories/${id}/${restaurantId}`
+  );
+
+  return response.data;
 }
 
 export async function updateModifierCategory(
   data: UpdateModifierCategoryInput
 ) {
-  if (!data.id || !data.restaurantId)
+  if (!data.id || !data.restaurantId) {
     throw new Error("Missing id or restaurantId");
-
-  try {
-    const response = await api.patch(
-      `/modifier-categories/${data.id}`,
-      { name: data.name, restaurantId: data.restaurantId }
-    );
-    return response.data;
-  } catch (error) {
-    throw new Error(`Error updating modifier category: ${error}`);
   }
+
+  const response = await api.patch(
+    `/modifier-categories/${data.id}`,
+    {
+      name: data.name,
+      restaurantId: data.restaurantId,
+    }
+  );
+
+  return response.data;
 }
 
-export async function deleteModifierCategory(id: string, restaurantId: string) {
-  if (!id || !restaurantId) throw new Error("id and restaurantId are required");
-  
-  try {
-    await api.delete(`/modifier-categories/${id}/${restaurantId}`);
-    return;
-  } catch (error) {
-    throw new Error(`Error deleting modifier category: ${error}`);
+export async function deleteModifierCategory(
+  id: string,
+  restaurantId: string
+) {
+  if (!id || !restaurantId) {
+    throw new Error("id e restaurantId são obrigatórios");
   }
+
+  await api.delete(`/modifier-categories/${id}/${restaurantId}`);
 }

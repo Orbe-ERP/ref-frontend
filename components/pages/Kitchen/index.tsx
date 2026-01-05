@@ -25,7 +25,7 @@ function normalizeKitchenItems(orders: Order[]) {
     tableName: string;
     kitchenId: string;
     kitchen: { id: string; name: string; color?: string };
-    items: KitchenCompositionItem[];
+    items: KitchenCompositionItem[] & { customObservation?: string; modifiers?: { name: string; textValue: string | null; quantity: number }[] }[];
     totalQuantity: number;
   };
 
@@ -36,19 +36,25 @@ function normalizeKitchenItems(orders: Order[]) {
 
     const kitchenMap: Record<
       string,
-      { items: KitchenCompositionItem[]; totalQuantity: number }
+      { items: any[]; totalQuantity: number }
     > = {};
 
-    order.products.forEach((orderProduct) => {
+    order.products.forEach((orderProduct: any) => {
       if (orderProduct.status === "WAITING_DELIVERY") return;
 
       const productTotalQuantity = orderProduct.quantity;
       const product = orderProduct.product;
 
+      const modifiers =
+        orderProduct.OrderProductModifier?.map((m: any) => ({
+          name: m.modifier.name,
+          textValue: m.textValue,
+          quantity: m.quantity,
+        })) ?? [];
+
       if (product.compositions.length === 0) {
         const kitchen = product.kitchens?.[0];
-        if (!kitchen.showOnKitchen) return;
-        if (!kitchen) return;
+        if (!kitchen || !kitchen.showOnKitchen) return;
 
         const kitchenId = kitchen.id;
 
@@ -68,13 +74,15 @@ function normalizeKitchenItems(orders: Order[]) {
           quantity: productTotalQuantity,
           kitchen,
           status: orderProduct.status,
+          customObservation: orderProduct.customObservation,
+          modifiers,
         });
 
         kitchenMap[kitchenId].totalQuantity += productTotalQuantity;
         return;
       }
 
-      product.compositions.forEach((comp) => {
+      product.compositions.forEach((comp: any) => {
         if (!comp.kitchen?.showOnKitchen) return;
 
         const kitchenId = comp.kitchen.id;
@@ -95,6 +103,8 @@ function normalizeKitchenItems(orders: Order[]) {
           quantity: comp.quantity,
           kitchen: comp.kitchen,
           status: orderProduct.status,
+          customObservation: orderProduct.customObservation,
+          modifiers,
         });
 
         kitchenMap[kitchenId].totalQuantity += comp.quantity;

@@ -149,6 +149,7 @@ export async function getCompletedOrdersByTable(
 
 
 export async function createOrder(order: NewOrder) {
+
   if (!order) throw new Error("Dados faltantes");
 
   try {
