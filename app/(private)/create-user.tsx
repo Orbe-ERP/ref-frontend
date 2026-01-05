@@ -53,7 +53,6 @@ const CreateUserScreen = () => {
         text1: "Sucesso",
         text2: "Usuário criado com sucesso!",
       });
-      // Limpa o formulário ou deixa para criar outro
     } catch (error) {
       Toast.show({
         type: "error",
@@ -73,7 +72,6 @@ const CreateUserScreen = () => {
         }}
       />
       <Container>
-        {/* Botão "Listar Usuários" com a mesma aparência da tela de Config */}
         <ItemRow onPress={() => router.push("/users-list")}>
           <Ionicons
             name="list-outline"
@@ -83,7 +81,6 @@ const CreateUserScreen = () => {
           <ItemText>Listar Usuários</ItemText>
         </ItemRow>
 
-        {/* Seção de criação de usuário */}
         <SectionTitle>Criar Novo Usuário</SectionTitle>
         <UserForm onSubmit={handleCreateUser} />
       </Container>

@@ -120,25 +120,6 @@ export default function CartPage() {
     );
   };
 
-  const toggleModifierExpansion = (productId: string, modifierId: string) => {
-    const currentExpanded = expandedModifierByProduct[productId];
-
-    setExpandedModifierByProduct((prev) => ({
-      ...prev,
-      [productId]: currentExpanded === modifierId ? null : modifierId,
-    }));
-
-    const animValue = animationRefs.current[modifierId];
-    if (animValue) {
-      Animated.timing(animValue, {
-        toValue: currentExpanded === modifierId ? 0 : 1,
-        duration: 200,
-        useNativeDriver: false,
-        easing: Easing.out(Easing.ease),
-      }).start();
-    }
-  };
-
   const handleQuantityChange = (cartItemId: string, delta: number) => {
     setProducts((prev) =>
       prev.map((p: any) =>
@@ -259,7 +240,7 @@ export default function CartPage() {
                   </S.Row>
 
                   <S.Input
-                    placeholder="Observação livre do produto"
+                    placeholder="Observação livre..."
                     placeholderTextColor="#ccc"
                     value={product.customDescription}
                     maxLength={50}
@@ -297,7 +278,6 @@ export default function CartPage() {
                               alignItems: "center",
                             }}
                           >
-                            {/* Quadradinho de seleção */}
                             <TouchableOpacity
                               onPress={() =>
                                 toggleModifier(product.productId, mod.id)
@@ -306,7 +286,8 @@ export default function CartPage() {
                                 width: 24,
                                 height: 24,
                                 borderWidth: 2,
-                                borderColor: "#2BAE66",
+                                borderColor: theme.theme.colors.primary,
+
                                 justifyContent: "center",
                                 alignItems: "center",
                                 marginRight: 8,
@@ -315,7 +296,7 @@ export default function CartPage() {
                               {modState.selected && (
                                 <Text
                                   style={{
-                                    color: "#2BAE66",
+                                    color: theme.theme.colors.primary,
                                     fontWeight: "bold",
                                   }}
                                 >
@@ -324,15 +305,23 @@ export default function CartPage() {
                               )}
                             </TouchableOpacity>
 
-                            {/* Nome do modifier */}
                             <View style={{ flex: 1 }}>
-                              <Text style={{ fontSize: 16 }}>{mod.name}</Text>
+                              <Text
+                                style={{
+                                  fontSize: 16,
+                                  color: theme.theme.colors.text.primary,
+                                  fontWeight: "bold"
+                                }}
+                              >
+                                {mod.name}
+                              </Text>
 
-                              {/* Texto livre do modifier */}
                               {modState.selected && mod.allowFreeText && (
                                 <S.Input
-                                  placeholder="Texto livre do modifier"
-                                  placeholderTextColor="#ccc"
+                                  placeholder="Observação..."
+                                  placeholderTextColor={
+                                    theme.theme.colors.text.secondary
+                                  }
                                   value={modState.customText}
                                   maxLength={50}
                                   onChangeText={(text) =>
@@ -364,7 +353,7 @@ export default function CartPage() {
             />
 
             <S.Row>
-              <S.Label>Viagem?</S.Label>
+              <S.Label>Para Viagem?</S.Label>
               <CustomSwitch value={toTake} onValueChange={setToTake} />
             </S.Row>
           </ScrollView>
@@ -373,7 +362,7 @@ export default function CartPage() {
         <S.ButtonContainer isWide={isWide}>
           <Button
             label="Enviar Para Cozinha"
-            variant="secondary"
+            variant="primary"
             onPress={handleOrderSubmit}
           />
         </S.ButtonContainer>

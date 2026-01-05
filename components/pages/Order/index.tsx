@@ -111,15 +111,25 @@ export default function OrderPage() {
       />
 
       <S.ContentWrapper isTablet={isTablet} isDesktop={isDesktop}>
-        <CategoryList
-          categories={categories}
-          expandedCategory={expandedCategory}
-          toggleCategory={toggleCategory}
-          selectedProducts={selectedProducts}
-          handleProductChange={handleProductChange}
-          handleQuantityChange={handleQuantityChange}
-          handleAddProduct={handleAddProduct}
-        />
+        <S.ScrollContent
+          isTablet={isTablet}
+          isDesktop={isDesktop}
+          contentContainerStyle={{
+            paddingBottom: 140,
+            alignItems: isTablet || isDesktop ? "center" : "stretch",
+          }}
+          showsVerticalScrollIndicator={false}
+        >
+          <CategoryList
+            categories={categories}
+            expandedCategory={expandedCategory}
+            toggleCategory={toggleCategory}
+            selectedProducts={selectedProducts}
+            handleProductChange={handleProductChange}
+            handleQuantityChange={handleQuantityChange}
+            handleAddProduct={handleAddProduct}
+          />
+        </S.ScrollContent>
 
         <S.Footer isTablet={isTablet} isDesktop={isDesktop}>
           <Button

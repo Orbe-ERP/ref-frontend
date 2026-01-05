@@ -20,7 +20,7 @@ const UserForm: React.FC<Props> = ({ onSubmit }) => {
   return (
     <Container>
       
-      <ScrollContainer>
+      <ScrollContainer showsVerticalScrollIndicator={false}>
         <Formik
           initialValues={{ name: "", email: "", password: "" }}
           validationSchema={UserSchema}

@@ -1,7 +1,8 @@
-import { FlatList, Switch, Alert } from "react-native";
+import { FlatList, Switch } from "react-native";
 import { useState } from "react";
 import { Stack } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import Toast from "react-native-toast-message";
 import { usePrinters } from "@/hooks/usePrinters";
 import Button from "@/components/atoms/Button";
 import { useAppTheme } from "@/context/ThemeProvider/theme";
@@ -17,10 +18,10 @@ export default function PrinterListScreen() {
     loading,
     createPrinter,
     updatePrinter,
+    deletePrinter: removePrinter,
   } = usePrinters();
 
   const [editingPrinter, setEditingPrinter] = useState<any | null>(null);
-
   const [ip, setIp] = useState("");
   const [port, setPort] = useState("");
   const [isDefault, setIsDefault] = useState(false);
@@ -41,7 +42,11 @@ export default function PrinterListScreen() {
 
   async function handleSave() {
     if (!ip || !port) {
-      Alert.alert("Erro", "Preencha IP e porta");
+      Toast.show({
+        type: "error",
+        text1: "Erro",
+        text2: "Preencha IP e porta",
+      });
       return;
     }
 
@@ -51,17 +56,50 @@ export default function PrinterListScreen() {
       default: isDefault,
     };
 
-    if (editingPrinter) {
-      await updatePrinter(editingPrinter.id, data);
-    } else {
-      await createPrinter({
-        ...data,
-        name: "Impressora",
-        restaurantId: printers[0]?.restaurantId,
+    try {
+      if (editingPrinter) {
+        await updatePrinter(editingPrinter.id, data);
+        Toast.show({ type: "success", text1: "Impressora atualizada" });
+      } else {
+        await createPrinter({
+          ...data,
+          name: "Impressora",
+          restaurantId: printers[0]?.restaurantId,
+        });
+        Toast.show({ type: "success", text1: "Impressora criada" });
+      }
+
+      resetForm();
+    } catch {
+      Toast.show({
+        type: "error",
+        text1: "Erro ao salvar impressora",
       });
     }
+  }
 
-    resetForm();
+  async function handleDelete(printer: any) {
+    if (printer.default) {
+      Toast.show({
+        type: "error",
+        text1: "Ação não permitida",
+        text2: "Não é possível excluir a impressora padrão",
+      });
+      return;
+    }
+
+    try {
+      await removePrinter(printer.id);
+      Toast.show({
+        type: "success",
+        text1: "Impressora excluída",
+      });
+    } catch {
+      Toast.show({
+        type: "error",
+        text1: "Erro ao excluir impressora",
+      });
+    }
   }
 
   return (
@@ -110,10 +148,7 @@ export default function PrinterListScreen() {
             </S.SwitchRow>
 
             <S.Actions>
-              <Button
-                label="Cancelar"
-                onPress={resetForm}
-              />
+              <Button label="Cancelar" onPress={resetForm} />
               <Button
                 label={editingPrinter ? "Salvar" : "Adicionar"}
                 onPress={handleSave}
@@ -125,12 +160,11 @@ export default function PrinterListScreen() {
             data={printers}
             keyExtractor={(item) => item.id}
             refreshing={loading}
-            contentContainerStyle={{ 
+            contentContainerStyle={{
               paddingBottom: 120,
-              ...(isTablet || isDesktop ? { 
-                width: '100%',
-                alignItems: 'center' 
-              } : {})
+              ...(isTablet || isDesktop
+                ? { width: "100%", alignItems: "center" }
+                : {}),
             }}
             renderItem={({ item }) => (
               <S.Card isTablet={isTablet} isDesktop={isDesktop}>
@@ -141,29 +175,35 @@ export default function PrinterListScreen() {
                   </S.Info>
                 </S.InfoContainer>
 
-                <Button
-                  label="Editar"
-                  onPress={() => handleEdit(item)}
-                />
+                <S.ActionsRow>
+                  <Button label="Editar" onPress={() => handleEdit(item)} />
+
+                  <Button
+                    variant="danger"
+                    label="🗑️"
+                    onPress={() => handleDelete(item)}
+                  />
+                </S.ActionsRow>
               </S.Card>
             )}
           />
 
           <S.ToastNotice isTablet={isTablet} isDesktop={isDesktop}>
-              <S.ToastIcon>
-                <Ionicons
-                  name="alert-circle-outline"
-                  size={20}
-                  color={theme.theme.colors.feedback.warning}
-                />
-              </S.ToastIcon>
+            <S.ToastIcon>
+              <Ionicons
+                name="alert-circle-outline"
+                size={20}
+                color={theme.theme.colors.feedback.warning}
+              />
+            </S.ToastIcon>
 
-              <S.ToastContent>
-                <S.ToastTitle>Aviso importante</S.ToastTitle>
-                <S.ToastText>
-                   Para obter o IP da impressora, entre em contato com o suporte da impressora.
-                </S.ToastText>
-              </S.ToastContent>
+            <S.ToastContent>
+              <S.ToastTitle>Aviso importante</S.ToastTitle>
+              <S.ToastText>
+                Para obter o IP da impressora, entre em contato com o suporte da
+                impressora.
+              </S.ToastText>
+            </S.ToastContent>
           </S.ToastNotice>
         </S.ContentWrapper>
       </S.Container>

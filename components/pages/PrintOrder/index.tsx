@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, ScrollView, Alert } from "react-native";
+import { ActivityIndicator, ScrollView } from "react-native";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import Toast from "react-native-toast-message";
 import Button from "@/components/atoms/Button";
 import { getOrderSummaryByIdentifier } from "@/services/order";
 import { useAppTheme } from "@/context/ThemeProvider/theme";
 import * as S from "./styles";
+import { printReceipt } from "@/services/print";
 
 const paymentMethodLabelMap: Record<string, string> = {
   CASH: "Dinheiro",
@@ -18,7 +19,7 @@ export default function PrintOrderScreen() {
   const { identifier } = useLocalSearchParams<{ identifier: string }>();
   const router = useRouter();
   const theme = useAppTheme();
-
+  const [printing, setPrinting] = useState(false);
   const [orderSummary, setOrderSummary] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -43,12 +44,27 @@ export default function PrintOrderScreen() {
     }
   };
 
-  const handlePrint = () => {
-    Toast.show({
-      type: "info",
-      text1: "Imprimindo...",
-      text2: "Funcionalidade em desenvolvimento",
-    });
+  const handlePrint = async () => {
+    if (!identifier) return;
+
+    try {
+      setPrinting(true);
+      await printReceipt(identifier);
+
+      Toast.show({
+        type: "success",
+        text1: "Impressão enviada",
+        text2: "A comanda foi enviada para a impressora",
+      });
+    } catch (error: any) {
+      Toast.show({
+        type: "error",
+        text1: "Erro ao imprimir",
+        text2: error?.message || "Não foi possível se conectar à impressora",
+      });
+    } finally {
+      setPrinting(false);
+    }
   };
 
   const formatCurrency = (value: number) =>
@@ -98,9 +114,7 @@ export default function PrintOrderScreen() {
       <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
         <S.TicketCard>
           <S.Header>
-            <S.RestaurantTitle>
-              {orderSummary.restaurant.name}
-            </S.RestaurantTitle>
+            <S.RestaurantTitle>{orderSummary.restaurant.name}</S.RestaurantTitle>
             <S.Subtitle>{orderSummary.restaurant.tradeName}</S.Subtitle>
             <S.MetaInfo>CNPJ: {orderSummary.restaurant.cnpj}</S.MetaInfo>
             <S.Divider />
@@ -122,19 +136,19 @@ export default function PrintOrderScreen() {
           <S.SectionTitle>Itens do Pedido</S.SectionTitle>
 
           {products.map((item: any) => (
-            <S.ProductRow key={item.productId || item.id}>
+            <S.ProductRow key={item.productId}>
               <S.QuantityBox>
                 <S.QuantityText>{item.quantity}x</S.QuantityText>
               </S.QuantityBox>
 
               <S.ProductInfo>
                 <S.ProductName>{item.productName}</S.ProductName>
-                <S.ProductUnitVal>
-                  {formatCurrency(item.price)}
-                </S.ProductUnitVal>
+                <S.ProductUnitVal>{formatCurrency(item.price)}</S.ProductUnitVal>
               </S.ProductInfo>
 
-              <S.ProductTotal>{formatCurrency(item.totalPrice)}</S.ProductTotal>
+              <S.ProductTotal>
+                {formatCurrency(item.price * item.quantity)}
+              </S.ProductTotal>
             </S.ProductRow>
           ))}
 
@@ -157,18 +171,14 @@ export default function PrintOrderScreen() {
 
             <S.TotalRow>
               <S.TotalLabel>TOTAL</S.TotalLabel>
-              <S.TotalValue>
-                {formatCurrency(orderSummary.totalAmount)}
-              </S.TotalValue>
+              <S.TotalValue>{formatCurrency(orderSummary.totalAmount)}</S.TotalValue>
             </S.TotalRow>
           </S.SummaryContainer>
 
           <S.FooterInfo>
             <S.PaymentTitle>Pagamento</S.PaymentTitle>
             <S.PaymentInfo>
-              Método:{" "}
-              {paymentMethodLabelMap[orderSummary.paymentMethod] ??
-                "Não informado"}
+              Método: {paymentMethodLabelMap[orderSummary.paymentMethod] ?? "Não informado"}
             </S.PaymentInfo>
           </S.FooterInfo>
         </S.TicketCard>
@@ -179,6 +189,7 @@ export default function PrintOrderScreen() {
           label="Imprimir Comanda"
           variant="primary"
           onPress={handlePrint}
+          disabled={printing}
         />
       </S.BottomButtonContainer>
     </S.Container>

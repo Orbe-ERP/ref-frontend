@@ -6,6 +6,11 @@ interface ResponsiveProps {
   isDesktop?: boolean;
   isWeb?: boolean;
 }
+export const ActionsRow = styled.View`
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+`;
 
 export const Container = styled.View<ResponsiveProps>`
   flex: 1;

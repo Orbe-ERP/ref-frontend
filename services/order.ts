@@ -79,6 +79,7 @@ export interface ConcludeOrderInput {
   tableId: string;
   ordersArray: string[];
   restaurantId: string;
+  operator: string | null;
   sumIndividually?: boolean;
   additional?: number;
   paymentMethod: "CASH" | "PIX" | "CREDIT_CARD" | "DEBIT_CARD" | "OTHER";
@@ -91,6 +92,7 @@ export interface ConcludeSingleOrderInput {
   additional?: number;
   paymentMethod: "CASH" | "PIX" | "CREDIT_CARD" | "DEBIT_CARD" | "OTHER";
   paymentConfigId?: string | null;
+  operator: string | null;
 }
 
 export interface ReportDataProduct {
@@ -256,6 +258,7 @@ export async function concludeOrders({
   ordersArray,
   sumIndividually,
   additional = 0,
+  operator = null
 }: ConcludeOrderInput) {
   if (!tableId || !restaurantId)
     throw new Error("TableId e RestaurantId são obrigatórios");
@@ -269,6 +272,7 @@ export async function concludeOrders({
       sumIndividually,
       additional,
       ordersArray,
+      operator
     });
 
     return response.data;
@@ -284,6 +288,7 @@ export async function concludeOrder({
   additional = 0,
   paymentMethod,
   paymentConfigId,
+  operator = null
 }: ConcludeSingleOrderInput) {
   if (!orderId || !restaurantId)
     throw new Error("OrderId e RestaurantId são obrigatórios");

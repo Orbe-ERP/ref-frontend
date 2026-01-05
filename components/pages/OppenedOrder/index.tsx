@@ -14,12 +14,14 @@ import {
 import * as S from "./styles";
 import { TopBar } from "@/components/atoms/TopBar";
 import { useAppTheme } from "@/context/ThemeProvider/theme";
+import useAuth from "@/hooks/useAuth";
 
 export default function OppenedOrderPage() {
   const { tableId } = useLocalSearchParams();
   const router = useRouter();
   const { selectedRestaurant } = useRestaurant();
   const [orders, setOrders] = useState<Order[]>([]);
+  const {user} = useAuth()
   const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
   const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -159,6 +161,7 @@ export default function OppenedOrderPage() {
         additional,
         paymentMethod: firstOrder.paymentMethod,
         paymentConfigId,
+        operator: user?.name || null,
       };
 
       const response = await concludeOrders(payload);

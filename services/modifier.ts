@@ -18,12 +18,16 @@ export interface Modifier {
 
 export interface CreateModifierInput {
   name: string;
-  priceChange?: number;
-  stockItemId?: string | null;
-  allowFreeText: boolean;
+  priceChange: number;
   restaurantId: string;
+  allowFreeText: boolean;
   trackStock: boolean;
+
+  stockItemId?: string | null;
+  stockEffect?: "ADD" | "REMOVE" | null;
+  stockMultiplier?: number | null;
 }
+
 
 export interface AddModifierToProductOpts {
   required?: boolean;
@@ -46,7 +50,12 @@ export async function addModifierToProduct(
 
 
 export async function createModifier(data: CreateModifierInput) {
+
+
+
   const response = await api.post("/modifiers", data);
+
+
   return response.data;
 }
 
