@@ -4,7 +4,7 @@ import { Stack, useRouter } from "expo-router";
 import useRestaurant from "@/hooks/useRestaurant";
 import { HorizontalBarChart } from "@/components/organisms/TopProductsChart/components/HorizontalBarChart";
 import { usePermissions } from "@/hooks/usePermissions";
-import { SalesService } from "@/services/salesService";
+import { getTodayProductSales } from "@/services/salesService";
 import { getOrdersByRestaurant } from "@/services/order";
 import { ProductSales } from "@/services/types";
 import Button from "@/components/atoms/Button";
@@ -69,7 +69,7 @@ const LogoutContainer = styled.View<ResponsiveProps>`
     max-width: 800px;
     align-self: center;
   `
-      : ""}
+    : ""}
 `;
 
 const ChartSection = styled.View<ResponsiveProps>`
@@ -280,16 +280,20 @@ export default function IndexScreen() {
     try {
       setLoading(true);
       setError(null);
+
       if (!selectedRestaurant?.id) {
         setError("Nenhum restaurante selecionado");
         return;
       }
+
       const orders = await getOrdersByRestaurant(
         selectedRestaurant.id,
         "COMPLETED"
       );
-      const salesData = SalesService.getSalesByTimeRange(orders);
-      setSalesData(salesData.day);
+
+      const todayProductSales = getTodayProductSales(orders);
+
+      setSalesData(todayProductSales);
     } catch (err) {
       console.error(err);
       setError("Erro ao carregar dados de vendas");

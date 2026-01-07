@@ -4,7 +4,7 @@ import { Stack, useRouter } from "expo-router";
 import useRestaurant from "@/hooks/useRestaurant";
 import { HorizontalBarChart } from "@/components/organisms/TopProductsChart/components/HorizontalBarChart";
 import { getOrdersByRestaurant } from "@/services/order";
-import { SalesService } from "@/services/salesService";
+import { getTodayProductSales } from "@/services/salesService";
 import { ProductSales } from "@/services/types";
 import Button from "@/components/atoms/Button";
 import LogoutButton from "@/components/atoms/LogoutButton";
@@ -26,20 +26,30 @@ export default function IndexPage() {
   }, [selectedRestaurant?.id]);
 
   const loadSalesData = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      if (!selectedRestaurant?.id) return setError("Nenhum restaurante selecionado");
-
-      const orders = await getOrdersByRestaurant(selectedRestaurant.id, "COMPLETED");
-      const salesData = SalesService.getSalesByTimeRange(orders);
-      setSalesData(salesData.day);
-    } catch {
-      setError("Erro ao carregar dados de vendas");
-    } finally {
-      setLoading(false);
-    }
-  };
+      try {
+        setLoading(true);
+        setError(null);
+  
+        if (!selectedRestaurant?.id) {
+          setError("Nenhum restaurante selecionado");
+          return;
+        }
+  
+        const orders = await getOrdersByRestaurant(
+          selectedRestaurant.id,
+          "COMPLETED"
+        );
+  
+        const todayProductSales = getTodayProductSales(orders);
+  
+        setSalesData(todayProductSales);
+      } catch (err) {
+        console.error(err);
+        setError("Erro ao carregar dados de vendas");
+      } finally {
+        setLoading(false);
+      }
+    };
 
   const refreshData = () => {
     if (selectedRestaurant?.id) loadSalesData();

@@ -1,120 +1,160 @@
-import { api } from "./api";
 import dayjs from "dayjs";
-import { Order } from "./order";
-import { ProductSales, SalesTimeRange } from "./types";
-export class SalesService {
-  static processProductSales(orders: Order[]): ProductSales[] {
-    const productSalesMap = new Map<string, ProductSales>();
+import {
+  ReportData,
+  PaymentMethod,
+} from "@/services/report";
 
-    orders.forEach((order) => {
-      order.products.forEach((orderProduct) => {
-        if (!orderProduct.product) return; 
+export interface DashboardProductSales {
+  productId: string;
+  productName: string;
+  salesCount: number;
+  totalRevenue: number;
+}
 
-        const productId = orderProduct.product.id;
-        const productName = orderProduct.product.name;
-        const price = orderProduct.appliedPrice ?? orderProduct.product.price;
+export interface DashboardMetrics {
+  totalRevenue: number;
+  totalOrders: number;
+  totalProductsSold: number;
+  averageTicket: number;
+}
 
-        const existing = productSalesMap.get(productId);
+export interface PaymentMethodMetrics {
+  method: PaymentMethod;
+  totalValue: number;
+  percentage: number;
+}
 
-        if (existing) {
-          existing.salesCount += orderProduct.quantity;
-          existing.totalRevenue += price * orderProduct.quantity;
-        } else {
-          productSalesMap.set(productId, {
-            productId,
-            productName,
-            salesCount: orderProduct.quantity,
-            totalRevenue: price * orderProduct.quantity,
-          });
-        }
-      });
+export function filterReportsByDate(
+  reports: ReportData[],
+  startDate: Date,
+  endDate: Date
+): ReportData[] {
+  return reports.filter((report) => {
+    const createdAt = new Date(report.createdAt);
+    return createdAt >= startDate && createdAt <= endDate;
+  });
+}
+
+export function buildDashboardMetrics(
+  reports: ReportData[]
+): DashboardMetrics {
+  const totalOrders = reports.length;
+
+  const totalRevenue = reports.reduce(
+    (sum, report) => sum + report.totalValue,
+    0
+  );
+
+  const totalProductsSold = reports.reduce((sum, report) => {
+    return (
+      sum +
+      report.products.reduce(
+        (productSum, product) => productSum + product.quantity,
+        0
+      )
+    );
+  }, 0);
+
+  const averageTicket =
+    totalOrders > 0 ? totalRevenue / totalOrders : 0;
+
+  return {
+    totalRevenue,
+    totalOrders,
+    totalProductsSold,
+    averageTicket,
+  };
+}
+
+export function buildProductSales(
+  reports: ReportData[]
+): DashboardProductSales[] {
+  const productMap = new Map<string, DashboardProductSales>();
+
+  reports.forEach((report) => {
+    report.products.forEach((product) => {
+      const existing = productMap.get(product.productId);
+
+      const revenue = product.quantity * product.price;
+
+      if (existing) {
+        existing.salesCount += product.quantity;
+        existing.totalRevenue += revenue;
+      } else {
+        productMap.set(product.productId, {
+          productId: product.productId,
+          productName: product.productName,
+          salesCount: product.quantity,
+          totalRevenue: revenue,
+        });
+      }
     });
+  });
 
-    return Array.from(productSalesMap.values());
-  }
-  static filterByTimeRange(orders: Order[], startDate: Date, endDate: Date): Order[] {
-    return orders.filter((order) => {
-      const orderDate = new Date(order.createdAt);
-      return orderDate >= startDate && orderDate <= endDate;
-    });
-  }
+  return Array.from(productMap.values()).sort(
+    (a, b) => b.salesCount - a.salesCount
+  );
+}
 
-  static getSalesByTimeRange(orders: Order[]): SalesTimeRange {
-    const now = new Date();
-    const startOfDay = new Date(now);
-    startOfDay.setHours(0, 0, 0, 0);
+export function buildPaymentMethodMetrics(
+  reports: ReportData[]
+): PaymentMethodMetrics[] {
+  const map = new Map<PaymentMethod, number>();
 
-    const endOfDay = new Date(now);
-    endOfDay.setHours(23, 59, 59, 999);
-    const dayOfWeek = now.getDay();
-    const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+  reports.forEach((report) => {
+    map.set(
+      report.paymentMethod,
+      (map.get(report.paymentMethod) || 0) + report.totalValue
+    );
+  });
 
-    const startOfWeek = new Date(now);
-    startOfWeek.setDate(now.getDate() + diffToMonday);
-    startOfWeek.setHours(0, 0, 0, 0);
+  const total = Array.from(map.values()).reduce(
+    (sum, value) => sum + value,
+    0
+  );
 
-    const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(startOfWeek.getDate() + 6);
-    endOfWeek.setHours(23, 59, 59, 999);
+  return Array.from(map.entries()).map(([method, totalValue]) => ({
+    method,
+    totalValue,
+    percentage: total > 0 ? (totalValue / total) * 100 : 0,
+  }));
+}
 
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    startOfMonth.setHours(0, 0, 0, 0);
+export interface DailySalesItem {
+  date: string;
+  totalValue: number;
+}
 
-    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-    endOfMonth.setHours(23, 59, 59, 999);
+export function buildDailySalesChart(
+  reports: ReportData[]
+): DailySalesItem[] {
+  const map = new Map<string, number>();
 
-    return {
-      day: this.processProductSales(this.filterByTimeRange(orders, startOfDay, endOfDay)),
-      week: this.processProductSales(this.filterByTimeRange(orders, startOfWeek, endOfWeek)),
-      month: this.processProductSales(this.filterByTimeRange(orders, startOfMonth, endOfMonth)),
-    };
-  }
+  reports.forEach((report) => {
+    const date = dayjs(report.createdAt).format("YYYY-MM-DD");
 
-  // static getSalesByTimeRange(orders: Order[]): SalesTimeRange {
-  //   const now = new Date();
+    map.set(date, (map.get(date) || 0) + report.totalValue);
+  });
 
-  //   const startOfDay = new Date(now);
-  //   startOfDay.setHours(0, 0, 0, 0);
+  return Array.from(map.entries())
+    .map(([date, totalValue]) => ({
+      date,
+      totalValue,
+    }))
+    .sort((a, b) => a.date.localeCompare(b.date));
+}
 
-  //   const startOfWeek = new Date(now);
-  //   startOfWeek.setDate(now.getDate() - now.getDay());
-  //   startOfWeek.setHours(0, 0, 0, 0);
+export function getTodayProductSales(
+  reports: ReportData[] = []
+): DashboardProductSales[] {
+  const startOfDay = dayjs().startOf("day").toDate();
+  const endOfDay = dayjs().endOf("day").toDate();
 
-  //   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const todayReports = filterReportsByDate(
+    reports,
+    startOfDay,
+    endOfDay
+  );
 
-  //   return {
-  //     day: this.processProductSales(this.filterByTimeRange(orders, startOfDay, now)),
-  //     week: this.processProductSales(this.filterByTimeRange(orders, startOfWeek, now)),
-  //     month: this.processProductSales(this.filterByTimeRange(orders, startOfMonth, now)),
-  //   };
-  // }
-
-  static getTimeRanges() {
-    return [
-      { label: "Hoje", value: "day" as const },
-      { label: "Semana", value: "week" as const },
-      { label: "Mês", value: "month" as const },
-    ];
-  }
-
-  static async getTotalProductsSold(
-    restaurantId: string,
-    startDate: Date,
-    endDate: Date
-  ): Promise<{ totalProductsSold: number }> {
-    try {
-      const response = await api.get("/reports/products/total", {
-        params: {
-          restaurantId,
-          startDate: dayjs(startDate).toISOString(),
-          endDate: dayjs(endDate).toISOString(),
-        },
-      });
-
-      return response.data;
-    } catch (error) {
-      console.error("Erro ao buscar total de produtos vendidos:", error);
-      throw new Error("Falha ao buscar total de produtos vendidos");
-    }
-  }
+  return buildProductSales(todayReports);
 }

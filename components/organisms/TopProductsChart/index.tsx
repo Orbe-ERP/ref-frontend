@@ -1,138 +1,167 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { HorizontalBarChart } from "./components/HorizontalBarChart";
+import { VerticalBarChart } from "../VerticalBarChart";
 import { PieChart } from "./components/PieChart";
-import { SalesTimeRange, ChartType, ProductSales } from "@/services/types";
-import { SalesService } from "@/services/salesService";
+import { PieChartProfit } from "./components/PieChart/PieChartProfit";
+import { DashboardProductSales as ProductSales } from "@/services/salesService";
 import { useResponsive } from "@/hooks/useResponsive";
+import { Feather } from "@expo/vector-icons";
+import { useAppTheme } from "@/context/ThemeProvider/theme";
+
+// Tipos de gráfico
+type ChartType =
+  | "bar"
+  | "pie-category"
+  | "pie-price"
+  | "pie-performance"
+  | "pie-analysis";
 
 interface TopProductsChartProps {
-  salesData: SalesTimeRange | null;
+  data: ProductSales[];
   onRefresh?: () => void;
   variant?: "full" | "mini";
   defaultChartType?: ChartType;
-  showFilters?: boolean;
   showInsights?: boolean;
   showRefreshButton?: boolean;
 }
 
 export const TopProductsChart: React.FC<TopProductsChartProps> = ({
-  salesData,
+  data,
   onRefresh,
   variant = "full",
   defaultChartType = "bar",
-  showFilters = true,
   showInsights = true,
   showRefreshButton = true,
 }) => {
-  const [selectedRange, setSelectedRange] = useState<keyof SalesTimeRange>("day");
+  const { theme } = useAppTheme();
   const [chartType, setChartType] = useState<ChartType>(defaultChartType);
 
-  const timeRanges = SalesService.getTimeRanges();
-  const currentData: ProductSales[] = salesData?.[selectedRange] || [];
-
-  const sortedData = [...currentData].sort((a, b) => b.salesCount - a.salesCount);
+  const sortedData = [...data].sort((a, b) => b.salesCount - a.salesCount);
   const topProduct = sortedData[0];
+  const displayData =
+    variant === "mini" ? sortedData.slice(0, 5) : sortedData;
 
-  const displayData = variant === "mini" ? salesData?.day || [] : currentData;
-
-  const { isDesktop } = useResponsive();
+  const getChartTypeIcon = (type: ChartType) => {
+    switch (type) {
+      case "bar":
+        return variant === "mini" ? "bar-chart-2" : "bar-chart";
+      case "pie-category":
+        return "layers";
+      case "pie-price":
+        return "dollar-sign";
+      case "pie-performance":
+        return "trending-up";
+      case "pie-analysis":
+        return "pie-chart";
+      default:
+        return "bar-chart";
+    }
+  };
 
   return (
-    <View style={[styles.container, variant === "mini" && styles.miniContainer]}>
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: theme.colors.surface, borderColor: theme.colors.border },
+      ]}
+    >
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>
-          {variant === "mini" ? "📊 Pratos Mais Vendidos Hoje" : "🍽️ Pratos Mais Vendidos"}
-        </Text>
+        <View style={styles.titleContainer}>
+          <Feather
+            name={getChartTypeIcon(chartType)}
+            size={variant === "mini" ? 16 : 20}
+            color={theme.colors.primary}
+          />
 
-        {variant === "full" && (
-          <View style={styles.chartTypeSelector}>
-            <TouchableOpacity
-              style={[styles.chartTypeButton, chartType === "bar" && styles.chartTypeButtonActive]}
-              onPress={() => setChartType("bar")}
-            >
-              <Text
-                style={[styles.chartTypeText, chartType === "bar" && styles.chartTypeTextActive]}
-              >
-                Barras
-              </Text>
-            </TouchableOpacity>
+          <Text style={[styles.title, { color: theme.colors.text.primary }]}>
+            {variant === "mini"
+              ? "Produtos Mais Vendidos Hoje"
+              : "Análise de Produtos"}
+          </Text>
+        </View>
 
-          </View>
+        {variant === "mini" && onRefresh && (
+          <TouchableOpacity onPress={onRefresh}>
+            <Feather name="refresh-cw" size={16} color={theme.colors.primary} />
+          </TouchableOpacity>
         )}
       </View>
 
-      {showFilters && variant === "full" && (
-        <View style={styles.timeFilter}>
-          {timeRanges.map((range) => (
-            <TouchableOpacity
-              key={range.value}
+      {showInsights && variant === "full" && topProduct && (
+        <View
+          style={[
+            styles.insightContainer,
+            {
+              backgroundColor: theme.colors.feedback.warning + "20",
+              borderLeftColor: theme.colors.feedback.warning,
+            },
+          ]}
+        >
+          <Feather name="zap" size={16} color={theme.colors.feedback.warning} />
+          <View style={styles.insightContent}>
+            <Text
               style={[
-                styles.timeFilterButton,
-                selectedRange === range.value && styles.timeFilterButtonActive,
+                styles.insightTitle,
+                { color: theme.colors.feedback.warning },
               ]}
-              onPress={() => setSelectedRange(range.value)}
+            >
+              Destaque do Período
+            </Text>
+            <Text
+              style={[styles.insightText, { color: theme.colors.text.primary }]}
             >
               <Text
-                style={[
-                  styles.timeFilterText,
-                  selectedRange === range.value && styles.timeFilterTextActive,
-                ]}
+                style={[styles.highlight, { color: theme.colors.primary }]}
               >
-                {range.label}
-              </Text>
-            </TouchableOpacity>
-          ))}
+                {topProduct.productName}
+              </Text>{" "}
+              lidera com {topProduct.salesCount} vendas
+            </Text>
+          </View>
         </View>
       )}
 
-      {showInsights && variant === "full" && topProduct && (
-        <View style={styles.insightContainer}>
-          <Text style={styles.insightTitle}>💡 Insight</Text>
-          <Text style={styles.insightText}>
-            <Text style={styles.highlight}>{topProduct.productName}</Text> é o campeão com{" "}
-            {topProduct.salesCount} vendas
-            {topProduct.salesCount > 10 ? " - Considere aumentar o estoque!" : ""}
-          </Text>
-        </View>
-      )}
-
+      {/* Gráfico */}
       <View style={styles.chartContainer}>
         {displayData.length > 0 ? (
           variant === "mini" ? (
-            <HorizontalBarChart data={displayData} maxBars={5} />
+            <VerticalBarChart data={displayData} maxBars={5} />
           ) : chartType === "bar" ? (
-            <HorizontalBarChart data={displayData} maxBars={5} />
-          ) : (
-            <PieChart data={displayData} maxItems={5} />
-          )
+            <HorizontalBarChart data={displayData} maxBars={7} />
+          ) : chartType === "pie-category" ? (
+            <PieChart data={displayData} type="category" />
+          ) : chartType === "pie-price" ? (
+            <PieChart data={displayData} type="price-range" />
+          ) : chartType === "pie-performance" ? (
+            <PieChart data={displayData} type="performance" />
+          ) : chartType === "pie-analysis" ? (
+            <PieChartProfit data={displayData} />
+          ) : null
         ) : (
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>
-              {variant === "mini" ? "Nenhuma venda hoje" : "Nenhuma venda no período selecionado"}
+            <Feather name="inbox" size={32} color={theme.colors.text.muted} />
+            <Text style={{ color: theme.colors.text.secondary }}>
+              Nenhuma venda hoje
             </Text>
           </View>
         )}
       </View>
 
-      {showRefreshButton && onRefresh && (
-        <View
-          style={{
-            width: isDesktop ? 240 : "100%",
-            alignSelf: "center",
-            marginTop: 12,
-          }}
+      {showRefreshButton && onRefresh && variant === "full" && (
+        <TouchableOpacity
+          style={[
+            styles.refreshButton,
+            { backgroundColor: theme.colors.primary },
+          ]}
+          onPress={onRefresh}
         >
-          <TouchableOpacity
-            style={styles.refreshButton}
-            onPress={onRefresh}
-          >
-            <Text style={styles.refreshButtonText}>
-              🔄 Atualizar Dados
-            </Text>
-          </TouchableOpacity>
-        </View>
+          <Feather name="refresh-cw" size={16} color={theme.colors.surface} />
+          <Text style={{ color: theme.colors.surface, marginLeft: 8 }}>
+            Atualizar Dados
+          </Text>
+        </TouchableOpacity>
       )}
     </View>
   );
@@ -140,16 +169,23 @@ export const TopProductsChart: React.FC<TopProductsChartProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#0A1A2F",
-    borderRadius: 12,
-    borderColor: "#fff",
+    borderRadius: 16,
+    padding: 20,
+    marginHorizontal: 16,
+    marginVertical: 8,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
     borderWidth: 1,
-    padding: 16,
-    margin: 10,
   },
   miniContainer: {
     marginHorizontal: 16,
     marginVertical: 8,
+    padding: 16,
   },
   header: {
     flexDirection: "row",
@@ -157,98 +193,177 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 16,
   },
+  titleContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+  },
   title: {
     fontSize: 18,
-    fontWeight: "bold",
-    color: "#fff",
+    fontWeight: "600",
+    marginLeft: 8,
+  },
+  miniTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  controls: {
+    flexDirection: "row",
+    alignItems: "center",
   },
   chartTypeSelector: {
     flexDirection: "row",
-    backgroundColor: "#f5f5f5",
     borderRadius: 8,
-    padding: 2,
+    padding: 4,
   },
   chartTypeButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    padding: 8,
     borderRadius: 6,
+    marginHorizontal: 2,
   },
   chartTypeButtonActive: {
-    backgroundColor: "white",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 2,
   },
-  chartTypeText: {
+  fullDashboardButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    marginLeft: 8,
+  },
+  fullDashboardText: {
     fontSize: 12,
-    color: "#666",
-  },
-  chartTypeTextActive: {
-    color: "#264653",
-    fontWeight: "500",
+    fontWeight: "600",
+    marginLeft: 4,
   },
   timeFilter: {
     flexDirection: "row",
-    justifyContent: "space-around",
-    marginBottom: 16,
-    backgroundColor: "#f8f9fa",
-    borderRadius: 8,
-    padding: 6,
+    justifyContent: "space-between",
+    marginBottom: 20,
+    borderRadius: 10,
+    padding: 4,
   },
   timeFilterButton: {
     flex: 1,
-    paddingVertical: 8,
+    paddingVertical: 10,
     alignItems: "center",
-    borderRadius: 6,
+    borderRadius: 8,
   },
   timeFilterButtonActive: {
-    backgroundColor: "#2BAE66",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 2,
   },
   timeFilterText: {
-    fontSize: 14,
-    color: "#264653",
+    fontSize: 13,
     fontWeight: "500",
   },
   timeFilterTextActive: {
-    color: "#0A1A2F",
+    fontWeight: "600",
   },
   insightContainer: {
-    backgroundColor: "#E3F2FD",
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 16,
+    flexDirection: "row",
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 20,
+    alignItems: "flex-start",
+  },
+  insightContent: {
+    flex: 1,
+    marginLeft: 12,
   },
   insightTitle: {
     fontSize: 14,
-    fontWeight: "bold",
-    color: "#1976D2",
+    fontWeight: "600",
     marginBottom: 4,
   },
   insightText: {
-    fontSize: 12,
-    color: "#424242",
+    fontSize: 13,
+    lineHeight: 18,
   },
   highlight: {
-    fontWeight: "bold",
-    color: "#FF6B6B",
+    fontWeight: "700",
   },
   chartContainer: {
-    minHeight: 200,
+    minHeight: 250,
+  },
+  miniChartContainer: {
+    minHeight: 180,
   },
   emptyContainer: {
-    padding: 20,
+    padding: 40,
     alignItems: "center",
+    justifyContent: "center",
+  },
+  miniEmptyContainer: {
+    padding: 20,
+    minHeight: 120,
   },
   emptyText: {
-    color: "#666",
-    fontStyle: "italic",
+    fontSize: 16,
+    fontWeight: "500",
+    marginTop: 16,
+    textAlign: "center",
+  },
+  miniEmptyText: {
+    fontSize: 14,
+    marginTop: 8,
+  },
+  emptySubtext: {
+    fontSize: 13,
+    marginTop: 4,
+    textAlign: "center",
   },
   refreshButton: {
-    backgroundColor: "#2BAE66",
-    padding: 12,
-    borderRadius: 8,
+    flexDirection: "row",
+    padding: 14,
+    borderRadius: 10,
     alignItems: "center",
-    marginTop: 12,
+    justifyContent: "center",
+    marginTop: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
   },
   refreshButtonText: {
-    color: "#0A1A2F",
-    fontWeight: "bold",
+    fontWeight: "600",
+    fontSize: 14,
+    marginLeft: 8,
+  },
+  chartTypeLabels: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 16,
+    flexWrap: "wrap",
+    gap: 8,
+  },
+  chartTypeLabelButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    backgroundColor: "#F1F5F9",
+  },
+  chartTypeLabelButtonActive: {
+    backgroundColor: "#3B82F6",
+  },
+  chartTypeLabelText: {
+    fontSize: 12,
+    color: "#64748B",
+    fontWeight: "500",
+  },
+  chartTypeLabelTextActive: {
+    color: "#FFFFFF",
   },
 });
+
+// Exportando os tipos necessários
+export type { ChartType };

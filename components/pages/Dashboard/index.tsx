@@ -1,109 +1,131 @@
-import React, { useEffect, useState } from "react";
-import { ActivityIndicator } from "react-native";
+import React, { useEffect, useMemo, useState } from "react";
+import { ScrollView, RefreshControl, ActivityIndicator } from "react-native";
 import { Stack } from "expo-router";
-import { getOrdersByRestaurant } from "@/services/order";
-import { SalesService } from "@/services/salesService";
-import { SalesTimeRange } from "@/services/types";
-import { TopProductsChart } from "@/components/organisms/TopProductsChart";
+import dayjs from "dayjs";
+import { getCompletedOrdersByDateRange, ReportData } from "@/services/order";
+import { buildDashboardMetrics, buildPaymentMethodMetrics, } from "@/services/salesService";
 import useRestaurant from "@/hooks/useRestaurant";
 import { useAppTheme } from "@/context/ThemeProvider/theme";
 import * as S from "./styles";
+import { RevenueMetrics } from "@/components/organisms/Charts/RevenueMetrics";
+import { PaymentMethodChart } from "@/components/organisms/Charts/PaymentMethodChart";
+import { TopProductsChart } from "@/components/organisms/Charts/TopProductsChart";
+import { SalesInsights } from "@/components/organisms/Charts/SalesInsights";
 
 export default function DashboardScreen() {
   const { selectedRestaurant } = useRestaurant();
+  const { theme } = useAppTheme();
 
-  const [salesData, setSalesData] = useState<SalesTimeRange | null>(null);
-  const [totalProducts, setTotalProducts] = useState<number | null>(null);
+  const [orders, setOrders] = useState<ReportData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
+  const [selectedPeriod, setSelectedPeriod] =
+    useState<'day' | 'week' | 'month'>('day');
 
-  const theme = useAppTheme();
-  const loadSalesData = async () => {
+  const loadDashboardData = async () => {
     try {
       setLoading(true);
-      setError(null);
 
-      if (!selectedRestaurant) {
-        setError("Nenhum restaurante selecionado");
-        return;
-      }
+      if (!selectedRestaurant?.id) return;
 
-      const orders = await getOrdersByRestaurant(
+      const startDate = dayjs().subtract(30, 'day').format('YYYY-MM-DD');
+      const endDate = dayjs().format('YYYY-MM-DD');
+
+      const response = await getCompletedOrdersByDateRange(
         selectedRestaurant.id,
-        "COMPLETED"
-      );
-
-      const processed = SalesService.getSalesByTimeRange(orders);
-
-      setSalesData(processed);
-
-      const endDate = new Date();
-      const startDate = new Date();
-      startDate.setDate(endDate.getDate() - 7);
-
-      const totalResponse = await SalesService.getTotalProductsSold(
-        selectedRestaurant.id,
+        1,
+        1000,
         startDate,
         endDate
       );
 
-      const totalProductsSold = totalResponse.totalProductsSold;
-
-      setTotalProducts(totalProductsSold);
-    } catch (err) {
-      console.error("Erro ao carregar dados de vendas:", err);
-      setError("Erro ao carregar dados de vendas");
+      setOrders(response.data);
+    } catch (error) {
+      console.error("Erro ao carregar dashboard:", error);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   };
 
   useEffect(() => {
-    if (selectedRestaurant?.id) loadSalesData();
-    else setLoading(false);
+    if (selectedRestaurant?.id) {
+      loadDashboardData();
+    }
   }, [selectedRestaurant]);
 
+  const onRefresh = () => {
+    setRefreshing(true);
+    loadDashboardData();
+  };
+
+  const dashboardMetrics = useMemo(
+    () => buildDashboardMetrics(orders),
+    [orders]
+  );
+
+  const paymentMethodMetrics = useMemo(
+    () => buildPaymentMethodMetrics(orders),
+    [orders]
+  );
+
   return (
-    <>
+    <S.ScreenContainer>
       <Stack.Screen
         options={{
           title: "Dashboard",
-          headerStyle: { backgroundColor: theme.theme.colors.background },
-          headerTintColor: theme.theme.colors.text.primary,
+          headerStyle: { backgroundColor: theme.colors.background },
+          headerTintColor: theme.colors.text.primary,
         }}
       />
 
-      <S.ScrollView>
-        {loading ? (
-          <S.View>
-            <ActivityIndicator size="large" color="#2BAE66" />
-            <S.Text>Carregando dados...</S.Text>
-          </S.View>
-        ) : error ? (
-          <S.View>
-            <S.Text>{error}</S.Text>
-          </S.View>
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[theme.colors.primary]}
+          />
+        }
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
+      >
+        {loading && !refreshing ? (
+          <S.LoadingContainer>
+            <ActivityIndicator size="large" color={theme.colors.primary} />
+            <S.LoadingText>Carregando dashboard...</S.LoadingText>
+          </S.LoadingContainer>
         ) : (
           <>
-            {totalProducts !== null && (
-              <S.View>
-                <S.Text>
-                  📦 Produtos Vendidos (7 dias) - {totalProducts} vendidos
-                </S.Text>
-              </S.View>
-            )}
+            {/* Header */}
+            <S.RestaurantHeader>
+              <S.RestaurantName>{selectedRestaurant?.name}</S.RestaurantName>
+              <S.RestaurantSubtitle>
+                Dashboard de Performance
+              </S.RestaurantSubtitle>
+            </S.RestaurantHeader>
 
-            <TopProductsChart
-              salesData={salesData}
-              onRefresh={loadSalesData}
-              variant="full"
-              showFilters
-              showInsights
-              showRefreshButton
+            {/* Métricas principais */}
+            <RevenueMetrics metrics={dashboardMetrics} />
+
+            {/* Métodos de pagamento */}
+            <PaymentMethodChart
+              data={paymentMethodMetrics}
+              selectedPeriod={selectedPeriod}
+              onPeriodChange={setSelectedPeriod}
+              onRefresh={loadDashboardData}
             />
+
+            {/* Produtos mais vendidos */}
+            <TopProductsChart
+              orders={orders}
+              selectedPeriod={selectedPeriod}
+            />
+
+            {/* Insights */}
+            <SalesInsights orders={orders} />
           </>
         )}
-      </S.ScrollView>
-    </>
+      </ScrollView>
+    </S.ScreenContainer>
   );
 }
