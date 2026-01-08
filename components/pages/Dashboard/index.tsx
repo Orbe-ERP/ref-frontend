@@ -3,7 +3,10 @@ import { ScrollView, RefreshControl, ActivityIndicator } from "react-native";
 import { Stack } from "expo-router";
 import dayjs from "dayjs";
 import { getCompletedOrdersByDateRange, ReportData } from "@/services/order";
-import { buildDashboardMetrics, buildPaymentMethodMetrics, } from "@/services/salesService";
+import {
+  buildDashboardMetrics,
+  buildPaymentMethodMetrics,
+} from "@/services/salesService";
 import useRestaurant from "@/hooks/useRestaurant";
 import { useAppTheme } from "@/context/ThemeProvider/theme";
 import * as S from "./styles";
@@ -19,40 +22,71 @@ export default function DashboardScreen() {
   const [orders, setOrders] = useState<ReportData[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [selectedPeriod, setSelectedPeriod] =
-    useState<'day' | 'week' | 'month'>('day');
+  const [selectedPeriod, setSelectedPeriod] = useState<
+    "day" | "week" | "month"
+  >("day");
 
-  const loadDashboardData = async () => {
-    try {
-      setLoading(true);
 
-      if (!selectedRestaurant?.id) return;
+  const getDateRangeByPeriod = (
+  period: 'day' | 'week' | 'month'
+) => {
+  const today = dayjs();
 
-      const startDate = dayjs().subtract(30, 'day').format('YYYY-MM-DD');
-      const endDate = dayjs().format('YYYY-MM-DD');
+  switch (period) {
+    case 'day':
+      return {
+        startDate: today.startOf('day').format('YYYY-MM-DD'),
+        endDate: today.add(1, 'day').startOf('day').format('YYYY-MM-DD'),
+      };
 
-      const response = await getCompletedOrdersByDateRange(
-        selectedRestaurant.id,
-        1,
-        1000,
-        startDate,
-        endDate
-      );
+    case 'week':
+      return {
+        startDate: today.subtract(6, 'day').startOf('day').format('YYYY-MM-DD'),
+        endDate: today.add(1, 'day').startOf('day').format('YYYY-MM-DD'),
+      };
 
-      setOrders(response.data);
-    } catch (error) {
-      console.error("Erro ao carregar dashboard:", error);
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  };
+    case 'month':
+      return {
+        startDate: today.subtract(30, 'day').startOf('day').format('YYYY-MM-DD'),
+        endDate: today.add(1, 'day').startOf('day').format('YYYY-MM-DD'),
+      };
+  }
+};
+
+
+
+const loadDashboardData = async () => {
+  try {
+    setLoading(true);
+
+    if (!selectedRestaurant?.id) return;
+    
+    const { startDate, endDate } =
+    getDateRangeByPeriod(selectedPeriod);
+    
+    const response = await getCompletedOrdersByDateRange(
+      selectedRestaurant.id,
+      1,
+      1000,
+      startDate,
+      endDate
+    );
+
+    setOrders(response.data);
+  } catch (error) {
+    console.error('Erro ao carregar dashboard:', error);
+  } finally {
+    setLoading(false);
+    setRefreshing(false);
+  }
+};
+
 
   useEffect(() => {
     if (selectedRestaurant?.id) {
       loadDashboardData();
     }
-  }, [selectedRestaurant]);
+  }, [selectedRestaurant, selectedPeriod]);
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -116,10 +150,7 @@ export default function DashboardScreen() {
             />
 
             {/* Produtos mais vendidos */}
-            <TopProductsChart
-              orders={orders}
-              selectedPeriod={selectedPeriod}
-            />
+            <TopProductsChart orders={orders} selectedPeriod={selectedPeriod} />
 
             {/* Insights */}
             <SalesInsights orders={orders} />
