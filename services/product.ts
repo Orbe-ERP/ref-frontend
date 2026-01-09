@@ -12,7 +12,7 @@ export interface Product {
   name: string;
   price: number;
   active: boolean;
-  kitchen: Kitchen;
+  kitchens: string[];
   observations: Observation;
   categoryId: string;
   restaurantId: string | undefined;
@@ -21,7 +21,7 @@ export interface ProductInput {
   name: string;
   price: number;
   active: boolean;
-  kitchen: Kitchen;
+  kitchenIds: string[];
   categoryId: string;
   restaurantId: string | undefined;
 }
@@ -36,7 +36,7 @@ export interface UpdateProductInput {
   name?: string;
   price?: number;
   active?: boolean;
-  kitchen?: string;
+  kitchenIds?: string[];
   observation?: any;
   restaurantId: string | undefined;
 }
@@ -76,13 +76,14 @@ export async function updateProduct(productData: UpdateProductInput) {
   if (!productData.restaurantId) {
     throw new Error("Need's a restaurant ID to edit");
   }
+
   try {
     const response = await api.patch(`/products/${productData.id}`, {
       name: productData.name,
       price: productData.price,
       active: productData.active,
       restaurantId: productData.restaurantId,
-      kitchenId: productData.kitchen,
+      kitchenIds: productData.kitchenIds, 
     });
 
     return response.data;
@@ -90,6 +91,7 @@ export async function updateProduct(productData: UpdateProductInput) {
     throw new Error(`Erro ao atualizar produto: ${error}`);
   }
 }
+
 
 export async function updateObservations(productData: UpdateObservationInput) {
   try {

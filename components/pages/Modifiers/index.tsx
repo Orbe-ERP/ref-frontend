@@ -110,7 +110,7 @@ export default function ProductModifiersPage() {
         trackStock,
 
         stockItemId: trackStock ? stockItemId : null,
-        stockEffect: trackStock ? stockEffect : null,
+        stockEffect: trackStock ? stockEffect : "NONE",
         stockMultiplier: trackStock ? Number(stockMultiplier || 1) : null,
       });
 
@@ -156,7 +156,7 @@ export default function ProductModifiersPage() {
         keyExtractor={(item) => item.id}
         contentContainerStyle={{ padding: 16 }}
         ListEmptyComponent={() => (
-          <Empty>Nenhum modifier cadastrado para este produto.</Empty>
+          <Empty>Nenhum modificador cadastrado para este produto.</Empty>
         )}
         ListHeaderComponent={
           <Form>

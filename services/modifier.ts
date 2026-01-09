@@ -24,10 +24,9 @@ export interface CreateModifierInput {
   trackStock: boolean;
 
   stockItemId?: string | null;
-  stockEffect?: "ADD" | "REMOVE" | null;
+  stockEffect?: "ADD" | "REMOVE" | "NONE" | null;
   stockMultiplier?: number | null;
 }
-
 
 export interface AddModifierToProductOpts {
   required?: boolean;
@@ -48,15 +47,17 @@ export async function addModifierToProduct(
   return response.data;
 }
 
-
 export async function createModifier(data: CreateModifierInput) {
+  if (data.stockEffect == null) {
+    data.stockEffect = "NONE";
+  }
 
-
-
-  const response = await api.post("/modifiers", data);
-
-
-  return response.data;
+  try {
+    const response = await api.post("/modifiers", data);
+    return response.data;
+  } catch (error) {
+    throw new Error(`Erro ao criar modificador: ${error}`);
+  }
 }
 
 export async function getModifierById(id: string) {
@@ -65,7 +66,6 @@ export async function getModifierById(id: string) {
   const response = await api.get(`/modifiers/${id}`);
   return response.data;
 }
-
 
 export async function getModifiersProduct(productId: string) {
   if (!productId) throw new Error("Product id é obrigatório");
@@ -85,9 +85,7 @@ export async function updateModifier(
   return response.data;
 }
 
-export async function deleteModifier(
-  id: string,
-) {
+export async function deleteModifier(id: string) {
   if (!id) {
     throw new Error("id é obrigatórios");
   }
@@ -95,15 +93,12 @@ export async function deleteModifier(
   await api.delete(`/modifiers/${id}`);
 }
 
-
-
 export async function getModifiersByProductIds(productIds: string[]) {
   if (!productIds?.length) return [];
 
-  const response = await api.post(
-    "/modifiers/product-modifiers",
-    { productIds }
-  );
+  const response = await api.post("/modifiers/product-modifiers", {
+    productIds,
+  });
 
   return response.data;
 }

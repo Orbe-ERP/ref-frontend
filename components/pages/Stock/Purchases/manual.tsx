@@ -209,13 +209,13 @@ export default function ManualPurchaseScreen() {
 
             </S.PickerContainer>
 
-            <S.Row style={{ marginTop: 8 }}>
+
               <Button
                 label="Cadastrar fornecedor"
                 variant="secondary"
                 onPress={() => router.push("/stock/suppliers/new")}
               />
-            </S.Row>
+       
 
             {!purchaseId && (
               <Button

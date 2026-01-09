@@ -14,6 +14,7 @@ import Toast from "react-native-toast-message";
 import styled from "styled-components/native";
 import { Ionicons } from "@expo/vector-icons";
 import { Pressable } from "react-native-gesture-handler";
+import useSubscriptionStatus from "@/context/SubscriptionProvider/subscription";
 
 const Container = styled.View`
   flex: 1;
@@ -49,6 +50,7 @@ const CreateButtonText = styled.Text`
 export default function SelectRestaurantScreen() {
   const [restaurants, setRestaurants] = useState<any[]>([]);
   const { selectRestaurant, selectedRestaurant } = useRestaurant();
+  const { status, loadingStatus } = useSubscriptionStatus();
   const { isAdmin } = usePermissions();
   const router = useRouter();
   const { theme } = useAppTheme();
@@ -113,9 +115,26 @@ export default function SelectRestaurantScreen() {
     }
   };
 
-  const handleCreateRestaurant = () => {
-    router.push("/(private)/create-restaurant");
-  };
+const handleCreateRestaurant = () => {
+  if (loadingStatus) return;
+
+  if (
+    !status ||
+    !status.plan ||
+    status.isExpired ||
+    status.isPendingFirstInvoice
+  ) {
+    Toast.show({
+      type: "error",
+      text1: "Plano necessário",
+      text2: "Você precisa de um plano ativo para criar restaurantes",
+    });
+    return;
+  }
+
+  router.push("/(private)/create-restaurant");
+};
+
 
   return (
     <>

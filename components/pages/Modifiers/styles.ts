@@ -75,6 +75,8 @@ export const SelectText = styled.Text`
 `;
 
 export const Empty = styled.View`
+  color: ${({ theme }) => theme.colors.text.primary};
+  font-size: 16px;
   align-items: center;
-  margin-top: 80px;
+  margin-top: 40px;
 `;

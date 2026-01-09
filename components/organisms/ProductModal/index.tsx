@@ -24,6 +24,7 @@ import {
 import { Kitchen } from "@/services/kitchen";
 import CustomSwitch from "@/components/atoms/CustomSwitch";
 import Toast from "react-native-toast-message";
+import Button from "@/components/atoms/Button";
 
 interface ProductModalProps {
   visible: boolean;
@@ -46,17 +47,28 @@ const ProductModal: React.FC<ProductModalProps> = ({
 }) => {
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
-  const [kitchen, setKitchen] = useState("");
   const [active, setActive] = useState(true);
+
+  const [kitchenIds, setKitchenIds] = useState<string[]>([]);
   const [isKitchenModalVisible, setIsKitchenModalVisible] = useState(false);
 
-
   useEffect(() => {
+
+  if (!visible) return;
+
+
     setName(product?.name ?? "");
     setPrice(product?.price?.toString() ?? "");
-    setKitchen(product?.kitchens ?? kitchens[0]?.id ?? "");
     setActive(product?.active ?? true);
-  }, [product, kitchens]);
+
+    setKitchenIds(product?.kitchens?.map((k: any) => k.id) ?? []);
+  }, [visible, product]);
+
+  function toggleKitchen(id: string) {
+    setKitchenIds((prev) =>
+      prev.includes(id) ? prev.filter((k) => k !== id) : [...prev, id]
+    );
+  }
 
   async function handleSave() {
     try {
@@ -66,7 +78,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
           name,
           price: parseFloat(price),
           active,
-          kitchen,
+          kitchenIds,
           restaurantId,
         });
       } else {
@@ -74,19 +86,19 @@ const ProductModal: React.FC<ProductModalProps> = ({
           name,
           price: parseFloat(price),
           active,
-          kitchen: kitchens.find((k) => k.id === kitchen) as Kitchen,
+          kitchenIds,
           categoryId,
           restaurantId,
         };
         await createProduct(input);
       }
+
       onSaved();
       onClose();
-    } catch (err) {
+    } catch {
       Toast.show({
         type: "error",
         text1: "Erro ao salvar produto",
-        text2: "Por favor, tente novamente.",
       });
     }
   }
@@ -97,21 +109,18 @@ const ProductModal: React.FC<ProductModalProps> = ({
       await deleteProduct(restaurantId, product.id);
       onSaved();
       onClose();
-    } catch (err) {
+    } catch {
       Toast.show({
         type: "error",
         text1: "Erro ao excluir produto",
-        text2: "Por favor, tente novamente.",
-      });    }
+      });
+    }
   }
 
+  const selectedKitchens = kitchens.filter((k) => kitchenIds.includes(k.id));
+
   return (
-    <Modal
-      visible={visible}
-      animationType="fade"
-      transparent
-      onRequestClose={onClose}
-    >
+    <Modal visible={visible} animationType="fade" transparent>
       <ModalOverlay>
         <ModalContent>
           <ModalTitle>{product ? "Editar Produto" : "Novo Produto"}</ModalTitle>
@@ -121,6 +130,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
             value={name}
             onChangeText={setName}
           />
+
           <Input
             placeholder="Preço"
             value={price}
@@ -130,25 +140,43 @@ const ProductModal: React.FC<ProductModalProps> = ({
 
           <Divider />
 
-          <SectionLabel>Cozinha</SectionLabel>
+          <SectionLabel>Cozinhas</SectionLabel>
           <KitchenSelector onPress={() => setIsKitchenModalVisible(true)}>
             <KitchenText>
-              {kitchens.find((k) => k.id === kitchen)?.name ||
-                "Selecionar cozinha"}
+              {kitchenIds.length ? "Editar cozinhas" : "Selecionar cozinhas"}
             </KitchenText>
           </KitchenSelector>
 
+          {/* 🔥 CHIPS DE COZINHAS */}
+          {selectedKitchens.length > 0 && (
+            <View
+              style={{
+                flexDirection: "row",
+                flexWrap: "wrap",
+                gap: 8,
+                marginTop: 10,
+              }}
+            >
+              {selectedKitchens.map((k) => (
+                <View
+                  key={k.id}
+                  style={{
+                    backgroundColor: "#065f46",
+                    paddingHorizontal: 10,
+                    paddingVertical: 4,
+                    borderRadius: 12,
+                  }}
+                >
+                  <Text style={{ color: "white", fontSize: 13 }}>{k.name}</Text>
+                </View>
+              ))}
+            </View>
+          )}
+
           <Divider />
 
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              marginBottom: 12,
-            }}
-          >
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
             <Text>Ativo</Text>
-
             <CustomSwitch value={active} onValueChange={setActive} />
           </View>
 
@@ -168,6 +196,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
         </ModalContent>
       </ModalOverlay>
 
+      {/* MODAL DE SELEÇÃO */}
       <Modal
         visible={isKitchenModalVisible}
         animationType="fade"
@@ -175,34 +204,66 @@ const ProductModal: React.FC<ProductModalProps> = ({
         onRequestClose={() => setIsKitchenModalVisible(false)}
       >
         <ModalOverlay>
-          <ModalContent style={{ maxHeight: "60%" }}>
-            <ModalTitle>Selecionar Cozinha</ModalTitle>
+          <ModalContent style={{ maxHeight: "70%" }}>
+            <ModalTitle>Selecionar Cozinhas</ModalTitle>
+
+            {/* 🔥 CHIPS SEMPRE VISÍVEIS NO MODAL */}
+            {selectedKitchens.length > 0 && (
+              <View
+                style={{
+                  flexDirection: "row",
+                  flexWrap: "wrap",
+                  gap: 8,
+                  marginBottom: 12,
+                }}
+              >
+                {selectedKitchens.map((k) => (
+                  <View
+                    key={k.id}
+                    style={{
+                      backgroundColor: "#065f46",
+                      paddingHorizontal: 10,
+                      paddingVertical: 4,
+                      borderRadius: 12,
+                    }}
+                  >
+                    <Text style={{ color: "white", fontSize: 13 }}>
+                      {k.name}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            )}
+
             <FlatList
               data={kitchens}
               keyExtractor={(item) => item.id}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={{
-                    paddingVertical: 14,
-                    borderBottomWidth: 1,
-                    borderBottomColor: "#333",
-                  }}
-                  onPress={() => {
-                    setKitchen(item.id);
-                    setIsKitchenModalVisible(false);
-                  }}
-                >
-                  <Text style={{ color: "white", fontSize: 16 }}>
-                    {item.name}
-                  </Text>
-                </TouchableOpacity>
-              )}
+              renderItem={({ item }) => {
+                const selected = kitchenIds.includes(item.id);
+
+                return (
+                  <TouchableOpacity
+                    onPress={() => toggleKitchen(item.id)}
+                    style={{
+                      paddingVertical: 14,
+                      borderBottomWidth: 1,
+                      borderBottomColor: "#333",
+                      backgroundColor: selected ? "#065f46" : "transparent",
+                    }}
+                  >
+                    <Text style={{ color: "white", fontSize: 16 }}>
+                      {item.name} {selected ? "✓" : ""}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              }}
             />
-            <ActionButton
+
+            <Button
+              label="Fechar"
+              variant="secondary"
               onPress={() => setIsKitchenModalVisible(false)}
-            >
-              <ActionText>Fechar</ActionText>
-            </ActionButton>
+            />
           </ModalContent>
         </ModalOverlay>
       </Modal>

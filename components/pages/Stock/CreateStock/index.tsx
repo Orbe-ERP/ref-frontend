@@ -107,7 +107,6 @@ export default function CreateStock() {
           visibilityTime: 2000,
         });
         
-        // Passa um parâmetro indicando que houve atualização
         router.replace({
           pathname: "/stock/items",
           params: { refresh: Date.now() }
@@ -145,13 +144,17 @@ export default function CreateStock() {
 
   return (
     <>
-      <Stack.Screen
-        options={{
-          title: "",
-          headerStyle: { backgroundColor: theme.colors.background },
-          headerTintColor: theme.colors.text.primary,
-        }}
+<Stack.Screen
+  options={{
+    headerLeft: () => (
+      <Button
+        label="Voltar"
+        onPress={() => router.replace("/stock/items")}
       />
+    ),
+  }}
+/>
+
       <S.ScreenContainer>
         <S.Header>
           <Title>{id ? 'Editar Item' : 'Novo Item de Estoque'}</Title>
