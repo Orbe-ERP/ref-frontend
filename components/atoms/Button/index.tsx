@@ -4,7 +4,7 @@ import { StyledButton, Label, IconContainer } from "./styles";
 export interface ButtonProps {
   label: string;
   onPress: () => void;
-  variant?: "primary" | "secondary" | "danger";
+  variant?: "primary" | "secondary" | "danger" | "icon";
   icon?: React.ReactNode;
   disabled?: boolean;
   hasFlex1?: boolean;

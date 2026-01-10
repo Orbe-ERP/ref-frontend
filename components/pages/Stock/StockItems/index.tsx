@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import {
   FlatList,
-  Alert,
   RefreshControl,
   ActivityIndicator,
   View,
@@ -172,21 +171,19 @@ async function handleDelete(id: string) {
     const status = getStatus(item);
 
     return (
-      <S.StockCard status={status}>
-        <S.InfoContainer>
-          <S.StockName>{item.name}</S.StockName>
+      <S.StockRow status={status}>
+        <S.ColumnName numberOfLines={1}>{item.name}</S.ColumnName>
 
-          <S.StockInfo>
-            {item.quantity} {item.unit ?? ""}
-          </S.StockInfo>
+        <S.ColumnQty>
+          {item.quantity} {item.unit ?? ""}
+        </S.ColumnQty>
 
-          {item.minimum !== undefined && (
-            <S.StockMinimum>Mínimo: {item.minimum}</S.StockMinimum>
-          )}
-        </S.InfoContainer>
+        <S.ColumnMin>
+          {item.minimum !== undefined ? `Min: ${item.minimum}` : "-"}
+        </S.ColumnMin>
 
         {isAdmin && (
-          <S.Actions>
+          <S.RowActions>
             <S.ActionButton
               onPress={() =>
                 router.push({
@@ -197,7 +194,7 @@ async function handleDelete(id: string) {
             >
               <Ionicons
                 name="swap-vertical-outline"
-                size={20}
+                size={18}
                 color={theme.colors.primary}
               />
             </S.ActionButton>
@@ -212,7 +209,7 @@ async function handleDelete(id: string) {
             >
               <Ionicons
                 name="create-outline"
-                size={20}
+                size={18}
                 color={theme.colors.primary}
               />
             </S.ActionButton>
@@ -220,13 +217,13 @@ async function handleDelete(id: string) {
             <S.ActionButton onPress={() => handleDelete(item.id)}>
               <Ionicons
                 name="trash-outline"
-                size={20}
+                size={18}
                 color={theme.colors.feedback.error}
               />
             </S.ActionButton>
-          </S.Actions>
+          </S.RowActions>
         )}
-      </S.StockCard>
+      </S.StockRow>
     );
   }
 
@@ -250,17 +247,6 @@ async function handleDelete(id: string) {
     }
     return null;
   };
-
-  if (loading && !refreshing) {
-    return (
-      <S.ScreenContainer showsVerticalScrollIndicator={false}>
-        <S.EmptyContainer>
-          <ActivityIndicator size="large" color={theme.colors.primary} />
-          <S.EmptyText>Carregando estoque...</S.EmptyText>
-        </S.EmptyContainer>
-      </S.ScreenContainer>
-    );
-  }
 
   return (
     <>

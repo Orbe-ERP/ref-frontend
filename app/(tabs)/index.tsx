@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { ScrollView } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import useRestaurant from "@/hooks/useRestaurant";
-import { HorizontalBarChart } from "@/components/organisms/TopProductsChart/components/HorizontalBarChart";
+import { VerticalBarChart } from "@/components/organisms/VerticalBarChart";
 import { usePermissions } from "@/hooks/usePermissions";
 import { getTodayProductSales } from "@/services/salesService";
 import { getOrdersByRestaurant } from "@/services/order";
@@ -241,16 +241,16 @@ export const SubscriptionTimer = styled.View`
   margin-bottom: 16px;
 `;
 
-interface HorizontalBarChartWrapperProps {
+interface VerticalBarChartWrapperProps {
   data: ProductSales[];
   scale?: number;
 }
 
-const HorizontalBarChartWrapper: React.FC<HorizontalBarChartWrapperProps> = ({
+const VerticalBarChartWrapper: React.FC<VerticalBarChartWrapperProps> = ({
   data,
   scale = 1,
 }) => {
-  return <HorizontalBarChart data={data} />;
+  return <VerticalBarChart data={data} />;
 };
 
 export default function IndexScreen() {
@@ -404,7 +404,7 @@ export default function IndexScreen() {
                   <EmptyText isMobile={isMobile}>{error}</EmptyText>
                 ) : (
                   <>
-                    <HorizontalBarChartWrapper
+                    <VerticalBarChartWrapper
                       data={salesData}
                       scale={isDesktop ? 0.9 : isTablet ? 0.95 : 1}
                     />

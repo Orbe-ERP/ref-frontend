@@ -14,6 +14,8 @@ import { RevenueMetrics } from "@/components/organisms/Charts/RevenueMetrics";
 import { PaymentMethodChart } from "@/components/organisms/Charts/PaymentMethodChart";
 import { TopProductsChart } from "@/components/organisms/Charts/TopProductsChart";
 import { SalesInsights } from "@/components/organisms/Charts/SalesInsights";
+import { Ionicons } from "@expo/vector-icons";
+import { useResponsive } from "@/hooks/useResponsive";
 
 export default function DashboardScreen() {
   const { selectedRestaurant } = useRestaurant();
@@ -25,7 +27,7 @@ export default function DashboardScreen() {
   const [selectedPeriod, setSelectedPeriod] = useState<
     "day" | "week" | "month"
   >("day");
-
+  const { isTablet, isDesktop } = useResponsive();
 
   const getDateRangeByPeriod = (
   period: 'day' | 'week' | 'month'
@@ -52,8 +54,6 @@ export default function DashboardScreen() {
       };
   }
 };
-
-
 
 const loadDashboardData = async () => {
   try {
@@ -154,6 +154,28 @@ const loadDashboardData = async () => {
 
             {/* Insights */}
             <SalesInsights orders={orders} />
+
+            {/* Informativo sobre período */}
+            <S.ToastNotice isTablet={isTablet} isDesktop={isDesktop}>
+              <S.ToastIcon>
+                <Ionicons
+                  name="information-circle-outline"
+                  size={20}
+                  color={theme.colors.feedback.warning}
+                />
+              </S.ToastIcon>
+
+              <S.ToastContent>
+                <S.ToastTitle>Período de dados</S.ToastTitle>
+                <S.ToastText>
+                  Os filtros de <S.ToastStrong>Semana</S.ToastStrong> e{" "}
+                  <S.ToastStrong>Mês</S.ToastStrong> representam, respectivamente, os{" "}
+                  <S.ToastStrong>últimos 7 dias</S.ToastStrong> e{" "}
+                  <S.ToastStrong>últimos 30 dias</S.ToastStrong> a partir de hoje.
+                  Em breve será possível escolher um intervalo de datas personalizado.
+                </S.ToastText>
+              </S.ToastContent>
+            </S.ToastNotice>
           </>
         )}
       </ScrollView>

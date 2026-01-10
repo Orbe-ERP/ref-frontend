@@ -5,11 +5,9 @@ import { VerticalBarChart } from "../VerticalBarChart";
 import { PieChart } from "./components/PieChart";
 import { PieChartProfit } from "./components/PieChart/PieChartProfit";
 import { DashboardProductSales as ProductSales } from "@/services/salesService";
-import { useResponsive } from "@/hooks/useResponsive";
 import { Feather } from "@expo/vector-icons";
 import { useAppTheme } from "@/context/ThemeProvider/theme";
 
-// Tipos de gráfico
 type ChartType =
   | "bar"
   | "pie-category"

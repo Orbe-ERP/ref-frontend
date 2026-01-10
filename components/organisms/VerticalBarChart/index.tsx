@@ -17,24 +17,17 @@ const DEFAULT_BAR_WIDTH = 32;
 const SPACING = 8;
 
 export const VerticalBarChart: React.FC<VerticalBarChartProps> = ({
-  data,
+  data = [],
   maxBars = 5,
   showValues = true,
   height = DEFAULT_CHART_HEIGHT,
 }) => {
   const { theme } = useAppTheme();
 
-  /**
-   * Ordena os produtos por quantidade de vendas
-   * e limita pelo maxBars
-   */
   const sortedData = [...data]
     .sort((a, b) => b.salesCount - a.salesCount)
     .slice(0, maxBars);
 
-  /**
-   * Estado vazio
-   */
   if (sortedData.length === 0) {
     return (
       <View style={[styles.emptyContainer, { height }]}>
@@ -50,16 +43,10 @@ export const VerticalBarChart: React.FC<VerticalBarChartProps> = ({
     );
   }
 
-  /**
-   * Escala do gráfico
-   */
   const maxSales = Math.max(
     ...sortedData.map(item => item.salesCount)
   );
 
-  /**
-   * Paleta de cores (rotativa)
-   */
   const barColors = [
     theme.colors.primary,
     theme.colors.secondary,
@@ -68,9 +55,6 @@ export const VerticalBarChart: React.FC<VerticalBarChartProps> = ({
     theme.colors.feedback.info,
   ];
 
-  /**
-   * Largura dinâmica das barras
-   */
   const availableWidth = SCREEN_WIDTH - 32;
   const totalBars = sortedData.length;
   const totalSpacing = (totalBars - 1) * SPACING;
@@ -80,36 +64,31 @@ export const VerticalBarChart: React.FC<VerticalBarChartProps> = ({
     (availableWidth - totalSpacing) / totalBars
   );
 
-  /**
-   * Helpers
-   */
   const formatNumber = (num: number) => {
     if (num >= 1000) return `${(num / 1000).toFixed(1)}k`;
     return num.toString();
   };
 
-  const formatProductName = (name: string) => {
+  const formatProductName = (name?: string) => {
+    if (!name) return "—";
     if (name.length > 12) return `${name.slice(0, 10)}...`;
     return name;
   };
 
   return (
     <View style={[styles.container, { height }]}>
-      {/* Barras */}
       <View style={styles.barsContainer}>
         {sortedData.map((item, index) => {
-          const barHeight =
-            (item.salesCount / maxSales) * (height - 60);
+          if (!item) return null;
 
-          const color =
-            barColors[index % barColors.length];
+          const barHeight = (item.salesCount / maxSales) * (height - 60);
+          const color = barColors[index % barColors.length];
 
           return (
             <View
               key={item.productId}
               style={styles.barColumn}
             >
-              {/* Valor */}
               {showValues && (
                 <Text
                   style={[
@@ -121,7 +100,6 @@ export const VerticalBarChart: React.FC<VerticalBarChartProps> = ({
                 </Text>
               )}
 
-              {/* Barra */}
               <View style={styles.barWrapper}>
                 <View
                   style={[
@@ -135,7 +113,6 @@ export const VerticalBarChart: React.FC<VerticalBarChartProps> = ({
                     },
                   ]}
                 >
-                  {/* Highlight */}
                   <View style={styles.barInner}>
                     <View
                       style={[
@@ -150,7 +127,6 @@ export const VerticalBarChart: React.FC<VerticalBarChartProps> = ({
                   </View>
                 </View>
 
-                {/* Base */}
                 <View
                   style={[
                     styles.barBase,
@@ -163,13 +139,11 @@ export const VerticalBarChart: React.FC<VerticalBarChartProps> = ({
                 />
               </View>
 
-              {/* Label */}
               <Text
                 style={[
                   styles.labelText,
                   {
-                    color:
-                      theme.colors.text.secondary,
+                    color: theme.colors.text.secondary,
                   },
                 ]}
                 numberOfLines={2}
@@ -181,7 +155,6 @@ export const VerticalBarChart: React.FC<VerticalBarChartProps> = ({
         })}
       </View>
 
-      {/* Rodapé */}
       {sortedData.length > 3 && (
         <View style={styles.footer}>
           <View style={styles.legendItem}>

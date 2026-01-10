@@ -1,5 +1,5 @@
-import OnboardPage from "@/components/pages/Onboard";
+// import OnboardPage from "@/components/pages/Onboard";
 
-export default function Onboarding() {
-  return <OnboardPage />;
-}
+// export default function Onboarding() {
+//   return <OnboardPage />;
+// }

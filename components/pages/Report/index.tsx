@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ScrollView, Modal, Button, } from 'react-native';
 import { Calendar } from 'react-native-calendars';
-import { getReportData, ReportData } from '@/services/report';
+import { getReportData, PaymentMethod, ReportData } from '@/services/report';
 import useRestaurant from '@/hooks/useRestaurant';
 import dayjs from 'dayjs';
 import { Stack } from 'expo-router';
@@ -11,14 +11,21 @@ import { useResponsive } from '@/hooks/useResponsive';
 
 export default function ReportScreen() {
   const { selectedRestaurant } = useRestaurant();
-  const [startDate, setStartDate] = useState<string | null>(null);
-  const [endDate, setEndDate] = useState<string | null>(null);
+  const [startDate, setStartDate] = useState(dayjs().startOf("month").format("YYYY-MM-DD"));
+  const [endDate, setEndDate] = useState(dayjs().endOf("month").format("YYYY-MM-DD"));
   const [showCalendarFor, setShowCalendarFor] = useState<'start' | 'end' | null>(null);
   const [reportData, setReportData] = useState<ReportData[]>([]);
   const [loading, setLoading] = useState(false);
   const {theme} = useAppTheme();
   const { isTablet, isDesktop } = useResponsive();
   const isWide = isTablet || isDesktop;
+  const paymentMethodLabel: Record<PaymentMethod, string> = {
+    CREDIT_CARD: 'Cartão de Crédito',
+    DEBIT_CARD: 'Cartão de Débito',
+    CASH: 'Dinheiro',
+    PIX: 'PIX',
+    OTHER: 'Outro',
+  };
 
   useEffect(() => {
     if (selectedRestaurant?.id) {
@@ -26,13 +33,13 @@ export default function ReportScreen() {
     }
   }, [selectedRestaurant]);
 
-  async function fetchData(initial?: string, final?: string) {
+  async function fetchData(initial = startDate, final = endDate) {
     try {
       setLoading(true);
       const data = await getReportData({
         restaurantId: selectedRestaurant.id,
-        initialDate: initial || dayjs().startOf('month').format('YYYY-MM-DD'),
-        finalDate: final || dayjs().endOf('month').format('YYYY-MM-DD'),
+        initialDate: initial,
+        finalDate: final,
       });
 
       setReportData(Array.isArray(data) ? data : [data]);
@@ -53,82 +60,91 @@ export default function ReportScreen() {
   };
 
   const handleSearch = () => {
-    if (startDate && endDate) {
-      fetchData(startDate, endDate);
-    } else {
-      fetchData();
-    }
+    fetchData(startDate, endDate);
   };
+
+  function formatPaymentMethod(method: PaymentMethod) {
+    return paymentMethodLabel[method];
+  }
 
   return (
     <>
         <Stack.Screen
-            options={{
+          options={{
             title: "Relatórios",
             headerStyle: { backgroundColor: theme.colors.background },
             headerTintColor: theme.colors.text.primary,
-            }}
+          }}
         />
 
         <S.Container>
             <ScrollView>
-              <S.FilterContainer wide={isWide}>
-                <S.DateRow wide={isWide}>
-                  <S.DateInput onPress={() => setShowCalendarFor('start')}>
-                    <S.LabelText>
-                      De: {startDate ? dayjs(startDate).format('DD/MM/YYYY') : '--/--/----'}
-                    </S.LabelText>
-                  </S.DateInput>
+              {isWide ? (
+                <S.FilterContainerWide>
+                  <S.DateRowWide>
+                    <S.DateInput onPress={() => setShowCalendarFor("start")}>
+                      <S.LabelText>
+                        De: {dayjs(startDate).format("DD/MM/YYYY")}
+                      </S.LabelText>
+                    </S.DateInput>
 
-                  <S.DateInput onPress={() => setShowCalendarFor('end')}>
-                    <S.LabelText>
-                      Até: {endDate ? dayjs(endDate).format('DD/MM/YYYY') : '--/--/----'}
-                    </S.LabelText>
-                  </S.DateInput>
+                    <S.DateInput onPress={() => setShowCalendarFor("end")}>
+                      <S.LabelText>
+                        Até: {dayjs(endDate).format("DD/MM/YYYY")}
+                      </S.LabelText>
+                    </S.DateInput>
 
-                    {isWide && (
-                      <S.SearchButton
-                        onPress={handleSearch}
-                        disabled={loading}
-                        $inline
-                      >
-                        <S.SearchButtonText>
-                          {loading ? 'Carregando...' : 'Buscar'}
-                        </S.SearchButtonText>
-                      </S.SearchButton>
-                    )}
-                  </S.DateRow>
-
-                  {!isWide && (
-                    <S.SearchButton onPress={handleSearch} disabled={loading}>
+                    <S.SearchButtonWide onPress={handleSearch} disabled={loading}>
                       <S.SearchButtonText>
-                        {loading ? 'Carregando...' : 'Buscar'}
+                        {"Buscar"}
                       </S.SearchButtonText>
-                    </S.SearchButton>
-                  )}
-                </S.FilterContainer>
+                    </S.SearchButtonWide>
+                  </S.DateRowWide>
+                </S.FilterContainerWide>
+              ) : (
+                <S.FilterContainerMobile>
+                  <S.DateRowMobile>
+                    <S.DateInputMobile onPress={() => setShowCalendarFor("start")}>
+                      <S.LabelText>
+                        De: {dayjs(startDate).format("DD/MM/YYYY")}
+                      </S.LabelText>
+                    </S.DateInputMobile>
 
-                <Modal visible={!!showCalendarFor} transparent>
-                    <S.ModalContainer>
-                        <S.CalendarWrapper>
-                            <Calendar
-                                onDayPress={handleDateSelect}
-                                theme={{
-                                backgroundColor: '#0A1A2F',
-                                calendarBackground: '#0A1A2F',
-                                textSectionTitleColor: '#ffffff',
-                                dayTextColor: '#ffffff',
-                                todayTextColor: '#E9C46A',
-                                selectedDayBackgroundColor: '#2BAE66',
-                                selectedDayTextColor: '#ffffff',
-                                monthTextColor: '#ffffff',
-                                arrowColor: '#ffffff',
-                                }}
-                            />
-                            <Button title="Fechar" onPress={() => setShowCalendarFor(null)} />
-                        </S.CalendarWrapper>
-                    </S.ModalContainer>
-                </Modal>
+                    <S.DateInputMobile onPress={() => setShowCalendarFor("end")}>
+                      <S.LabelText>
+                        Até: {dayjs(endDate).format("DD/MM/YYYY")}
+                      </S.LabelText>
+                    </S.DateInputMobile>
+                  </S.DateRowMobile>
+
+                  <S.SearchButtonMobile onPress={handleSearch} disabled={loading}>
+                    <S.SearchButtonText>
+                      {"Buscar"}
+                    </S.SearchButtonText>
+                  </S.SearchButtonMobile>
+                </S.FilterContainerMobile>
+              )}
+
+              <Modal visible={!!showCalendarFor} transparent animationType="fade">
+                <S.ModalContainer>
+                  <S.CalendarWrapper>
+                    <Calendar
+                      onDayPress={handleDateSelect}
+                      markedDates={{
+                        [startDate]: { selected: true },
+                        [endDate]: { selected: true },
+                      }}
+                      theme={{
+                        backgroundColor: theme.colors.background,
+                        calendarBackground: theme.colors.background,
+                        dayTextColor: theme.colors.text.primary,
+                        monthTextColor: theme.colors.text.primary,
+                        arrowColor: theme.colors.primary,
+                      }}
+                    />
+                  </S.CalendarWrapper>
+                </S.ModalContainer>
+              </Modal>
 
                 {loading ? (
                 <S.LoadingText>Carregando dados...</S.LoadingText>
@@ -149,7 +165,7 @@ export default function ReportScreen() {
                                     <S.Cell>R$ {order.totalValue.toFixed(2)}</S.Cell>
                                     <S.Cell>R$ {order.additional.toFixed(2)}</S.Cell>
                                     <S.Cell>R$ {order.feePaidValue.toFixed(2)}</S.Cell>
-                                    <S.Cell>{order.paymentMethod}</S.Cell>
+                                    <S.Cell>{formatPaymentMethod(order.paymentMethod)}</S.Cell>
                                 </S.Row>
                                 <S.RowDivider />
                             </React.Fragment>

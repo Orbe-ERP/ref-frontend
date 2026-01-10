@@ -1,6 +1,13 @@
 import styled from "styled-components/native";
 import { Feather } from "@expo/vector-icons";
 
+export interface ResponsiveProps {
+  isMobile?: boolean;
+  isTablet?: boolean;
+  isDesktop?: boolean;
+  isWeb?: boolean;
+}
+
 export const ScreenContainer = styled.View`
   flex: 1;
   background-color: ${({ theme }) => theme.colors.background};
@@ -122,4 +129,46 @@ export const InsightHighlight = styled.Text`
 
 export const Icon = styled(Feather as any)<{ color?: string }>`
   color: ${({ color, theme }) => color || theme.colors.primary};
+`;
+
+export const ToastNotice = styled.View<ResponsiveProps>`
+  flex-direction: row;
+  align-items: flex-start;
+  padding: 14px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  margin-horizontal: 16px;
+  margin-vertical: 12px;
+  background-color: ${({ theme }) => theme.colors.surface};
+  
+  ${({ isTablet, isDesktop }) => 
+    (isTablet || isDesktop) ? `
+    width: 100%;
+  ` : ''}
+`;
+
+export const ToastIcon = styled.View`
+  margin-right: 12px;
+  margin-top: 2px;
+`;
+
+export const ToastContent = styled.View`
+  flex: 1;
+`;
+
+export const ToastTitle = styled.Text`
+  font-size: 14px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.feedback.warning};
+`;
+
+export const ToastText = styled.Text`
+  font-size: 13px;
+  line-height: 18px;
+  color: ${({ theme }) => theme.colors.feedback.warning};
+`;
+
+export const ToastStrong = styled.Text`
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.text.primary};
 `;

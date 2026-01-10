@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { 
   View, 
   ScrollView,
-  Text 
+  Text,
+  TouchableOpacity 
 } from 'react-native';
 import { useRouter, useLocalSearchParams, Stack } from 'expo-router';
 import { Picker } from '@react-native-picker/picker';
+import { Ionicons } from '@expo/vector-icons';
 import Toast from 'react-native-toast-message';
 import * as S from './styles';
-import Title from '@/components/atoms/Title';
 import Button from '@/components/atoms/Button';
 import Input from '@/components/atoms/Input';
 import useRestaurant from '@/hooks/useRestaurant';
@@ -20,12 +21,24 @@ import {
 } from '@/services/stock';
 import { useAppTheme } from '@/context/ThemeProvider/theme';
 
+const UNIT_DESCRIPTIONS = {
+  [Unit.UNIT]: 'Unidades individuais',
+  [Unit.GRAM]: 'Peso em gramas (ex: temperos, especiarias, queijos)',
+  [Unit.KILOGRAM]: 'Peso em quilogramas (ex: carnes, legumes, farinhas)',
+  [Unit.MILLILITER]: 'Volume em mililitros (ex: molhos, condimentos, bebidas)',
+  [Unit.LITER]: 'Volume em litros (ex: óleos, bebidas em garrafa)',
+  [Unit.PACKAGE]: 'Pacotes fechados (ex: macarrão, biscoitos)',
+  [Unit.OTHER]: 'Unidade personalizada ou específica',
+};
+
 export default function CreateStock() {
   const router = useRouter();
   const { id } = useLocalSearchParams();
   const { selectedRestaurant } = useRestaurant();
   const { theme } = useAppTheme();
   const [loading, setLoading] = useState(false);
+  const [showUnitInfo, setShowUnitInfo] = useState(false);
+  const [showCostInfo, setShowCostInfo] = useState(false);
   const [form, setForm] = useState({
     name: '',
     unit: Unit.UNIT,
@@ -144,26 +157,18 @@ export default function CreateStock() {
 
   return (
     <>
-<Stack.Screen
-  options={{
-    headerLeft: () => (
-      <Button
-        label="Voltar"
-        onPress={() => router.replace("/stock/items")}
+      <Stack.Screen
+        options={{
+          title: id ? 'Editar Item' : 'Novo Item de Estoque',
+          headerStyle: { backgroundColor: theme.colors.background },
+          headerTintColor: theme.colors.text.primary,
+        }}
       />
-    ),
-  }}
-/>
 
       <S.ScreenContainer>
-        <S.Header>
-          <Title>{id ? 'Editar Item' : 'Novo Item de Estoque'}</Title>
-        </S.Header>
-
         <ScrollView 
           contentContainerStyle={{ padding: 16, paddingBottom: 32 }}
           showsVerticalScrollIndicator={false}
-          
         >
           <View style={{ marginBottom: 16 }}>
             <Text style={{ 
@@ -182,14 +187,60 @@ export default function CreateStock() {
           </View>
 
           <View style={{ marginBottom: 16 }}>
-            <Text style={{ 
-              fontSize: 14, 
-              color: '#666', 
-              marginBottom: 8,
-              fontWeight: '500' 
-            }}>
-              Unidade de Medida
-            </Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+              <Text style={{ 
+                fontSize: 14, 
+                color: '#666', 
+                fontWeight: '500' 
+              }}>
+                Unidade de Medida
+              </Text>
+              <TouchableOpacity 
+                onPress={() => setShowUnitInfo(!showUnitInfo)}
+                style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}
+              >
+                <Ionicons 
+                  name="information-circle-outline" 
+                  size={16} 
+                  color={theme.colors.primary} 
+                />
+                <Text style={{ fontSize: 12, color: theme.colors.primary }}>
+                  {showUnitInfo ? 'Ocultar ajuda' : 'Ver explicações'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Informativo sobre unidades */}
+            {showUnitInfo && (
+              <S.UnitInfoContainer>
+                <S.UnitInfoIcon>
+                  <Ionicons
+                    name="information-circle-outline"
+                    size={18}
+                    color={theme.colors.feedback.info}
+                  />
+                </S.UnitInfoIcon>
+                <S.UnitInfoContent>
+                  <S.UnitInfoTitle>Entenda as unidades</S.UnitInfoTitle>
+                  <S.UnitInfoText>
+                    Escolha a unidade que melhor representa como você mede o item:
+                  </S.UnitInfoText>
+                  <View style={{ marginTop: 8 }}>
+                    {Object.entries(UNIT_DESCRIPTIONS).map(([unitKey, description]) => (
+                      <View key={unitKey} style={{ flexDirection: 'row', marginBottom: 4 }}>
+                        <Text style={{ fontWeight: '600', fontSize: 12, minWidth: 100, color: theme.colors.text.primary }}>
+                          {unitKey}:
+                        </Text>
+                        <Text style={{ fontSize: 12, color: theme.colors.text.secondary, flex: 1 }}>
+                          {description}
+                        </Text>
+                      </View>
+                    ))}
+                  </View>
+                </S.UnitInfoContent>
+              </S.UnitInfoContainer>
+            )}
+
             <Picker
               selectedValue={form.unit}
               onValueChange={(value) => setForm({ ...form, unit: value })}
@@ -200,7 +251,12 @@ export default function CreateStock() {
               }}
             >
               {Object.values(Unit).map((unit) => (
-                <Picker.Item key={unit} label={unit} value={unit} />
+                <Picker.Item 
+                  key={unit} 
+                  label={unit} 
+                  value={unit}
+                  style={{ fontSize: 14 }}
+                />
               ))}
             </Picker>
           </View>
@@ -246,7 +302,56 @@ export default function CreateStock() {
               marginBottom: 8,
               fontWeight: '500' 
             }}>
-              Último Custo (opcional)
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                <Text style={{ 
+                  fontSize: 14, 
+                  color: '#666', 
+                  fontWeight: '500' 
+                }}>
+                  Custo individual (opcional)
+                </Text>
+
+                <TouchableOpacity 
+                  onPress={() => setShowCostInfo(!showCostInfo)}
+                  style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}
+                >
+                  <Ionicons 
+                    name="information-circle-outline" 
+                    size={16} 
+                    color={theme.colors.primary} 
+                  />
+                  <Text style={{ fontSize: 12, color: theme.colors.primary }}>
+                    {showCostInfo ? 'Ocultar ajuda' : 'Ver explicação'}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              {showCostInfo && (
+                <S.UnitInfoContainer>
+                  <S.UnitInfoIcon>
+                    <Ionicons
+                      name="information-circle-outline"
+                      size={18}
+                      color={theme.colors.feedback.info}
+                    />
+                  </S.UnitInfoIcon>
+
+                  <S.UnitInfoContent>
+                    <S.UnitInfoTitle>Como informar o custo?</S.UnitInfoTitle>
+                    <S.UnitInfoText>
+                      O custo deve ser o valor de <Text style={{ fontWeight: '600' }}>uma única unidade</Text> do item,
+                      conforme a unidade de medida selecionada.
+                    </S.UnitInfoText>
+
+                    <View style={{ marginTop: 8 }}>
+                      <Text style={{ fontSize: 12, color: theme.colors.text.secondary }}>
+                        Exemplo: se a unidade for <Text style={{ fontWeight: '600' }}>pacote</Text> e você cadastrar{" "}
+                        <Text style={{ fontWeight: '600' }}>5 pacotes</Text>, informe aqui o{" "}
+                        <Text style={{ fontWeight: '600' }}>preço de cada pacote</Text>, e não o valor total.
+                      </Text>
+                    </View>
+                  </S.UnitInfoContent>
+                </S.UnitInfoContainer>
+              )}
             </Text>
             <Input
               value={form.lastCost}

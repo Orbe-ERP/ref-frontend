@@ -123,3 +123,50 @@ export const EmptyText = styled.Text`
   margin-top: 20px;
   font-size: 16px;
 `;
+
+export const FilterContainerMobile = styled.View`
+  margin-bottom: 20px;
+`;
+
+export const DateRowMobile = styled.View`
+  flex-direction: row;
+  gap: 12px;
+  margin-bottom: 12px;
+`;
+
+export const DateInputMobile = styled.TouchableOpacity`
+  flex: 1;
+  padding: 12px;
+  border-width: 1px;
+  border-color: ${({ theme }) => theme.colors.border};
+  border-radius: 8px;
+  background-color: ${({ theme }) => theme.colors.surface};
+`;
+
+export const SearchButtonMobile = styled.TouchableOpacity<{ disabled?: boolean }>`
+  background-color: ${({ disabled }) => (disabled ? "#165332ff" : "#2BAE66")};
+  padding: 14px;
+  border-radius: 8px;
+  align-items: center;
+`;
+
+export const FilterContainerWide = styled.View`
+  gap: 12px;
+  margin-bottom: 20px;
+`;
+
+export const DateRowWide = styled.View`
+  flex-direction: row;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+export const SearchButtonWide = styled.TouchableOpacity<{ disabled?: boolean }>`
+  background-color: ${({ disabled }) => (disabled ? "#165332ff" : "#2BAE66")};
+  padding: 12px 24px;
+  border-radius: 8px;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+`;

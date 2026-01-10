@@ -68,3 +68,44 @@ export const EmptyText = styled.Text`
   margin-top: 12px;
   color: ${({ theme }) => theme.colors.text.secondary};
 `;
+
+export const StockRow = styled.View<{ status: "ok" | "warning" | "critical" }>`
+  flex-direction: row;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom-width: 1px;
+  border-bottom-color: ${({ theme }) => theme.colors.border};
+
+  background-color: ${({ status, theme }) =>
+    status === "critical"
+      ? theme.colors.feedback.error + "10"
+      : status === "warning"
+      ? theme.colors.feedback.warning + "10"
+      : "transparent"};
+`;
+
+export const ColumnName = styled.Text`
+  flex: 2;
+  font-size: 14px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.text.primary};
+`;
+
+export const ColumnQty = styled.Text`
+  flex: 1;
+  font-size: 13px;
+  color: ${({ theme }) => theme.colors.text.secondary};
+`;
+
+export const ColumnMin = styled.Text`
+  flex: 1;
+  font-size: 13px;
+  color: ${({ theme }) => theme.colors.text.secondary};
+`;
+
+export const RowActions = styled.View`
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+`;

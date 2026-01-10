@@ -72,19 +72,29 @@ export function buildProductSales(
   const productMap = new Map<string, DashboardProductSales>();
 
   reports.forEach((report) => {
-    report.products.forEach((product) => {
-      const existing = productMap.get(product.productId);
+    report.products.forEach((item) => {
+      const productId = item.product?.id;
+      const productName = item.product?.name;
+      const price = item.product?.price ?? 0;
+      const quantity = item.quantity ?? 0;
 
-      const revenue = product.quantity * product.price;
+      if (!productId || !productName) {
+        console.warn("Produto inválido recebido:", item);
+        return;
+      }
+
+      const revenue = quantity * price;
+
+      const existing = productMap.get(productId);
 
       if (existing) {
-        existing.salesCount += product.quantity;
+        existing.salesCount += quantity;
         existing.totalRevenue += revenue;
       } else {
-        productMap.set(product.productId, {
-          productId: product.productId,
-          productName: product.productName,
-          salesCount: product.quantity,
+        productMap.set(productId, {
+          productId,
+          productName,
+          salesCount: quantity,
           totalRevenue: revenue,
         });
       }
