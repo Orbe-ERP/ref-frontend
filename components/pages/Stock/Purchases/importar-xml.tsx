@@ -3,6 +3,8 @@ import { Platform, View, Text, ActivityIndicator } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import styled from "styled-components/native";
 import { useAppTheme } from "@/context/ThemeProvider/theme";
+import { importPurchaseXml } from "@/services/purchase";
+import useRestaurant from "@/hooks/useRestaurant";
 
 const Container = styled.View`
   flex: 1;
@@ -44,9 +46,10 @@ const InfoText = styled.Text`
 export default function ImportXmlScreen() {
   const router = useRouter();
   const isWeb = Platform.OS === "web";
+  const { selectedRestaurant } = useRestaurant();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { theme } = useAppTheme();  
+  const { theme } = useAppTheme();
 
   const handleFileSelect = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -63,27 +66,27 @@ export default function ImportXmlScreen() {
       setLoading(true);
       setError(null);
 
-      const formData = new FormData();
-      formData.append("file", file);
+      const data = await importPurchaseXml({
+        file,
+        restaurantId: selectedRestaurant?.id || "",
+      });
 
-      const response = await fetch(
-        `${process.env.EXPO_PUBLIC_API_URL}/purchase/import/xml`,
-        {
-          method: "POST",
-          body: formData,
-          credentials: "include",
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Erro ao importar XML.");
-      }
-
-      const data = await response.json();
+      const previewPayload = {
+        restaurantId: selectedRestaurant?.id || "",
+        invoiceKey: data.invoiceKey,
+        supplierName: data.supplier?.name,
+        date: data.issuedAt,
+        items: data.items.map((item: any) => ({
+          stockItemId: "",
+          name: item.originalName,
+          quantity: item.quantity,
+          unitCost: item.unitCost,
+        })),
+      };
 
       router.push({
         pathname: "/stock/purchases/import-preview",
-        params: { payload: JSON.stringify(data) },
+        params: { payload: JSON.stringify(previewPayload) },
       });
     } catch (err) {
       setError("Não foi possível importar o XML.");
@@ -95,12 +98,12 @@ export default function ImportXmlScreen() {
   if (!isWeb) {
     return (
       <>
-        <Stack.Screen 
-          options={{ 
-            title: "Upload de XML", 
-            headerStyle: { backgroundColor: theme.colors.background }, 
+        <Stack.Screen
+          options={{
+            title: "Upload de XML",
+            headerStyle: { backgroundColor: theme.colors.background },
             headerTintColor: theme.colors.text.primary,
-          }} 
+          }}
         />
         <Container>
           <Title>Importação de XML</Title>
@@ -110,7 +113,8 @@ export default function ImportXmlScreen() {
 
           <Card>
             <Text>
-              Para importar notas fiscais em XML, utilize o sistema pelo navegador.
+              Para importar notas fiscais em XML, utilize o sistema pelo
+              navegador.
             </Text>
           </Card>
         </Container>
@@ -120,12 +124,12 @@ export default function ImportXmlScreen() {
 
   return (
     <>
-      <Stack.Screen 
-        options={{ 
-          title: "Upload de XML", 
-          headerStyle: { backgroundColor: theme.colors.background }, 
+      <Stack.Screen
+        options={{
+          title: "Upload de XML",
+          headerStyle: { backgroundColor: theme.colors.background },
           headerTintColor: theme.colors.text.primary,
-        }} 
+        }}
       />
       <Container>
         <Title>Importar XML</Title>

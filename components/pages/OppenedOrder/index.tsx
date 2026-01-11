@@ -21,7 +21,7 @@ export default function OppenedOrderPage() {
   const router = useRouter();
   const { selectedRestaurant } = useRestaurant();
   const [orders, setOrders] = useState<Order[]>([]);
-  const {user} = useAuth()
+  const { user } = useAuth();
   const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
   const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -29,7 +29,7 @@ export default function OppenedOrderPage() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [additional, setAdditional] = useState<number>(10);
   const [paymentConfigs, setPaymentConfigs] = useState<PaymentConfig[]>([]);
-  const [searchText, setSearchText] = useState(""); // Estado para o filtro
+  const [searchText, setSearchText] = useState("");
   const screenWidth = Dimensions.get("window").width;
   const theme = useAppTheme();
 
@@ -40,7 +40,9 @@ export default function OppenedOrderPage() {
       const activeOrders = data.filter(
         (order: any) =>
           Array.isArray(order.products) &&
-          order.products.some((p) => p.status !== "CANCELED" && !p.deletedAt)
+          order.products.some(
+            (p: any) => p.status !== "CANCELED" && !p.deletedAt
+          )
       );
       setOrders(activeOrders);
       setFilteredOrders(activeOrders);
@@ -286,7 +288,10 @@ export default function OppenedOrderPage() {
           </S.NoOrdersText>
         )}
 
-      <ScrollView style={{ width: "100%" }} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={{ width: "100%" }}
+        showsVerticalScrollIndicator={false}
+      >
         {filteredOrders.map((order) => {
           const total = order.products.reduce(
             (sum, item) =>
@@ -328,7 +333,12 @@ export default function OppenedOrderPage() {
                     </S.ProductText>
                     <S.ProductText>Preço: R$ {price.toFixed(2)}</S.ProductText>
                     <S.ProductText>
-                      Cozinha: {item.product?.kitchen?.name ?? "Não definida"}
+                      Cozinha:{" "}
+                      {item.product?.kitchens?.length
+                        ? item.product.kitchens
+                            .map((k: any) => k.name)
+                            .join(", ")
+                        : "Não definida"}
                     </S.ProductText>
                     <S.ProductText>Quantidade: {item.quantity}</S.ProductText>
                   </S.ProductContainer>

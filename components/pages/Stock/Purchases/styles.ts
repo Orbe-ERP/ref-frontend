@@ -1,3 +1,5 @@
+
+
 import styled from "styled-components/native";
 
 export const ScreenContainer = styled.View`
@@ -5,6 +7,137 @@ export const ScreenContainer = styled.View`
   padding: 16px;
   background-color: ${({ theme }) => theme.colors.background};
 `;
+
+
+
+export const ContentCard = styled.View`
+  background-color: ${({ theme }) => theme.colors.surface};
+  border-radius: 16px;
+  padding: 20px;
+  border-width: 1;
+  border-color: ${({ theme }) => theme.colors.border};
+`;
+
+export const PreviewRow = styled.View`
+  flex-direction: row;
+  margin-bottom: 8px;
+`;
+
+export const PreviewLabel = styled.Text`
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.text.secondary};
+  width: 120px;
+`;
+
+export const PreviewValue = styled.Text`
+  color: ${({ theme }) => theme.colors.text.primary};
+  flex: 1;
+  flex-wrap: wrap;
+`;
+
+
+export const Card = styled.View`
+  background-color: ${({ theme }) => theme.colors.surface};
+  padding: 16px;
+  border-radius: 14px;
+  margin-bottom: 16px;
+  border-width: 1;
+  border-color: ${({ theme }) => theme.colors.border};
+`;
+
+export const Label = styled.Text`
+  font-size: 13px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.text.secondary};
+  text-transform: uppercase;
+  margin-bottom: 2px;
+`;
+
+export const InfoText = styled.Text`
+  font-size: 15px;
+  color: ${({ theme }) => theme.colors.text.primary};
+`;
+
+export const WarningText = styled.Text`
+  font-size: 13px;
+  font-weight: 500;
+  color: ${({ theme }) => theme.colors.feedback.warning};
+  margin-bottom: 10px;
+`;
+
+export const ItemCard = styled.View`
+  background-color: ${({ theme }) => theme.colors.surface};
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 16px;
+  border-width: 1.5px;
+  border-color: ${({ theme }) => theme.colors.border};
+`;
+
+export const ItemHeader = styled.View`
+  margin-bottom: 12px;
+`;
+
+export const ItemTitle = styled.Text`
+  font-size: 16px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.text.primary};
+`;
+
+export const Row = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+`;
+
+
+
+export const ItemTotal = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top-width: 1;
+  border-top-color: ${({ theme }) => theme.colors.border};
+`;
+
+export const ItemTotalValue = styled.Text`
+  font-size: 16px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.primary};
+`;
+
+export const TotalSection = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin: 32px 0 24px;
+  padding: 20px;
+  background-color: ${({ theme }) => theme.colors.primary}10;
+  border-radius: 16px;
+  border-width: 1.5px;
+  border-color: ${({ theme }) => theme.colors.primary}40;
+`;
+
+export const TotalLabelLarge = styled.Text`
+  font-size: 16px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.text.secondary};
+`;
+
+export const TotalLarge = styled.Text`
+  font-size: 26px;
+  font-weight: 800;
+  color: ${({ theme }) => theme.colors.primary};
+`;
+
+export const ButtonRow = styled.View`
+  margin-top: 12px;
+`;
+
+
 
 export const Header = styled.View`
   padding: 10px;
@@ -16,12 +149,7 @@ export const ModalContainer = styled.ScrollView`
   padding: 16px;
 `;
 
-export const Card = styled.View`
-  background-color: ${({ theme }) => theme.colors.surface};
-  padding: 16px;
-  border-radius: 12px;
-  margin-bottom: 12px;
-`;
+
 
 export const ItemName = styled.Text`
   font-size: 16px;
@@ -58,15 +186,6 @@ export const ItemBox = styled.View`
   background-color: ${({ theme }) => theme.colors.surface};
 `;
 
-export const Row = styled.View`
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-`;
-
-export const Label = styled.Text`
-  font-weight: bold;
-`;
 
 export const LoadingContainer = styled.View`
   flex: 1;
@@ -105,27 +224,7 @@ export const SectionTitle = styled.Text`
   color: ${({ theme }) => theme.colors.text.primary};
 `;
 
-export const ItemCard = styled.View`
-  background-color: ${({ theme }) => theme.colors.surface};
-  border-radius: 8px;
-  padding: 16px;
-  margin-bottom: 16px;
-  border-width: 1;
-  border-color: ${({ theme }) => theme.colors.border};
-`;
 
-export const ItemHeader = styled.View`
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-`;
-
-export const ItemTitle = styled.Text`
-  font-size: 16px;
-  font-weight: 600;
-  color: ${({ theme }) => theme.colors.text.primary};
-`;
 
 export const PickerContainer = styled.View`
   border-width: 1;
@@ -134,51 +233,7 @@ export const PickerContainer = styled.View`
   background-color: ${({ theme }) => theme.colors.background};
 `;
 
-export const ItemTotal = styled.View`
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top-width: 1;
-  border-top-color: ${({ theme }) => theme.colors.border};
-`;
 
-export const ItemTotalValue = styled.Text`
-  font-size: 16px;
-  font-weight: 600;
-  color: ${({ theme }) => theme.colors.primary};
-`;
-
-export const TotalSection = styled.View`
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  margin: 24px 0;
-  padding: 16px;
-  background-color: ${({ theme }) => theme.colors.surface};
-  border-radius: 8px;
-  border-width: 1;
-  border-color: ${({ theme }) => theme.colors.primary}20;
-`;
-
-export const TotalLabelLarge = styled.Text`
-  font-size: 18px;
-  font-weight: 600;
-  color: ${({ theme }) => theme.colors.text.primary};
-`;
-
-export const TotalLarge = styled.Text`
-  font-size: 24px;
-  font-weight: 700;
-  color: ${({ theme }) => theme.colors.primary};
-`;
-
-export const ButtonRow = styled.View`
-  flex-direction: row;
-  margin-top: 8px;
-  justify-content: space-between
-`;
 
 export const CardHeader = styled.View`
   flex-direction: row;
@@ -195,11 +250,7 @@ export const DateBadge = styled.Text`
   border-radius: 12px;
 `;
 
-export const InfoText = styled.Text`
-  font-size: 12px;
-  color: ${({ theme }) => theme.colors.text.secondary};
-  margin-left: 4px;
-`;
+
 
 export const TotalContainer = styled.View`
   flex-direction: row;

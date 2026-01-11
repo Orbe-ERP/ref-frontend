@@ -50,15 +50,14 @@ export async function importPurchaseXml(data: {
   file: File;
 }) {
   const formData = new FormData();
-  formData.append('file', data.file);
-  formData.append('restaurantId', data.restaurantId);
-  
+  formData.append("file", data.file);
+  formData.append("restaurantId", data.restaurantId);
+
   const response = await api.post("/purchase/import/xml", formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
   });
-
   return response.data;
 }
 
@@ -97,4 +96,38 @@ export function validatePurchaseItems(items: PurchaseItem[]) {
     isValid: errors.length === 0,
     errors,
   };
+}
+
+export async function matchStockItem(restaurantId: string, name: string) {
+  const { data } = await api.get("/stock/suggestions", {
+    params: {
+      restaurantId,
+      name,
+    },
+  });
+
+  const best = data?.[0];
+
+  if (!best) {
+    return null;
+  }
+
+  return {
+    stockItemId: best.id,
+    confidence: best.similarity,
+  };
+}
+
+export async function getStockItemSuggestions(
+  restaurantId: string,
+  name: string
+) {
+  const { data } = await api.get("/stock/suggestions", {
+    params: {
+      restaurantId,
+      name,
+    },
+  });
+
+  return data;
 }

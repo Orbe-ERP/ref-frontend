@@ -8,13 +8,13 @@ export interface OrderProduct {
   quantity: number;
   appliedPrice?: number;
   status: string;
-  
+
   observations?: { id: string; description: string }[];
   product: {
     name: string;
     price: number;
-    compositions: any
-    kitchen: Kitchen;
+    compositions: any;
+    kitchens: string[];
   };
 }
 
@@ -149,9 +149,7 @@ export async function getCompletedOrdersByTable(
   }
 }
 
-
 export async function createOrder(order: NewOrder) {
-
   if (!order) throw new Error("Dados faltantes");
 
   try {
@@ -198,7 +196,7 @@ export async function getOrdersByRestaurant(
 }
 
 export async function getOrders(tableId: string) {
-  if (!tableId) throw new Error("Table Id not defined");
+  if (!tableId) throw new Error("Table Id not defined")
   try {
     const response = await api.get(`/orders/table/${tableId}`);
     return response.data;
@@ -217,7 +215,6 @@ export async function addProductToOrder(productData: AddProductInput) {
     throw new Error(`Error adding product to order: ${error}`);
   }
 }
-
 
 export async function updateStatus(orderData: UpdateOrderStatus) {
   try {
@@ -258,7 +255,7 @@ export async function concludeOrders({
   ordersArray,
   sumIndividually,
   additional = 0,
-  operator = null
+  operator = null,
 }: ConcludeOrderInput) {
   if (!tableId || !restaurantId)
     throw new Error("TableId e RestaurantId são obrigatórios");
@@ -272,7 +269,7 @@ export async function concludeOrders({
       sumIndividually,
       additional,
       ordersArray,
-      operator
+      operator,
     });
 
     return response.data;
@@ -288,7 +285,7 @@ export async function concludeOrder({
   additional = 0,
   paymentMethod,
   paymentConfigId,
-  operator = null
+  operator = null,
 }: ConcludeSingleOrderInput) {
   if (!orderId || !restaurantId)
     throw new Error("OrderId e RestaurantId são obrigatórios");
