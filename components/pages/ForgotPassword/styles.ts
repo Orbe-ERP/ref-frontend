@@ -22,6 +22,7 @@ export const HeaderTitle = styled.Text`
   font-size: 18px;
   font-weight: 600;
   color: ${({ theme }) => theme.colors.text.primary};
+  background-color: ${({ theme }) => theme.colors.background};
 `;
 
 export const FormContainer = styled.View`
