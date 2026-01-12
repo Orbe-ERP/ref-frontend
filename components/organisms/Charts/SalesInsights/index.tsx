@@ -23,9 +23,6 @@ export const SalesInsights: React.FC<SalesInsightsProps> = ({ orders }) => {
       detail?: string;
     }[] = [];
 
-    /* =====================================================
-       1. MÉTODOS DE PAGAMENTO (NOVO SERVICE)
-    ===================================================== */
     const paymentMetrics = buildPaymentMethodMetrics(orders);
 
     if (paymentMetrics.length > 0) {
@@ -37,14 +34,11 @@ export const SalesInsights: React.FC<SalesInsightsProps> = ({ orders }) => {
         type: 'success',
         icon: 'credit-card',
         title: 'Método Mais Utilizado',
-        description: `${mostUsed.method} lidera em receita`,
+        description: `${mostUsed.label} lidera em receita`,
         detail: `Participação: ${mostUsed.percentage.toFixed(1)}%`,
       });
     }
 
-    /* =====================================================
-       2. PERÍODO DE PICO
-    ===================================================== */
     const hourGroups: Record<string, number> = {};
 
     orders.forEach(order => {
@@ -73,9 +67,6 @@ export const SalesInsights: React.FC<SalesInsightsProps> = ({ orders }) => {
       });
     }
 
-    /* =====================================================
-       3. TICKET MÉDIO
-    ===================================================== */
     const totalRevenue = orders.reduce(
       (sum, order) => sum + order.totalValue,
       0
@@ -96,9 +87,6 @@ export const SalesInsights: React.FC<SalesInsightsProps> = ({ orders }) => {
       });
     }
 
-    /* =====================================================
-       4. PRODUTOS POR PEDIDO
-    ===================================================== */
     const totalProducts = orders.reduce((sum, order) => {
       return (
         sum +
