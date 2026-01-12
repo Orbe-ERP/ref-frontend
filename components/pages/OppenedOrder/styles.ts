@@ -183,28 +183,26 @@ export const PaymentMethodsText = styled.Text`
 export const PaymentOptions = styled.View`
   flex-direction: row;
   flex-wrap: wrap;
-  justify-content: space-between;
 `;
 
 export const PaymentButton = styled.TouchableOpacity<{ selected?: boolean }>`
   flex-basis: 48%;
+  max-width: 40%;
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  padding: 12px 10px;
-  flex-basis: 48%;
-  border-radius: 8px;
-  margin-bottom: 10px;
-  background-color: ${({ selected, theme }) =>
-    selected ? theme.colors.primary : theme.colors.background};
+  padding: 8px 8px;
+  height: 42px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  background-color: ${({ selected, theme }) => selected ? theme.colors.primary : theme.colors.background};
 `;
 
 export const PaymentButtonText = styled.Text<{ selected?: boolean }>`
-  color: ${({ selected, theme }) =>
-    selected ? theme.colors.surface : theme.colors.text.secondary};
-  font-size: 14px;
-  font-weight: bold;
-  margin-left: 6px;
+  color: ${({ selected, theme }) => selected ? theme.colors.surface : theme.colors.text.secondary};
+  font-size: 12px;
+  font-weight: 600;
+  margin-left: 4px;
 `;
 
 export const TaxList = styled.View`
