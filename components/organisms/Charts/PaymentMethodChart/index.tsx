@@ -21,27 +21,22 @@ export const PaymentMethodChart: React.FC<PaymentMethodChartProps> = ({
 
   const PAYMENT_UI = {
     CREDIT_CARD: {
-      label: 'Crédito',
       icon: 'credit-card',
       color: theme.colors.primary,
     },
     DEBIT_CARD: {
-      label: 'Débito',
       icon: 'credit-card',
       color: theme.colors.accent,
     },
     PIX: {
-      label: 'Pix',
       icon: 'smartphone',
       color: theme.colors.feedback.success,
     },
     CASH: {
-      label: 'Dinheiro',
       icon: 'dollar-sign',
       color: theme.colors.secondary,
     },
     OTHER: {
-      label: 'Outros',
       icon: 'more-horizontal',
       color: theme.colors.text.muted,
     },
@@ -183,7 +178,7 @@ export const PaymentMethodChart: React.FC<PaymentMethodChartProps> = ({
                     { color: theme.colors.text.primary },
                   ]}
                 >
-                  {ui.label}
+                  {item.label}
                 </Text>
               </View>
 

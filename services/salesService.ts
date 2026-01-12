@@ -4,6 +4,14 @@ import {
   PaymentMethod,
 } from "@/services/report";
 
+const paymentMethodLabels: Record<PaymentMethod, string> = {
+  CREDIT_CARD: "Cartão de Crédito",
+  DEBIT_CARD: "Cartão de Débito",
+  PIX: "Pix",
+  CASH: "Dinheiro",
+  OTHER: "Outro",
+};
+
 export interface DashboardProductSales {
   productId: string;
   productName: string;
@@ -20,6 +28,7 @@ export interface DashboardMetrics {
 
 export interface PaymentMethodMetrics {
   method: PaymentMethod;
+  label: string;
   totalValue: number;
   percentage: number;
 }
@@ -125,6 +134,7 @@ export function buildPaymentMethodMetrics(
 
   return Array.from(map.entries()).map(([method, totalValue]) => ({
     method,
+    label: paymentMethodLabels[method] ?? method,
     totalValue,
     percentage: total > 0 ? (totalValue / total) * 100 : 0,
   }));

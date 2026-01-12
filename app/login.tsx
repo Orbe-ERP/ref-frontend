@@ -73,8 +73,8 @@ const ButtonText = styled.Text`
 `;
 
 const Logo = styled.Image`
-  width: 160px;
-  height: 160px;
+  width: 150px;
+  height: 150px;
   margin-bottom: 16px;
 `;
 
@@ -95,6 +95,21 @@ const LoginSchema = Yup.object().shape({
     .min(6, "Mínimo 6 caracteres")
     .required("Senha obrigatória"),
 });
+
+const ForgotPasswordContainer = styled.View`
+  width: 100%;
+  align-items: flex-end;
+  margin-top: 6px;
+  margin-bottom: 12px;
+`;
+
+const ForgotPasswordButton = styled.TouchableOpacity``;
+
+const ForgotPasswordText = styled.Text`
+  color: ${COLORS.primary};
+  font-size: 13px;
+  font-weight: 500;
+`;
 
 const RegisterContainer = styled.View`
   flex-direction: row;
@@ -230,6 +245,12 @@ export default function Login() {
               {errors.password && touched.password && (
                 <ErrorText>{errors.password}</ErrorText>
               )}
+
+              <ForgotPasswordContainer>
+                <ForgotPasswordButton onPress={() => router.push("/forgot-password")}>
+                  <ForgotPasswordText>Esqueci minha senha</ForgotPasswordText>
+                </ForgotPasswordButton>
+              </ForgotPasswordContainer>
 
               <Button onPress={handleSubmit as any} disabled={loading}>
                 {loading ? (

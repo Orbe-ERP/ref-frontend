@@ -226,6 +226,17 @@ export default function OppenedOrderPage() {
     else setAdditional(value);
   };
 
+  const groupedByResponsible = filteredOrders.reduce((acc, order) => {
+    const key = order.responsible || "Sem responsável";
+
+    if (!acc[key]) {
+      acc[key] = [];
+    }
+
+    acc[key].push(order);
+    return acc;
+  }, {} as Record<string, Order[]>);
+
   return (
     <S.Container>
       <Stack.Screen
@@ -292,144 +303,200 @@ export default function OppenedOrderPage() {
         style={{ width: "100%" }}
         showsVerticalScrollIndicator={false}
       >
-        {filteredOrders.map((order) => {
-          const total = order.products.reduce(
-            (sum, item) =>
-              sum +
-              (item.appliedPrice && item.appliedPrice > 0
-                ? item.appliedPrice
-                : item.product?.price ?? 0) *
-                item.quantity,
-            0
-          );
-          const isSelected = selectedOrders.includes(order.id);
+        {Object.entries(groupedByResponsible).map(
+          ([responsible, ordersByResponsible]) => {
+            const allSelected = ordersByResponsible.every((o) =>
+              selectedOrders.includes(o.id)
+            );
 
-          return (
-            <S.OrderItem key={order.id}>
-              <S.Row>
-                <Checkbox
-                  status={isSelected ? "checked" : "unchecked"}
-                  onPress={() => toggleOrderSelection(order.id)}
-                  color="#16a34a"
-                />
-                <S.OrderHeader>
-                  <S.OrderText>Responsável: {order.responsible}</S.OrderText>
-                  <S.OrderText>Total: R$ {total.toFixed(2)}</S.OrderText>
-                </S.OrderHeader>
-              </S.Row>
+            const toggleSelectAllFromResponsible = () => {
+              const ids = ordersByResponsible.map((o) => o.id);
 
-              {order.products.map((item) => {
-                const price =
-                  item.appliedPrice && item.appliedPrice > 0
-                    ? item.appliedPrice
-                    : item.product?.price ?? 0;
-                return (
-                  <S.ProductContainer key={item.productId}>
-                    <S.ProductText>
-                      Status: {getStatusLabel(item.status)}
-                    </S.ProductText>
-                    <S.ProductText>
-                      Nome: {item.product?.name ?? "Produto não encontrado"}
-                    </S.ProductText>
-                    <S.ProductText>Preço: R$ {price.toFixed(2)}</S.ProductText>
-                    <S.ProductText>
-                      Cozinha:{" "}
-                      {item.product?.kitchens?.length
-                        ? item.product.kitchens
-                            .map((k: any) => k.name)
-                            .join(", ")
-                        : "Não definida"}
-                    </S.ProductText>
-                    <S.ProductText>Quantidade: {item.quantity}</S.ProductText>
-                  </S.ProductContainer>
-                );
-              })}
+              setSelectedOrders((prev) =>
+                allSelected
+                  ? prev.filter((id) => !ids.includes(id))
+                  : Array.from(new Set([...prev, ...ids]))
+              );
+            };
 
-              <S.PaymentMethodsContainer>
-                <S.PaymentMethodsText>
-                  Método de pagamento:
-                </S.PaymentMethodsText>
-                <S.PaymentOptions style={{ width: screenWidth * 0.9 }}>
-                  {["PIX", "CASH", "CREDIT_CARD", "DEBIT_CARD"].map(
-                    (method) => {
-                      const selected = order.paymentMethod === method;
-                      return (
-                        <S.PaymentButton
-                          key={method}
-                          selected={selected}
-                          onPress={() =>
-                            handlePaymentMethodSelect(order.id, method)
-                          }
-                        >
-                          <Ionicons
-                            name={
-                              method === "PIX"
-                                ? "cash-outline"
-                                : method === "CASH"
-                                ? "wallet-outline"
-                                : "card-outline"
-                            }
-                            size={24}
-                            color={selected ? "#fff" : "#aaa"}
-                          />
-                          <S.PaymentButtonText selected={selected}>
-                            {method === "PIX"
-                              ? "PIX"
-                              : method === "CASH"
-                              ? "Dinheiro"
-                              : method === "CREDIT_CARD"
-                              ? "Crédito"
-                              : "Débito"}
-                          </S.PaymentButtonText>
-                        </S.PaymentButton>
-                      );
-                    }
-                  )}
-                </S.PaymentOptions>
+            return (
+              <S.OrderItem key={responsible}>
+                <S.Row>
+                  <Checkbox
+                    status={allSelected ? "checked" : "unchecked"}
+                    onPress={toggleSelectAllFromResponsible}
+                    color="#16a34a"
+                  />
+                  <S.OrderHeader>
+                    <S.OrderText style={{ fontWeight: "bold", fontSize: 16 }}>
+                      Responsável: {responsible}
+                    </S.OrderText>
+                    <S.OrderText>
+                      {ordersByResponsible.length} comanda
+                      {ordersByResponsible.length !== 1 && "s"}
+                    </S.OrderText>
+                  </S.OrderHeader>
+                </S.Row>
 
-                {(order.paymentMethod === "CREDIT_CARD" ||
-                  order.paymentMethod === "DEBIT_CARD") && (
-                  <S.TaxList>
-                    {paymentConfigs
-                      .filter((c) => c.method === order.paymentMethod)
-                      .map((config) => {
-                        const selectedBrand = order.cardBrand === config.brand;
+                {ordersByResponsible.map((order) => {
+                  const total = order.products.reduce(
+                    (sum, item) =>
+                      sum +
+                      (item.appliedPrice && item.appliedPrice > 0
+                        ? item.appliedPrice
+                        : item.product?.price ?? 0) *
+                        item.quantity,
+                    0
+                  );
+
+                  const isSelected = selectedOrders.includes(order.id);
+
+                  return (
+                    <S.OrderItem
+                      key={order.id}
+                      style={{
+                        marginTop: 10,
+                        backgroundColor: theme.theme.colors.background,
+                      }}
+                    >
+                      <S.Row>
+                        <Checkbox
+                          status={isSelected ? "checked" : "unchecked"}
+                          onPress={() => toggleOrderSelection(order.id)}
+                          color="#16a34a"
+                        />
+                        <S.OrderHeader>
+                          <S.OrderText>Total: R$ {total.toFixed(2)}</S.OrderText>
+                        </S.OrderHeader>
+                      </S.Row>
+
+                      {order.products.map((item) => {
+                        const price =
+                          item.appliedPrice && item.appliedPrice > 0
+                            ? item.appliedPrice
+                            : item.product?.price ?? 0;
+
                         return (
-                          <S.TaxItem
-                            key={config.id}
-                            selected={selectedBrand}
-                            onPress={() =>
-                              handleCardBrandSelect(order.id, config.brand!)
-                            }
-                          >
-                            <S.TaxText selected={selectedBrand}>
-                              {CardBrandLabels[config.brand ?? "OUTRO"]}
-                            </S.TaxText>
-                          </S.TaxItem>
+                          <S.ProductContainer key={item.productId}>
+                            <S.ProductText>
+                              Status: {getStatusLabel(item.status)}
+                            </S.ProductText>
+                            <S.ProductText>
+                              Nome: {item.product?.name ?? "Produto não encontrado"}
+                            </S.ProductText>
+                            <S.ProductText>
+                              Preço: R$ {price.toFixed(2)}
+                            </S.ProductText>
+                            <S.ProductText>
+                              Cozinha:{" "}
+                              {item.product?.kitchens?.length
+                                ? item.product.kitchens
+                                    .map((k: any) => k.name)
+                                    .join(", ")
+                                : "Não definida"}
+                            </S.ProductText>
+                            <S.ProductText>
+                              Quantidade: {item.quantity}
+                            </S.ProductText>
+                          </S.ProductContainer>
                         );
                       })}
-                  </S.TaxList>
-                )}
-              </S.PaymentMethodsContainer>
 
-              <S.OrderText style={{ marginTop: 10 }}>Adicional (%)</S.OrderText>
-              <TextInput
-                keyboardType="numeric"
-                value={String(additional)}
-                onChangeText={(text) => handleAdditional(Number(text))}
-                placeholder="Ex: 10"
-                placeholderTextColor="#ccc"
-                style={{
-                  backgroundColor: "#fff",
-                  padding: 10,
-                  borderRadius: 5,
-                  fontSize: 16,
-                  marginBottom: 10,
-                }}
-              />
-            </S.OrderItem>
-          );
-        })}
+                      <S.PaymentMethodsContainer>
+                        <S.PaymentMethodsText>
+                          Método de pagamento:
+                        </S.PaymentMethodsText>
+                        <S.PaymentOptions style={{ width: screenWidth * 0.9 }}>
+                          {["PIX", "CASH", "CREDIT_CARD", "DEBIT_CARD"].map(
+                            (method) => {
+                              const selected = order.paymentMethod === method;
+                              return (
+                                <S.PaymentButton
+                                  key={method}
+                                  selected={selected}
+                                  onPress={() =>
+                                    handlePaymentMethodSelect(order.id, method)
+                                  }
+                                >
+                                  <Ionicons
+                                    name={
+                                      method === "PIX"
+                                        ? "cash-outline"
+                                        : method === "CASH"
+                                        ? "wallet-outline"
+                                        : "card-outline"
+                                    }
+                                    size={18}
+                                    color={selected ? "#fff" : "#aaa"}
+                                  />
+                                  <S.PaymentButtonText selected={selected}>
+                                    {method === "PIX"
+                                      ? "PIX"
+                                      : method === "CASH"
+                                      ? "Dinheiro"
+                                      : method === "CREDIT_CARD"
+                                      ? "Crédito"
+                                      : "Débito"}
+                                  </S.PaymentButtonText>
+                                </S.PaymentButton>
+                              );
+                            }
+                          )}
+                        </S.PaymentOptions>
+
+                        {(order.paymentMethod === "CREDIT_CARD" ||
+                          order.paymentMethod === "DEBIT_CARD") && (
+                          <S.TaxList>
+                            {paymentConfigs
+                              .filter((c) => c.method === order.paymentMethod)
+                              .map((config) => {
+                                const selectedBrand =
+                                  order.cardBrand === config.brand;
+                                return (
+                                  <S.TaxItem
+                                    key={config.id}
+                                    selected={selectedBrand}
+                                    onPress={() =>
+                                      handleCardBrandSelect(
+                                        order.id,
+                                        config.brand!
+                                      )
+                                    }
+                                  >
+                                    <S.TaxText selected={selectedBrand}>
+                                      {CardBrandLabels[config.brand ?? "OUTRO"]}
+                                    </S.TaxText>
+                                  </S.TaxItem>
+                                );
+                              })}
+                          </S.TaxList>
+                        )}
+                      </S.PaymentMethodsContainer>
+
+                      <S.OrderText style={{ marginTop: 10 }}>
+                        Adicional (%)
+                      </S.OrderText>
+                      <TextInput
+                        keyboardType="numeric"
+                        value={String(additional)}
+                        onChangeText={(text) => handleAdditional(Number(text))}
+                        placeholder="Ex: 10"
+                        placeholderTextColor="#ddd"
+                        style={{
+                          backgroundColor: theme.theme.colors.overlay,
+                          padding: 10,
+                          borderRadius: 5,
+                          fontSize: 16,
+                          marginBottom: 10,
+                        }}
+                      />
+                    </S.OrderItem>
+                  );
+                })}
+              </S.OrderItem>
+            );
+          }
+        )}
       </ScrollView>
 
       {orders.length > 0 && (
