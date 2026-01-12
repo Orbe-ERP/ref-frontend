@@ -11,7 +11,6 @@ interface StockSuggestion {
 }
 import styled from "styled-components/native";
 import { getStockItemSuggestions } from "@/services/purchase";
-import useRestaurant from "@/hooks/useRestaurant";
 import { usePurchaseImport } from "@/context/PurchaseImportProvider";
 
 export const Container = styled.View`

@@ -19,7 +19,7 @@ export default function ImportPreviewScreen() {
   const { theme } = useAppTheme();
   const { payload } = useLocalSearchParams<any>();
 
-  const { items, setItems, reset } = usePurchaseImport();
+  const { items, setItems, reset, unresolveItem } = usePurchaseImport();
   const [saving, setSaving] = useState(false);
 
   const data = useMemo(() => {
@@ -62,10 +62,6 @@ export default function ImportPreviewScreen() {
 
   const total = useMemo(() => calculatePurchaseTotal(items), [items]);
 
-  const hasAttentionItems = useMemo(
-    () => items.some((i) => i.needsAttention),
-    [items]
-  );
 
   async function handleConfirm() {
     try {
@@ -78,6 +74,7 @@ export default function ImportPreviewScreen() {
         quantity: i.quantity,
         unitCost: i.unitCost,
       }));
+
 
       await confirmPurchaseXml({
         restaurantId: data.restaurantId,
@@ -202,6 +199,14 @@ export default function ImportPreviewScreen() {
                       })
                     }
                   />
+
+                   {item.stockItemId && (
+    <Button
+      label="Desassociar"
+      variant="danger"
+      onPress={() => unresolveItem(index)}
+    />
+  )}
                 </S.ButtonRow>
               </S.ItemCard>
             ))}

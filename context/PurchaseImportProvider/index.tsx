@@ -14,6 +14,7 @@ interface PurchaseImportContextData {
   items: PreviewItem[];
   setItems: React.Dispatch<React.SetStateAction<PreviewItem[]>>;
   resolveItem: (index: number, stockItemId: string) => void;
+  unresolveItem: (index: number) => void;
   updateItem: (index: number, updated: Partial<PreviewItem>) => void;
   reset: () => void;
 }
@@ -42,6 +43,7 @@ export function PurchaseImportProvider({
           : item
       )
     );
+    console.log(items);
   }
 
   function updateItem(index: number, updated: Partial<PreviewItem>) {
@@ -54,9 +56,24 @@ export function PurchaseImportProvider({
     setItems([]);
   }
 
+  function unresolveItem(index: number) {
+    setItems((prev) =>
+      prev.map((item, i) =>
+        i === index
+          ? {
+              ...item,
+              stockItemId: undefined,
+              confidence: 0,
+              needsAttention: true,
+            }
+          : item
+      )
+    );
+  }
+
   return (
     <PurchaseImportContext.Provider
-      value={{ items, setItems, resolveItem, reset, updateItem }}
+      value={{ items, setItems, resolveItem, unresolveItem, reset, updateItem }}
     >
       {children}
     </PurchaseImportContext.Provider>

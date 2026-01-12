@@ -62,6 +62,8 @@ export async function importPurchaseXml(data: {
 }
 
 export async function confirmPurchaseXml(data: any) {
+  console.log(data)
+
   const response = await api.post("/purchase/import/xml/confirm", data);
   return response.data;
 }
