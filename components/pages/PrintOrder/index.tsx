@@ -114,7 +114,9 @@ export default function PrintOrderScreen() {
       <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
         <S.TicketCard>
           <S.Header>
-            <S.RestaurantTitle>{orderSummary.restaurant.name}</S.RestaurantTitle>
+            <S.RestaurantTitle>
+              {orderSummary.restaurant.name}
+            </S.RestaurantTitle>
             <S.Subtitle>{orderSummary.restaurant.tradeName}</S.Subtitle>
             <S.MetaInfo>CNPJ: {orderSummary.restaurant.cnpj}</S.MetaInfo>
             <S.Divider />
@@ -129,7 +131,9 @@ export default function PrintOrderScreen() {
             </S.RowInfo>
             <S.RowInfo>
               <S.Label>Responsável:</S.Label>
-              <S.Value>{orderSummary.responsible}</S.Value>
+              {orderSummary.responsibles.map((r: any, i: any) => (
+                <S.Value key={i}>{r}</S.Value>
+              ))}
             </S.RowInfo>
           </S.Header>
 
@@ -143,7 +147,9 @@ export default function PrintOrderScreen() {
 
               <S.ProductInfo>
                 <S.ProductName>{item.productName}</S.ProductName>
-                <S.ProductUnitVal>{formatCurrency(item.price)}</S.ProductUnitVal>
+                <S.ProductUnitVal>
+                  {formatCurrency(item.price)}
+                </S.ProductUnitVal>
               </S.ProductInfo>
 
               <S.ProductTotal>
@@ -171,14 +177,18 @@ export default function PrintOrderScreen() {
 
             <S.TotalRow>
               <S.TotalLabel>TOTAL</S.TotalLabel>
-              <S.TotalValue>{formatCurrency(orderSummary.totalAmount)}</S.TotalValue>
+              <S.TotalValue>
+                {formatCurrency(orderSummary.totalAmount)}
+              </S.TotalValue>
             </S.TotalRow>
           </S.SummaryContainer>
 
           <S.FooterInfo>
             <S.PaymentTitle>Pagamento</S.PaymentTitle>
             <S.PaymentInfo>
-              Método: {paymentMethodLabelMap[orderSummary.paymentMethod] ?? "Não informado"}
+              Método:{" "}
+              {paymentMethodLabelMap[orderSummary.paymentMethod] ??
+                "Não informado"}
             </S.PaymentInfo>
           </S.FooterInfo>
         </S.TicketCard>

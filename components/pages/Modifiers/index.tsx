@@ -38,7 +38,7 @@ export default function ProductModifiersPage() {
   );
   const [modifiers, setModifiers] = useState<Modifier[]>([]);
   const [loading, setLoading] = useState(true);
-  const [stockEffect, setStockEffect] = useState<"ADD" | "REMOVE" | null>(null);
+  const [stockEffect, setStockEffect] = useState<"ADD" | "REMOVE">("REMOVE");
   const [stockMultiplier, setStockMultiplier] = useState("1");
 
   const [name, setName] = useState("");
@@ -65,7 +65,6 @@ export default function ProductModifiersPage() {
     try {
       setLoading(true);
       const data = await getModifiersProduct(productId);
-
       setModifiers(data);
     } catch {
       Toast.show({ type: "error", text1: "Erro ao carregar modifiers" });
@@ -81,22 +80,9 @@ export default function ProductModifiersPage() {
     }
     if (!selectedRestaurant?.id || !productId) return;
 
-    if (trackStock) {
-      if (!stockItemId) {
-        Toast.show({
-          type: "error",
-          text1: "Selecione um item de estoque",
-        });
-        return;
-      }
-
-      if (!stockEffect) {
-        Toast.show({
-          type: "error",
-          text1: "Informe se o modifier adiciona ou remove do estoque",
-        });
-        return;
-      }
+    if (stockEffect === "REMOVE" && trackStock && !stockItemId) {
+      Toast.show({ type: "error", text1: "Selecione um item de estoque" });
+      return;
     }
 
     try {
@@ -107,11 +93,13 @@ export default function ProductModifiersPage() {
         priceChange: priceChange ? Number(priceChange) : 0,
         restaurantId: selectedRestaurant.id,
         allowFreeText,
-        trackStock,
-
-        stockItemId: trackStock ? stockItemId : null,
-        stockEffect: trackStock ? stockEffect : "NONE",
-        stockMultiplier: trackStock ? Number(stockMultiplier || 1) : null,
+        trackStock: stockEffect === "ADD" ? true : trackStock,
+        stockItemId,
+        stockEffect,
+        stockMultiplier:
+          stockEffect === "REMOVE" && trackStock
+            ? Number(stockMultiplier || 1)
+            : 0,
       });
 
       await addModifierToProduct(
@@ -126,6 +114,7 @@ export default function ProductModifiersPage() {
       setStockItemId(null);
       setTrackStock(false);
       setAllowFreeText(false);
+      setStockMultiplier("1");
 
       Toast.show({ type: "success", text1: "Modifier criado" });
       loadModifiers();
@@ -135,7 +124,6 @@ export default function ProductModifiersPage() {
       setCreating(false);
     }
   }
-
   useEffect(() => {
     loadStockItems();
     loadModifiers();
@@ -175,12 +163,6 @@ export default function ProductModifiersPage() {
               onChangeText={setPriceChange}
             />
 
-            <StockPicker
-              stockItems={stockItems}
-              stockItemId={stockItemId}
-              setStockItemId={setStockItemId}
-            />
-
             <Row>
               <Label>Alterar estoque</Label>
               <CustomSwitch value={trackStock} onValueChange={setTrackStock} />
@@ -188,30 +170,45 @@ export default function ProductModifiersPage() {
 
             {trackStock && (
               <>
-                <Row>
-                  <Label>Efeito no estoque</Label>
+                <StockPicker
+                  stockItems={stockItems}
+                  stockItemId={stockItemId}
+                  setStockItemId={setStockItemId}
+                />
+
+                <Row style={{ marginTop: 12 }}>
+                  <Label>Efeito do modificador</Label>
                   <View style={{ flexDirection: "row", gap: 12 }}>
                     <Button
-                      label="➖ Remove"
+                      label="➖ Consumir Estoque"
                       variant={
                         stockEffect === "REMOVE" ? "primary" : "secondary"
                       }
                       onPress={() => setStockEffect("REMOVE")}
                     />
                     <Button
-                      label="➕ Adiciona"
+                      label="➕ Não Consumir Estoque"
                       variant={stockEffect === "ADD" ? "primary" : "secondary"}
                       onPress={() => setStockEffect("ADD")}
                     />
                   </View>
                 </Row>
 
-                <Input
-                  placeholder="Multiplicador (ex: 1)"
-                  keyboardType="numeric"
-                  value={stockMultiplier}
-                  onChangeText={setStockMultiplier}
-                />
+                {stockEffect === "REMOVE" && (
+                  <Input
+                    placeholder="Multiplicador (ex: 1)"
+                    keyboardType="numeric"
+                    value={stockMultiplier}
+                    onChangeText={setStockMultiplier}
+                  />
+                )}
+
+                {stockEffect === "ADD" && (
+                  <Info>
+                    Ativando essa opção, o respectivo produto não selecionado
+                    não será consumido da composição do produto.
+                  </Info>
+                )}
               </>
             )}
 

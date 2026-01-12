@@ -37,7 +37,7 @@ export function StockPicker({ stockItems, stockItemId, setStockItemId }: StockPi
         <SelectText>
           {stockItemId
             ? stockItems.find(i => i.id === stockItemId)?.name
-            : "Selecionar item de estoque (opcional)"}
+            : "Selecionar item de estoque"}
         </SelectText>
       </Select>
 

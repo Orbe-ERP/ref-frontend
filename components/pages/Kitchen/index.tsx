@@ -20,9 +20,7 @@ import KitchenOrderCard, {
 
 import * as S from "./styles";
 
-/* ===========================
-   NORMALIZAÇÃO SEGURA
-=========================== */
+
 function normalizeKitchenItems(orders: Order[] = []) {
   const result: any[] = [];
 
@@ -55,7 +53,6 @@ function normalizeKitchenItems(orders: Order[] = []) {
 
       const productQuantity = orderProduct?.quantity ?? 0;
 
-      /* ---------- PRODUTO SIMPLES ---------- */
       if (compositions.length === 0) {
         const kitchen = product?.kitchens?.[0];
         if (!kitchen || kitchen.showOnKitchen === false) return;
@@ -81,7 +78,6 @@ function normalizeKitchenItems(orders: Order[] = []) {
         return;
       }
 
-      /* ---------- PRODUTO COM COMPOSIÇÃO ---------- */
       compositions.forEach((comp: any) => {
         if (!comp?.kitchen || comp.kitchen.showOnKitchen === false) return;
 
@@ -123,9 +119,7 @@ function normalizeKitchenItems(orders: Order[] = []) {
   return result;
 }
 
-/* ===========================
-   COMPONENTE
-=========================== */
+
 export default function KitchenPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [kitchens, setKitchens] = useState<Kitchen[]>([]);
@@ -138,7 +132,7 @@ export default function KitchenPage() {
 useEffect(() => {
   if (!selectedRestaurant) return;
 
-  const socket = io("http://localhost:3001");
+const socket = io(process.env.EXPO_PUBLIC_API_URL as string);
 
   const fetchData = async () => {
     try {

@@ -1,8 +1,9 @@
 import { getUserAsyncStorage } from "@/context/AuthProvider/utils";
 import axios from "axios";
 
+
 export const api = axios.create({
-  baseURL: "http://localhost:3001",
+  baseURL: process.env.EXPO_PUBLIC_API_URL,
 });
 
 api.interceptors.request.use(
