@@ -7,15 +7,13 @@ import React, { useEffect, useState } from "react";
 import { 
   ActivityIndicator, 
   FlatList, 
-  RefreshControl, 
-  Modal, 
-  Button 
+  RefreshControl,
 } from "react-native";
 import Toast from "react-native-toast-message";
 import * as S from "./styles";
-import { Calendar } from "react-native-calendars";
 import dayjs from "dayjs";
 import { Loader } from "@/components/atoms/Loader";
+import { CalendarModal } from "@/components/molecules/Calendar";
 
 export default function ClosedOrdersPage() {
   const { tableId } = useLocalSearchParams();
@@ -252,45 +250,14 @@ export default function ClosedOrdersPage() {
           </S.SearchButtonText>
         </S.SearchButton>
       </S.FilterContainer>
-      <Modal visible={!!showCalendarFor} transparent animationType="fade">
-        <S.ModalOverlay>
-          <S.CalendarWrapper>
-            <Calendar
-              onDayPress={handleDateSelect}
-              markingType="period"
-              markedDates={{
-                [startDate]: {
-                  startingDay: true,
-                  selected: true,
-                  color: theme.colors.primary,
-                  textColor: "white",
-                },
-                [endDate]: {
-                  endingDay: true,
-                  selected: true,
-                  color: theme.colors.primary,
-                  textColor: "white",
-                },
-              }}
-              theme={{
-                backgroundColor: theme.colors.background,
-                calendarBackground: theme.colors.background,
-                textSectionTitleColor: theme.colors.text.primary,
-                dayTextColor: theme.colors.text.primary,
-                todayTextColor: theme.colors.primary,
-                selectedDayTextColor: "white",
-                monthTextColor: theme.colors.text.primary,
-                arrowColor: theme.colors.text.primary,
-              }}
-            />
-            <Button 
-              title="Fechar" 
-              onPress={() => setShowCalendarFor(null)} 
-              color={theme.colors.primary}
-            />
-          </S.CalendarWrapper>
-        </S.ModalOverlay>
-      </Modal>
+
+      <CalendarModal 
+        visible={!!showCalendarFor}
+        startDate={startDate}
+        endDate={endDate}
+        onSelectDate={handleDateSelect}
+        onClose={() => setShowCalendarFor(null)}
+      />
 
       <FlatList
         data={orders}
