@@ -24,6 +24,13 @@ export default function StockManagement() {
       route: '/stock/purchases',
     },
     {
+      id: 'suppliers',
+      title: 'Fornecedores',
+      description: 'Visualizar e gerenciar fornecedores',
+      icon: 'business-outline',
+      route: '/stock/suppliers',
+    },
+    {
       id: 'product-compositions',
       title: 'Composição de Produtos',
       description: 'Vincular insumos aos produtos',

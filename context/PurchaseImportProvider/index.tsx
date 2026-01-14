@@ -43,7 +43,6 @@ export function PurchaseImportProvider({
           : item
       )
     );
-    console.log(items);
   }
 
   function updateItem(index: number, updated: Partial<PreviewItem>) {

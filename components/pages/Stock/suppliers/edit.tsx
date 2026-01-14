@@ -1,23 +1,47 @@
-import React, { useState } from "react";
-import { Stack, router } from "expo-router";
+import React, { useEffect, useState } from "react";
+import { Stack, router, useLocalSearchParams } from "expo-router";
 import Toast from "react-native-toast-message";
 
 import * as S from "./styles";
 import Button from "@/components/atoms/Button";
 import Input from "@/components/atoms/Input";
-import { createSupplier } from "@/services/supplier";
+import { getSupplierById, updateSupplier } from "@/services/supplier";
 import { useAppTheme } from "@/context/ThemeProvider/theme";
-import useRestaurant from "@/hooks/useRestaurant";
 
-export default function NewSupplierScreen() {
+export default function EditSupplierScreen() {
   const { theme } = useAppTheme();
-  const {selectedRestaurant} = useRestaurant()
+  const { id } = useLocalSearchParams<{ id: string }>();
 
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
   const [name, setName] = useState("");
   const [taxId, setTaxId] = useState("");
   const [contact, setContact] = useState("");
+
+  useEffect(() => {
+    loadSupplier();
+  }, []);
+
+  async function loadSupplier() {
+    try {
+      setLoading(true);
+      const supplier = await getSupplierById(id);
+
+      setName(supplier.name);
+      setTaxId(supplier.taxId ?? "");
+      setContact(supplier.contact ?? "");
+    } catch {
+      Toast.show({
+        type: "error",
+        text1: "Erro",
+        text2: "Não foi possível carregar o fornecedor",
+      });
+      router.back();
+    } finally {
+      setLoading(false);
+    }
+  }
 
   async function handleSave() {
     if (!name.trim()) {
@@ -32,37 +56,37 @@ export default function NewSupplierScreen() {
     try {
       setSaving(true);
 
-      await createSupplier({
+      await updateSupplier(id, {
         name,
         taxId: taxId || undefined,
         contact: contact || undefined,
-        restaurantId: selectedRestaurant?.id
       });
 
       Toast.show({
         type: "success",
-        text1: "Fornecedor cadastrado",
+        text1: "Fornecedor atualizado",
       });
 
       router.back();
-    } catch(error) {
-
+    } catch {
       Toast.show({
         type: "error",
         text1: "Erro",
-        text2: "Não foi possível cadastrar o fornecedor",
+        text2: "Não foi possível atualizar o fornecedor",
       });
     } finally {
       setSaving(false);
     }
   }
 
+  if (loading) return null;
+
   return (
     <>
       <Stack.Screen
         options={{
-          title: "Novo fornecedor",
-          headerStyle: { backgroundColor: theme.colors.background }, 
+          title: "Editar fornecedor",
+          headerStyle: { backgroundColor: theme.colors.background },
           headerTintColor: theme.colors.text.primary,
         }}
       />
@@ -70,34 +94,22 @@ export default function NewSupplierScreen() {
       <S.ScreenContainer>
         <S.FormGroup>
           <S.Label>Nome *</S.Label>
-          <Input
-            placeholder="Ex: Distribuidora ABC"
-            value={name}
-            onChangeText={setName}
-          />
+          <Input value={name} onChangeText={setName} />
         </S.FormGroup>
 
         <S.FormGroup>
-          <S.Label>Documento (opcional)</S.Label>
-          <Input
-            placeholder="CNPJ / CPF"
-            value={taxId}
-            onChangeText={setTaxId}
-          />
+          <S.Label>Documento</S.Label>
+          <Input value={taxId} onChangeText={setTaxId} />
         </S.FormGroup>
 
         <S.FormGroup>
-          <S.Label>Contato (opcional)</S.Label>
-          <Input
-            placeholder="Telefone ou e-mail"
-            value={contact}
-            onChangeText={setContact}
-          />
+          <S.Label>Contato</S.Label>
+          <Input value={contact} onChangeText={setContact} />
         </S.FormGroup>
 
         <S.Actions>
           <Button
-            label="Salvar fornecedor"
+            label="Salvar alterações"
             onPress={handleSave}
             disabled={saving}
           />

@@ -8,22 +8,35 @@ export interface Supplier {
 }
 
 export async function getSuppliers(): Promise<Supplier[]> {
-  const response = await api.get("/supplier");
-  return response.data;
+  try {
+    const response = await api.get("/suppliers");
+    return response.data;
+  } catch (error) {
+    throw new Error(`Error on supplier: ${error}`);
+  }
 }
 
 export async function getSupplierById(id: string): Promise<Supplier> {
-  const response = await api.get(`/supplier/${id}`);
-  return response.data;
+  try {
+    const response = await api.get(`/suppliers/${id}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(`Error on supplier: ${error}`);
+  }
 }
 
 export async function createSupplier(data: {
   name: string;
+  restaurantId: string;
   taxId?: string;
   contact?: string;
 }) {
-  const response = await api.post("/supplier", data);
-  return response.data;
+  try {
+    const response = await api.post("/suppliers", data);
+    return response.data;
+  } catch (error) {
+    throw new Error(`Error on supplier: ${error}`);
+  }
 }
 
 export async function updateSupplier(
@@ -34,11 +47,19 @@ export async function updateSupplier(
     contact?: string;
   }
 ) {
-  const response = await api.patch(`/supplier/${id}`, data);
-  return response.data;
+  try {
+    const response = await api.patch(`/suppliers/${id}`, data);
+    return response.data;
+  } catch (error) {
+    throw new Error(`Error on supplier: ${error}`);
+  }
 }
 
 export async function deleteSupplier(id: string) {
-  const response = await api.delete(`/supplier/${id}`);
-  return response.data;
+  try {
+    const response = await api.delete(`/suppliers/${id}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(`Error on supplier: ${error}`);
+  }
 }

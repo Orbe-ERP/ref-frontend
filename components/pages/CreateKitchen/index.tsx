@@ -79,7 +79,7 @@ export default function KitchenPage() {
         color: selectedColor,
         restaurantId: selectedRestaurant.id,
       });
-      setKitchens((prev) => [...prev, newKitchen]);
+      setKitchens((prev: any) => [...prev, newKitchen]);
       setNewKitchenName("");
       setShowOnKitchen(true);
       setSelectedColor(AVAILABLE_COLORS[0]);
@@ -98,8 +98,8 @@ export default function KitchenPage() {
         showOnKitchen,
         color: selectedColor,
       });
-      setKitchens((prev) =>
-        prev.map((k) => (k.id === updated.id ? updated : k))
+      setKitchens((prev: any) =>
+        prev.map((k: any) => (k.id === updated.id ? updated : k))
       );
       setNewKitchenName("");
       setSelectedKitchen(null);
@@ -156,7 +156,7 @@ export default function KitchenPage() {
                 <ExpertCard
                   icon="cube-outline"
                   cardType={kitchen}
-                  onPress={() => console.log("Selecionou:", kitchen.name)}
+                  onPress={() => console.warn(kitchen.name)}
                   onEdit={() => {
                     setSelectedKitchen(kitchen);
                     setNewKitchenName(kitchen.name);
