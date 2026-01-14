@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, Modal, Button, } from 'react-native';
-import { Calendar } from 'react-native-calendars';
+import { ScrollView, } from 'react-native';
 import { getReportData, PaymentMethod, ReportData } from '@/services/report';
 import useRestaurant from '@/hooks/useRestaurant';
 import dayjs from 'dayjs';
@@ -8,6 +7,7 @@ import { Stack } from 'expo-router';
 import { useAppTheme } from '@/context/ThemeProvider/theme';
 import * as S from './styles';
 import { useResponsive } from '@/hooks/useResponsive';
+import { CalendarModal } from '@/components/molecules/Calendar';
 
 export default function ReportScreen() {
   const { selectedRestaurant } = useRestaurant();
@@ -125,26 +125,13 @@ export default function ReportScreen() {
                 </S.FilterContainerMobile>
               )}
 
-              <Modal visible={!!showCalendarFor} transparent animationType="fade">
-                <S.ModalContainer>
-                  <S.CalendarWrapper>
-                    <Calendar
-                      onDayPress={handleDateSelect}
-                      markedDates={{
-                        [startDate]: { selected: true },
-                        [endDate]: { selected: true },
-                      }}
-                      theme={{
-                        backgroundColor: theme.colors.background,
-                        calendarBackground: theme.colors.background,
-                        dayTextColor: theme.colors.text.primary,
-                        monthTextColor: theme.colors.text.primary,
-                        arrowColor: theme.colors.primary,
-                      }}
-                    />
-                  </S.CalendarWrapper>
-                </S.ModalContainer>
-              </Modal>
+              <CalendarModal 
+                visible={!!showCalendarFor}
+                startDate={startDate}
+                endDate={endDate}
+                onSelectDate={handleDateSelect}
+                onClose={() => setShowCalendarFor(null)}
+              />
 
                 {loading ? (
                 <S.LoadingText>Carregando dados...</S.LoadingText>

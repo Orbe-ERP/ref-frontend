@@ -3,12 +3,10 @@ import {
   View,
   FlatList,
   RefreshControl,
-  Modal,
   TouchableOpacity,
 } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { Calendar } from "react-native-calendars";
 import dayjs from "dayjs";
 
 import {
@@ -23,6 +21,7 @@ import Toast from "react-native-toast-message";
 import { Pagination } from "@/components/organisms/Pagination";
 import { Loader } from "@/components/atoms/Loader";
 import { useResponsive } from "@/hooks/useResponsive";
+import { CalendarModal } from "@/components/molecules/Calendar";
 
 export default function CompletedOrdersPage() {
   const router = useRouter();
@@ -250,26 +249,13 @@ export default function CompletedOrdersPage() {
           </S.FilterContainerMobile>
         )}
 
-        <Modal visible={!!showCalendarFor} transparent animationType="fade">
-          <S.ModalContainer>
-            <S.CalendarWrapper>
-              <Calendar
-                onDayPress={handleDateSelect}
-                markedDates={{
-                  [startDate]: { selected: true },
-                  [endDate]: { selected: true },
-                }}
-                theme={{
-                  backgroundColor: theme.colors.background,
-                  calendarBackground: theme.colors.background,
-                  dayTextColor: theme.colors.text.primary,
-                  monthTextColor: theme.colors.text.primary,
-                  arrowColor: theme.colors.primary,
-                }}
-              />
-            </S.CalendarWrapper>
-          </S.ModalContainer>
-        </Modal>
+        <CalendarModal 
+          visible={!!showCalendarFor}
+          startDate={startDate}
+          endDate={endDate}
+          onSelectDate={handleDateSelect}
+          onClose={() => setShowCalendarFor(null)}
+        />
 
         <FlatList
           data={orders}
