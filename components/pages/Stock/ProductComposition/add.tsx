@@ -231,7 +231,7 @@ export default function AddComposition() {
               }}
             >
               <TextInput
-                style={{ flex: 1, height: 44 }}
+                style={{ flex: 1, height: 44, color: theme.colors.text.primary }}
                 keyboardType="numeric"
                 value={quantity}
                 onChangeText={setQuantity}

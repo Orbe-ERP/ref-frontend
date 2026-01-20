@@ -67,7 +67,7 @@ export default function HelpScreen() {
             <S.Email>{SUPPORT_EMAIL}</S.Email>
 
             <Button
-              label="Enviar e-mail"
+              label="Copiar e-mail"
               onPress={handleSendEmail}
             />
           </S.Card>

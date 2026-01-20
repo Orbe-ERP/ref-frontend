@@ -22,6 +22,7 @@ import {
   getCompositionsByProduct,
   ProductComposition,
 } from '@/services/product-composition';
+import { ToastNotice } from '@/components/molecules/ToastNotice';
 
 export default function ProductCompositions() {
   const router = useRouter();
@@ -308,11 +309,19 @@ function renderCompositionItem({ item }: { item: ProductComposition }) {
           headerTintColor: theme.colors.text.primary,
           headerBackVisible: true,
           headerBackTitle: 'Voltar',
-          
-  }}
-/>
+        }}
+      />
 
       <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
+        <ToastNotice
+          title="Multi-cozinha permitida"
+          message="Você pode adicionar ingredientes de um mesmo prato em mais de uma cozinha. Ex: carnes na cozinha principal e acompanhamentos na cozinha fria."
+          iconColor={theme.colors.feedback.info}
+          titleColor={theme.colors.feedback.info}
+          messageColor={theme.colors.text.secondary}
+          backgroundColor={theme.colors.feedback.info + "10"}
+        />
+        
         {/* 🔹 TELA 1: Lista de Categorias */}
         {!selectedCategory && !selectedProduct && (
           <>
