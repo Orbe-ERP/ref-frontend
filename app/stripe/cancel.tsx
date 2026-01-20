@@ -11,32 +11,57 @@ export default function StripeCancel() {
 
   return (
     <S.Container>
-      <S.Content style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <S.Content
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
         <View style={{ marginBottom: 24 }}>
-          <Ionicons name="close-circle-outline" size={100} color={theme.colors.feedback.error} />
+          <Ionicons
+            name="close-circle-outline"
+            size={100}
+            color={theme.colors.feedback.error}
+          />
         </View>
 
         <S.TitleContainer>
           <S.Title>Pagamento não concluído</S.Title>
           <S.Subtitle>
-            A operação foi cancelada e nenhuma cobrança foi realizada. 
+            A operação foi cancelada e nenhuma cobrança foi realizada.
             Se houve algum problema com seu cartão, você pode tentar novamente.
           </S.Subtitle>
         </S.TitleContainer>
 
-        <S.ContinueButton 
-          onPress={() => router.back()} // Volta para a tela de planos
-          style={{ width: '100%', backgroundColor: theme.colors.text.primary }}
+        <S.ContinueButton
+          onPress={() => router.replace('/plans')}
+          style={{
+            width: '100%',
+            backgroundColor: theme.colors.text.primary,
+          }}
         >
-          <S.ContinueButtonText>Tentar novamente</S.ContinueButtonText>
-          <Ionicons name="refresh-outline" size={18} color={theme.colors.surface} />
+          <S.ContinueButtonText>
+            Tentar novamente
+          </S.ContinueButtonText>
+          <Ionicons
+            name="refresh-outline"
+            size={18}
+            color={theme.colors.surface}
+          />
         </S.ContinueButton>
 
-        <S.BackButton 
-          onPress={() => router.replace('/')} 
-          style={{ marginTop: 20, width: 'auto', paddingHorizontal: 20 }}
+        <S.BackButton
+          onPress={() => router.replace('/')}
+          style={{
+            marginTop: 20,
+            width: 'auto',
+            paddingHorizontal: 20,
+          }}
         >
-           <S.FeatureText style={{ textAlign: 'center' }}>Voltar ao início</S.FeatureText>
+          <S.FeatureText style={{ textAlign: 'center' }}>
+            Voltar ao início
+          </S.FeatureText>
         </S.BackButton>
       </S.Content>
     </S.Container>

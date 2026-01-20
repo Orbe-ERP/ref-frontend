@@ -45,7 +45,6 @@ const PLAN_FEATURES: Record<Plan["name"], string[]> = {
   ],
 };
 
-
 export default function PlansSelection() {
   const { theme } = useAppTheme();
   const router = useRouter();
@@ -136,7 +135,7 @@ export default function PlansSelection() {
     );
   }
 
-  const selectedPlanData = plans.find((p) => p.id === selectedPlan);
+  const selectedPlanData = plans.find((p: any) => p.id === selectedPlan);
 
   return (
     <S.Container>
@@ -153,13 +152,12 @@ export default function PlansSelection() {
       </S.Header>
 
       <ScrollView showsVerticalScrollIndicator={false}>
+        {auth.user?.role === "ADMIN" && status?.isExpiringSoon && (
+          <S.SubscriptionTimer>
+            Seu plano expira em {status.expiresInDays} dias
+          </S.SubscriptionTimer>
+        )}
 
-      {auth.user?.role === "ADMIN" && status?.isExpiringSoon && (
-        <S.SubscriptionTimer>
-          Seu plano expira em {status.expiresInDays} dias
-        </S.SubscriptionTimer>
-      )}
-        
         <S.Content>
           <S.TitleContainer>
             <S.Title>Encontre o plano perfeito</S.Title>
@@ -167,7 +165,8 @@ export default function PlansSelection() {
           </S.TitleContainer>
 
           <S.PlansGrid>
-            {plans.map((plan) => {
+            {plans.map((plan: any) => {
+              const planName = plan.name.toLowerCase();
               const isSelected = selectedPlan === plan.id;
               const isCurrentPlan =
                 canSeeCurrentPlan && currentSubscription?.priceId === plan.id;
@@ -176,7 +175,7 @@ export default function PlansSelection() {
                 <S.PlanCard
                   key={plan.id}
                   selected={isSelected}
-                  recommended={plan.name === "pro"}
+                  recommended={planName == "pro"}
                   disabled={canSeeCurrentPlan && isCurrentPlan}
                   onPress={() => {
                     if (!isCurrentPlan) {
@@ -195,7 +194,7 @@ export default function PlansSelection() {
                     </S.CurrentPlanBadge>
                   )}
 
-                  {plan.name === "pro" && (
+                  {planName === "pro" && (
                     <S.RecommendedBadge>
                       <Ionicons
                         name="sparkles-outline"
@@ -208,11 +207,11 @@ export default function PlansSelection() {
 
                   <S.PlanHeader>
                     <S.PlanName selected={isSelected}>
-                      {plan.name === "starter"
+                      {planName === "starter"
                         ? "Starter"
-                        : plan.name === "pro"
-                        ? "Pro"
-                        : "Empresarial"}
+                        : planName === "pro"
+                          ? "Pro"
+                          : "Empresarial"}
                     </S.PlanName>
 
                     <S.PlanPrice selected={isSelected}>
@@ -222,7 +221,7 @@ export default function PlansSelection() {
                   </S.PlanHeader>
 
                   <S.PlanFeatures>
-                    {PLAN_FEATURES[plan.name].map((feature, index) => (
+                    {PLAN_FEATURES[planName].map((feature: any, index: any) => (
                       <S.FeatureItem key={index}>
                         <Ionicons
                           name="checkmark-circle-outline"
@@ -263,7 +262,7 @@ export default function PlansSelection() {
                     <S.SubscriptionText>
                       Próxima renovação em{" "}
                       {dayjs(currentSubscription.currentPeriodEnd).format(
-                        "DD/MM/YYYY"
+                        "DD/MM/YYYY",
                       )}
                     </S.SubscriptionText>
                   </S.SubscriptionInfo>
