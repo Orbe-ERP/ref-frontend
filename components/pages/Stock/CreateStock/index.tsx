@@ -20,6 +20,7 @@ import {
   Unit 
 } from '@/services/stock';
 import { useAppTheme } from '@/context/ThemeProvider/theme';
+import { useResponsive } from '@/hooks/useResponsive';
 
 const UNIT_DESCRIPTIONS = {
   [Unit.UNIT]: 'Unidades individuais',
@@ -46,6 +47,7 @@ export default function CreateStock() {
     minimum: '',
     lastCost: '',
   });
+  const { isTablet, isDesktop } = useResponsive();
 
   useEffect(() => {
     if (id) {
@@ -170,10 +172,28 @@ export default function CreateStock() {
           contentContainerStyle={{ padding: 16, paddingBottom: 32 }}
           showsVerticalScrollIndicator={false}
         >
+          <S.ToastNotice isTablet={isTablet} isDesktop={isDesktop}>
+            <S.ToastIcon>
+              <Ionicons
+                name="information-circle-outline"
+                size={20}
+                color={theme.colors.feedback.warning}
+              />
+            </S.ToastIcon>
+          
+            <S.ToastContent>
+              <S.ToastTitle>Atenção à unidade de medida!</S.ToastTitle>
+              <S.ToastText>
+                Certifique-se de usar a mesma unidade de medida no cadastro e na composição.
+                Exemplo: cadastre em &quot;gramas&quot; (1000g) e use em &quot;gramas&quot; (150g).
+              </S.ToastText>
+            </S.ToastContent>
+          </S.ToastNotice>
+
           <View style={{ marginBottom: 16 }}>
             <Text style={{ 
               fontSize: 14, 
-              color: '#666', 
+              color: theme.colors.text.primary, 
               marginBottom: 8,
               fontWeight: '500' 
             }}>
@@ -190,7 +210,7 @@ export default function CreateStock() {
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
               <Text style={{ 
                 fontSize: 14, 
-                color: '#666', 
+                color: theme.colors.text.primary, 
                 fontWeight: '500' 
               }}>
                 Unidade de Medida
@@ -264,7 +284,7 @@ export default function CreateStock() {
           <View style={{ marginBottom: 16 }}>
             <Text style={{ 
               fontSize: 14, 
-              color: '#666', 
+              color: theme.colors.text.primary, 
               marginBottom: 8,
               fontWeight: '500' 
             }}>
@@ -281,7 +301,7 @@ export default function CreateStock() {
           <View style={{ marginBottom: 16 }}>
             <Text style={{ 
               fontSize: 14, 
-              color: '#666', 
+              color: theme.colors.text.primary, 
               marginBottom: 8,
               fontWeight: '500' 
             }}>

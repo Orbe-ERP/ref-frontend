@@ -1,5 +1,12 @@
 import styled from "styled-components/native";
 
+interface ResponsiveProps {
+  isMobile?: boolean;
+  isTablet?: boolean;
+  isDesktop?: boolean;
+  isWeb?: boolean;
+}
+
 export const ScreenContainer = styled.View`
   flex: 1;
   background-color: ${({ theme }) => theme.colors.background || '#fff'};
@@ -49,4 +56,39 @@ export const UnitInfoText = styled.Text`
   font-size: 12px;
   line-height: 16px;
   color: ${({ theme }) => theme.colors.text.secondary || '#666'};
+`;
+
+export const ToastNotice = styled.View<ResponsiveProps>`
+  flex-direction: row;
+  align-items: flex-start;
+  padding: 14px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  background-color: ${({ theme }) => theme.colors.surface};
+  
+  ${({ isTablet, isDesktop }) => 
+    (isTablet || isDesktop) ? `
+    width: 100%;
+  ` : ''}
+`;
+
+export const ToastIcon = styled.View`
+  margin-right: 12px;
+  margin-top: 2px;
+`;
+
+export const ToastContent = styled.View`
+  flex: 1;
+`;
+
+export const ToastTitle = styled.Text`
+  font-size: 14px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.feedback.warning};
+`;
+
+export const ToastText = styled.Text`
+  font-size: 13px;
+  line-height: 18px;
+  color: ${({ theme }) => theme.colors.feedback.warning};
 `;

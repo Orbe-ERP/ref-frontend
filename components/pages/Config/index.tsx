@@ -101,14 +101,14 @@ export default function ConfigPage() {
                   />
                   <S.ItemText>Configurações de Impressora</S.ItemText>
                 </S.ItemRow>
-                <S.ItemRow onPress={() => router.push("/edit-account")}>
+                {/* <S.ItemRow onPress={() => router.push("/edit-account")}>
                   <Ionicons
                     name="person-outline"
                     size={22}
                     color={theme.theme.colors.primary}
                   />
                   <S.ItemText>Gerenciar Conta</S.ItemText>
-                </S.ItemRow>{" "}
+                </S.ItemRow>{" "} */}
               </>
             )}
 
