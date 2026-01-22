@@ -61,7 +61,7 @@ export default function NewSupplierScreen() {
     <>
       <Stack.Screen
         options={{
-          title: "Novo fornecedor",
+          title: "Novo Fornecedor",
           headerStyle: { backgroundColor: theme.colors.background }, 
           headerTintColor: theme.colors.text.primary,
         }}

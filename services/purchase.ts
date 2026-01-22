@@ -8,16 +8,30 @@ export interface PurchaseItem {
 
 export interface Purchase {
   id: string;
-  restaurantId: string;
-  supplierId?: string;
-  createdAt: string;
-  items: PurchaseItem[];
+  issuedAt: string;
+  total: number;
+  invoiceKey?: string;
+  items: {
+    id: string;
+    purchaseId: string;
+    quantity: number;
+    stockItemId: string;
+    totalCost: number;
+    unitCost: number;
+    createdAt: string;
+  }[];
+  supplier?: {
+    id: string;
+    name: string;
+  };
 }
 
 export async function createManualPurchase(data: {
   restaurantId: string;
   supplierId?: string;
-  date?: string;
+  issuedAt?: string;
+  invoiceKey?: string;
+  items: any;
 }) {
   const response = await api.post("/purchase/manual", data);
   return response.data;
@@ -25,7 +39,7 @@ export async function createManualPurchase(data: {
 
 export async function addItemsToPurchase(
   purchaseId: string,
-  items: PurchaseItem[]
+  items: PurchaseItem[],
 ) {
   if (!items.length) {
     throw new Error("A compra deve conter ao menos um item");
@@ -39,7 +53,7 @@ export async function addItemsToPurchase(
 }
 
 export async function getPurchasesByRestaurant(
-  restaurantId: string
+  restaurantId: string,
 ): Promise<Purchase[]> {
   const response = await api.get(`/purchase/restaurant/${restaurantId}`);
   return response.data;
@@ -62,8 +76,6 @@ export async function importPurchaseXml(data: {
 }
 
 export async function confirmPurchaseXml(data: any) {
-  console.log(data)
-
   const response = await api.post("/purchase/import/xml/confirm", data);
   return response.data;
 }
@@ -71,7 +83,7 @@ export async function confirmPurchaseXml(data: any) {
 export function calculatePurchaseTotal(items: PurchaseItem[]): number {
   return items.reduce(
     (total, item) => total + item.quantity * item.unitCost,
-    0
+    0,
   );
 }
 
@@ -122,7 +134,7 @@ export async function matchStockItem(restaurantId: string, name: string) {
 
 export async function getStockItemSuggestions(
   restaurantId: string,
-  name: string
+  name: string,
 ) {
   const { data } = await api.get("/stock/suggestions", {
     params: {

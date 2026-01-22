@@ -22,6 +22,17 @@ export default function PurchaseIndexScreen() {
 
       <S.ScreenContainer>
         <S.Card>
+          <Title>Listar Compras</Title>
+          <S.InfoText>
+            Veja suas compras.
+          </S.InfoText>
+
+          <Button
+            label="Listar Compras"
+            onPress={() => router.push("/stock/purchases/list-purchases")}
+          />
+        </S.Card>
+        <S.Card>
           <Title>Compra manual</Title>
           <S.InfoText>
             Registre uma compra informando fornecedor e itens manualmente.

@@ -27,11 +27,15 @@ export async function getSupplierById(id: string): Promise<Supplier> {
 
 export async function createSupplier(data: {
   name: string;
-  restaurantId: string;
+  restaurantId: string | undefined;
   taxId?: string;
   contact?: string;
 }) {
   try {
+    if (!data.restaurantId) {
+      throw new Error(`Error on supplier: `);
+    }
+
     const response = await api.post("/suppliers", data);
     return response.data;
   } catch (error) {
@@ -45,7 +49,7 @@ export async function updateSupplier(
     name?: string;
     taxId?: string;
     contact?: string;
-  }
+  },
 ) {
   try {
     const response = await api.patch(`/suppliers/${id}`, data);

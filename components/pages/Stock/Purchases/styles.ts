@@ -1,13 +1,5 @@
-
-
 import styled from "styled-components/native";
-
-export const ScreenContainer = styled.View`
-  flex: 1;
-  padding: 16px;
-  background-color: ${({ theme }) => theme.colors.background};
-`;
-
+import { Platform } from "react-native";
 
 
 export const ContentCard = styled.View`
@@ -33,16 +25,6 @@ export const PreviewValue = styled.Text`
   color: ${({ theme }) => theme.colors.text.primary};
   flex: 1;
   flex-wrap: wrap;
-`;
-
-
-export const Card = styled.View`
-  background-color: ${({ theme }) => theme.colors.surface};
-  padding: 16px;
-  border-radius: 14px;
-  margin-bottom: 16px;
-  border-width: 1;
-  border-color: ${({ theme }) => theme.colors.border};
 `;
 
 export const Label = styled.Text`
@@ -91,18 +73,6 @@ export const Row = styled.View`
   margin-top: 8px;
 `;
 
-
-
-export const ItemTotal = styled.View`
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 14px;
-  padding-top: 12px;
-  border-top-width: 1;
-  border-top-color: ${({ theme }) => theme.colors.border};
-`;
-
 export const ItemTotalValue = styled.Text`
   font-size: 16px;
   font-weight: 700;
@@ -137,19 +107,10 @@ export const ButtonRow = styled.View`
   margin-top: 12px;
 `;
 
-
-
-export const Header = styled.View`
-  padding: 10px;
-  background-color: ${({ theme }) => theme.colors.background};
-`;
-
 export const ModalContainer = styled.ScrollView`
   flex: 1;
   padding: 16px;
 `;
-
-
 
 export const ItemName = styled.Text`
   font-size: 16px;
@@ -162,42 +123,11 @@ export const ItemInfo = styled.Text`
   color: ${({ theme }) => theme.colors.text.secondary};
 `;
 
-export const Total = styled.Text`
-  font-size: 18px;
-  font-weight: bold;
-  margin-top: 8px;
-`;
-
-export const EmptyContainer = styled.View`
-  flex: 1;
-  justify-content: center;
-  align-items: center;
-`;
-
-export const EmptyText = styled.Text`
-  margin-top: 12px;
-  color: ${({ theme }) => theme.colors.text.secondary};
-`;
-
 export const ItemBox = styled.View`
   margin-top: 16px;
   padding: 12px;
   border-radius: 10px;
   background-color: ${({ theme }) => theme.colors.surface};
-`;
-
-
-export const LoadingContainer = styled.View`
-  flex: 1;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-`;
-
-export const LoadingText = styled.Text`
-  margin-top: 12px;
-  font-size: 16px;
-  color: ${({ theme }) => theme.colors.text.secondary};
 `;
 
 export const ModalHeader = styled.View`
@@ -224,16 +154,23 @@ export const SectionTitle = styled.Text`
   color: ${({ theme }) => theme.colors.text.primary};
 `;
 
-
-
 export const PickerContainer = styled.View`
-  border-width: 1;
+  border-width: 1px;
   border-color: ${({ theme }) => theme.colors.border};
-  border-radius: 4px;
-  background-color: ${({ theme }) => theme.colors.background};
+  border-radius: 10px;
+
+  background-color: ${({ theme }) => theme.colors.surface};
+
+  padding-horizontal: 12px;
+
+  height: 52px;
+  justify-content: center;
+
+  ${Platform.OS === "android" &&
+  `
+    overflow: hidden;
+  `}
 `;
-
-
 
 export const CardHeader = styled.View`
   flex-direction: row;
@@ -249,8 +186,6 @@ export const DateBadge = styled.Text`
   padding: 4px 8px;
   border-radius: 12px;
 `;
-
-
 
 export const TotalContainer = styled.View`
   flex-direction: row;
@@ -300,12 +235,15 @@ export const ListHeader = styled.View`
   background-color: ${({ theme }) => theme.colors.surface};
   border-radius: 8px;
   margin-bottom: 12px;
+  color: ${({ theme }) => theme.colors.text.primary};
+
   border-width: 1;
   border-color: ${({ theme }) => theme.colors.border};
 `;
 
 export const ListHeaderText = styled.Text`
   font-size: 16px;
+
   font-weight: 600;
   color: ${({ theme }) => theme.colors.text.primary};
   margin-bottom: 4px;
@@ -339,4 +277,164 @@ export const HelpText = styled.Text`
   color: ${({ theme }) => theme.colors.text.secondary};
   margin-top: 4px;
   font-style: italic;
+`;
+
+export const SupplierName = styled.Text`
+  font-size: 16px;
+  font-weight: bold;
+`;
+
+export const CardBody = styled.View``;
+
+export const ScreenContainer = styled.View`
+  flex: 1;
+  padding: 16px;
+  background-color: ${({ theme }) => theme.colors.background};
+`;
+
+/* CARD PRINCIPAL */
+export const Card = styled.View`
+  background-color: ${({ theme }) => theme.colors.surface};
+  padding: 18px;
+  border-radius: 18px;
+  margin-bottom: 16px;
+
+  border-width: 1px;
+  border-color: ${({ theme }) => theme.colors.border};
+
+  shadow-color: #000;
+  shadow-opacity: 0.05;
+  shadow-radius: 10px;
+  shadow-offset: 0px 4px;
+  elevation: 2;
+`;
+
+/* HEADER */
+export const Header = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+export const Supplier = styled.Text`
+  font-size: 16px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.text.primary};
+  flex: 1;
+  margin-right: 8px;
+`;
+
+export const Total = styled.Text`
+  font-size: 18px;
+  font-weight: 800;
+  color: ${({ theme }) => theme.colors.primary};
+`;
+
+/* META */
+export const Meta = styled.View`
+  margin-top: 8px;
+  gap: 2px;
+`;
+
+export const MetaText = styled.Text`
+  font-size: 13px;
+  color: ${({ theme }) => theme.colors.text.secondary};
+`;
+
+/* ITENS */
+export const ItemsContainer = styled.View`
+  margin-top: 14px;
+  padding-top: 12px;
+
+  border-top-width: 1px;
+  border-top-color: ${({ theme }) => theme.colors.border};
+`;
+
+export const ItemsTitle = styled.Text`
+  font-size: 14px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.text.primary};
+  margin-bottom: 8px;
+`;
+
+export const ItemRow = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 8px 0;
+`;
+
+export const ItemLeft = styled.View`
+  flex: 1;
+`;
+
+export const ItemText = styled.Text`
+  font-size: 14px;
+  font-weight: 500;
+  color: ${({ theme }) => theme.colors.text.primary};
+`;
+
+export const ItemSub = styled.Text`
+  font-size: 12px;
+  margin-top: 2px;
+  color: ${({ theme }) => theme.colors.text.secondary};
+`;
+
+export const ItemTotal = styled.Text`
+  font-size: 14px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.text.primary};
+`;
+
+/* FOOTER */
+export const Footer = styled.View`
+  margin-top: 14px;
+  padding-top: 10px;
+
+  flex-direction: row;
+  justify-content: space-between;
+
+  border-top-width: 1px;
+  border-top-color: ${({ theme }) => theme.colors.border};
+`;
+
+export const FooterText = styled.Text`
+  font-size: 12px;
+  color: ${({ theme }) => theme.colors.text.secondary};
+`;
+
+/* ESTADOS */
+export const LoadingContainer = styled.View`
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+`;
+
+export const LoadingText = styled.Text`
+  margin-top: 12px;
+  font-size: 15px;
+  color: ${({ theme }) => theme.colors.text.secondary};
+`;
+
+export const EmptyContainer = styled.View`
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  padding: 24px;
+`;
+
+export const EmptyText = styled.Text`
+  font-size: 15px;
+  color: ${({ theme }) => theme.colors.text.secondary};
+  margin-bottom: 16px;
+  text-align: center;
+`;
+
+/* BOTÃO FLUTUANTE */
+export const FloatingButton = styled.View`
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 24px;
 `;

@@ -128,6 +128,23 @@ export async function getMySubscription(): Promise<any> {
   }
 }
 
+export async function createPixPayment() {
+  const { data } = await api.post("/subscription/pix");
+  return data;
+}
+
+export async function getBillingPortal(): Promise<{ url: string }> {
+  try {
+    const { data } = await api.get("/subscription/portal");
+    return data;
+  } catch (error: any) {
+    console.error("Error getting portal:", error);
+    throw new Error(
+      error.response?.data?.message || "Erro ao buscar portal"
+    );
+  }
+}
+
 function extractSessionIdFromUrl(url: string): string | undefined {
   try {
     const urlObj = new URL(url);

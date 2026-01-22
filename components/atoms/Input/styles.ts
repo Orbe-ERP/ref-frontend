@@ -9,6 +9,6 @@ export const StyledInput = styled.TextInput`
   border-radius: 8px;
   font-size: 16px;
   border-width: 1;
-  border-color: ${({ theme }) => theme.colors.background};
+  border-color: ${({ theme }) => theme.colors.text.primary};
   margin-bottom: 20px;
 `;

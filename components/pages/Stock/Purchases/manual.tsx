@@ -13,7 +13,6 @@ import { useAppTheme } from "@/context/ThemeProvider/theme";
 
 import {
   createManualPurchase,
-  addItemsToPurchase,
   validatePurchaseItems,
   calculatePurchaseTotal,
   PurchaseItem,
@@ -37,10 +36,10 @@ export default function ManualPurchaseScreen() {
   const [stockItems, setStockItems] = useState<StockItem[]>([]);
 
   const [supplierId, setSupplierId] = useState<string | undefined>();
-  const [purchaseId, setPurchaseId] = useState<string | null>(null);
+  const [invoiceKey, setInvoiceKey] = useState("");
 
   const [items, setItems] = useState<ItemForm[]>([
-    { id: Date.now().toString(), stockItemId: "", quantity: 1, unitCost: 0 },
+    { id: Date.now().toString(), stockItemId: "", quantity: 0, unitCost: 0 },
   ]);
 
   useEffect(() => {
@@ -51,6 +50,7 @@ export default function ManualPurchaseScreen() {
   async function loadInitialData() {
     try {
       setLoading(true);
+
       const [suppliersData, stockData] = await Promise.all([
         getSuppliers(),
         getStockItems(selectedRestaurant!.id),
@@ -72,7 +72,7 @@ export default function ManualPurchaseScreen() {
   function addItem() {
     setItems((prev) => [
       ...prev,
-      { id: Date.now().toString(), stockItemId: "", quantity: 1, unitCost: 0 },
+      { id: Date.now().toString(), stockItemId: "", quantity: 0, unitCost: 0 },
     ]);
   }
 
@@ -93,7 +93,16 @@ export default function ManualPurchaseScreen() {
     );
   }
 
-  async function handleCreatePurchase() {
+  function getValidItems(items: ItemForm[]) {
+    return items.filter(
+      (i) =>
+        i.stockItemId &&
+        i.quantity > 0 &&
+        i.unitCost > 0
+    );
+  }
+
+  async function handleConfirmPurchase() {
     if (!selectedRestaurant?.id || !supplierId) {
       Toast.show({
         type: "error",
@@ -103,37 +112,18 @@ export default function ManualPurchaseScreen() {
       return;
     }
 
-    try {
-      setSaving(true);
+    const validItems = getValidItems(items);
 
-      const purchase = await createManualPurchase({
-        restaurantId: selectedRestaurant.id,
-        supplierId,
-        date: dayjs().toISOString(),
-      });
-
-      setPurchaseId(purchase.id);
-
-      Toast.show({
-        type: "success",
-        text1: "Compra criada",
-        text2: "Agora adicione os itens",
-      });
-    } catch {
+    if (validItems.length === 0) {
       Toast.show({
         type: "error",
-        text1: "Erro",
-        text2: "Não foi possível criar a compra",
+        text1: "Itens obrigatórios",
+        text2: "Adicione ao menos um item válido",
       });
-    } finally {
-      setSaving(false);
+      return;
     }
-  }
 
-  async function handleConfirmItems() {
-    if (!purchaseId) return;
-
-    const validation = validatePurchaseItems(items);
+    const validation = validatePurchaseItems(validItems);
     if (!validation.isValid) {
       Toast.show({
         type: "error",
@@ -145,7 +135,18 @@ export default function ManualPurchaseScreen() {
 
     try {
       setSaving(true);
-      await addItemsToPurchase(purchaseId, items);
+
+      await createManualPurchase({
+        restaurantId: selectedRestaurant.id,
+        supplierId,
+        invoiceKey: invoiceKey || undefined,
+        issuedAt: dayjs().toISOString(),
+        items: validItems.map((i) => ({
+          stockItemId: i.stockItemId,
+          quantity: i.quantity,
+          unitCost: i.unitCost,
+        })),
+      });
 
       Toast.show({
         type: "success",
@@ -153,18 +154,16 @@ export default function ManualPurchaseScreen() {
       });
 
       router.back();
-    } catch {
+    } catch (error) {
       Toast.show({
         type: "error",
         text1: "Erro",
-        text2: "Erro ao salvar itens",
+        text2: "Não foi possível registrar a compra",
       });
     } finally {
       setSaving(false);
     }
   }
-
-  const purchaseValidation = validatePurchaseItems(items);
 
   if (loading) {
     return (
@@ -177,17 +176,16 @@ export default function ManualPurchaseScreen() {
 
   return (
     <>
-      <Stack.Screen 
-        options={{ 
+      <Stack.Screen
+        options={{
           title: "Compra Manual",
-          headerStyle: { backgroundColor: theme.colors.background }, 
+          headerStyle: { backgroundColor: theme.colors.background },
           headerTintColor: theme.colors.text.primary,
         }}
       />
 
       <S.ScreenContainer>
         <ScrollView>
-          {/* FORNECEDOR */}
           <S.FormSection>
             <S.SectionHeader>
               <S.SectionTitle>Fornecedor</S.SectionTitle>
@@ -203,116 +201,104 @@ export default function ManualPurchaseScreen() {
               >
                 <Picker.Item label="Selecione o fornecedor" value={undefined} />
                 {suppliers.map((s) => (
-                  <Picker.Item key={s.id} label={s.name} value={s.id} />
+                  <Picker.Item  key={s.id} label={s.name} value={s.id} />
                 ))}
               </Picker>
-
             </S.PickerContainer>
 
-
-              <Button
-                label="Cadastrar fornecedor"
-                variant="secondary"
-                onPress={() => router.push("/stock/suppliers/new")}
+            <S.FormGroup>
+              <S.Label>Chave da nota (opcional)</S.Label>
+              <Input
+                placeholder="Ex: 35240112345678901234550010000000011000000010"
+                value={invoiceKey}
+                onChangeText={setInvoiceKey}
               />
-       
+            </S.FormGroup>
 
-            {!purchaseId && (
-              <Button
-                label="Criar compra"
-                onPress={handleCreatePurchase}
-                disabled={saving}
-              />
-            )}
+            <Button
+              label="Cadastrar fornecedor"
+              variant="secondary"
+              onPress={() => router.push("/stock/suppliers/new")}
+            />
           </S.FormSection>
 
-          {/* ITENS */}
-          {purchaseId && (
-            <>
-              <S.SectionTitle>Itens da compra</S.SectionTitle>
+          <S.SectionTitle>Itens da compra</S.SectionTitle>
 
-              {items.map((item, index) => (
-                <S.ItemCard key={item.id}>
-                  <S.ItemHeader>
-                    <S.ItemTitle>Item {index + 1}</S.ItemTitle>
-                    {items.length > 1 && (
-                      <Button
-                        label="Remover"
-                        variant="secondary"
-                        onPress={() => removeItem(item.id)}
-                      />
-                    )}
-                  </S.ItemHeader>
+          {items.map((item, index) => (
+            <S.ItemCard key={item.id}>
+              <S.ItemHeader>
+                <S.ItemTitle>Item {index + 1}</S.ItemTitle>
+                {items.length > 1 && (
+                  <Button
+                    label="Remover"
+                    variant="secondary"
+                    onPress={() => removeItem(item.id)}
+                  />
+                )}
+              </S.ItemHeader>
 
-                  <S.FormGroup>
-                    <S.Label>Produto</S.Label>
-                    <S.PickerContainer>
-                      <Picker
-                        selectedValue={item.stockItemId}
-                        onValueChange={(v) =>
-                          updateItem(item.id, "stockItemId", v)
-                        }
-                      >
-                        <Picker.Item label="Selecione o produto" value="" />
-                        {stockItems.map((s) => (
-                          <Picker.Item
-                            key={s.id}
-                            label={s.name}
-                            value={s.id}
-                          />
-                        ))}
-                      </Picker>
-                    </S.PickerContainer>
-                  </S.FormGroup>
+              <S.FormGroup>
+                <S.Label>Produto</S.Label>
+                <S.PickerContainer>
+                  <Picker
+                    selectedValue={item.stockItemId}
+                    onValueChange={(v) =>
+                      updateItem(item.id, "stockItemId", v)
+                    }
+                  >
+                    <Picker.Item label="Selecione o produto" value="" />
+                    {stockItems.map((s) => (
+                      <Picker.Item key={s.id} label={s.name} value={s.id} />
+                    ))}
+                  </Picker>
+                </S.PickerContainer>
+              </S.FormGroup>
 
-                  <S.FormGroup>
-                    <S.Label>Quantidade</S.Label>
-                    <Input
-                      keyboardType="numeric"
-                      value={String(item.quantity)}
-                      onChangeText={(v) =>
-                        updateItem(item.id, "quantity", Number(v))
-                      }
-                    />
-                  </S.FormGroup>
+              <S.FormGroup>
+                <S.Label>Quantidade</S.Label>
+                <Input
+                  keyboardType="numeric"
+                  value={String(item.quantity || "")}
+                  onChangeText={(v) =>
+                    updateItem(item.id, "quantity", Number(v))
+                  }
+                />
+              </S.FormGroup>
 
-                  <S.FormGroup>
-                    <S.Label>Custo unitário</S.Label>
-                    <Input
-                      keyboardType="decimal-pad"
-                      value={String(item.unitCost)}
-                      onChangeText={(v) =>
-                        updateItem(item.id, "unitCost", Number(v))
-                      }
-                    />
-                  </S.FormGroup>
+              <S.FormGroup>
+                <S.Label>Custo unitário</S.Label>
+                <Input
+                  keyboardType="decimal-pad"
+                  value={String(item.unitCost || "")}
+                  onChangeText={(v) =>
+                    updateItem(item.id, "unitCost", Number(v))
+                  }
+                />
+              </S.FormGroup>
 
-                  <S.ItemTotal>
-                    <S.Label>Total do item</S.Label>
-                    <S.ItemTotalValue>
-                      R${" "}
-                      {(item.quantity * item.unitCost || 0).toFixed(2)}
-                    </S.ItemTotalValue>
-                  </S.ItemTotal>
-                </S.ItemCard>
-              ))}
+              <S.ItemTotal>
+                <S.Label>Total do item</S.Label>
+                <S.ItemTotalValue>
+                  R$ {(item.quantity * item.unitCost || 0).toFixed(2)}
+                </S.ItemTotalValue>
+              </S.ItemTotal>
+            </S.ItemCard>
+          ))}
 
-              <Button label="Adicionar item" onPress={addItem} />
+          <Button label="Adicionar item" onPress={addItem} />
 
-              <S.TotalSection>
-                <S.TotalLabelLarge>Total da compra</S.TotalLabelLarge>
-                <S.TotalLarge>
-                  R$ {calculatePurchaseTotal(items).toFixed(2)}
-                </S.TotalLarge>
-              </S.TotalSection>
+          <S.TotalSection>
+            <S.TotalLabelLarge>Total da compra</S.TotalLabelLarge>
+            <S.TotalLarge>
+              R$ {calculatePurchaseTotal(getValidItems(items)).toFixed(2)}
+            </S.TotalLarge>
+          </S.TotalSection>
 
-              <Button
-                label="Confirmar compra"
-                onPress={handleConfirmItems}
-                disabled={saving || !purchaseValidation.isValid}
-              />
-            </>
-          )}
+          <Button
+            label="Confirmar compra"
+            onPress={handleConfirmPurchase}
+            disabled={saving}
+          />
         </ScrollView>
       </S.ScreenContainer>
     </>

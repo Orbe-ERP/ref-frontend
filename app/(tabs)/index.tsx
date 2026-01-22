@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ScrollView } from "react-native";
+import { Linking, ScrollView } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import useRestaurant from "@/hooks/useRestaurant";
 import { VerticalBarChart } from "@/components/organisms/VerticalBarChart";
@@ -17,6 +17,8 @@ import Title from "@/components/atoms/Title";
 import { useResponsive } from "@/hooks/useResponsive";
 import useSubscriptionStatus from "@/context/SubscriptionProvider/subscription";
 import useAuth from "@/hooks/useAuth";
+import { getBillingPortal } from "@/services/subscription";
+import Toast from "react-native-toast-message";
 
 interface ResponsiveProps {
   isMobile?: boolean;
@@ -302,6 +304,31 @@ export default function IndexScreen() {
     }
   };
 
+async function handleOpenBillingPortal() {
+  try {
+    const { url } = await getBillingPortal();
+
+    if (!url) {
+      throw new Error("URL do portal não retornada");
+    }
+
+    const supported = await Linking.canOpenURL(url);
+
+    if (!supported) {
+      throw new Error("Não foi possível abrir o portal");
+    }
+
+    await Linking.openURL(url);
+  } catch (error: any) {
+    Toast.show({
+      type: "error",
+      text1: "Erro",
+      text2: error.message || "Erro ao abrir portal de faturamento",
+    });
+  }
+}
+
+
   const refreshData = () => {
     if (selectedRestaurant?.id) loadSalesData();
   };
@@ -457,6 +484,13 @@ export default function IndexScreen() {
                     label={isMobile ? "Planos" : "💳 Planos"}
                     onPress={() => router.push("/plans")}
                   />
+                </ButtonWrapper>
+                <ButtonWrapper isTablet={isTablet} isDesktop={isDesktop}>
+<Button
+  label={isMobile ? "Planos" : "🍀 Gerenciar Faturas"}
+  onPress={handleOpenBillingPortal}
+/>
+
                 </ButtonWrapper>
               </MenuColumn>
             </MenuSection>
