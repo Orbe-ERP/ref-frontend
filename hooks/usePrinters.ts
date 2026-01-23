@@ -1,19 +1,20 @@
 import { useCallback, useEffect, useState } from "react";
 import {
-  Printer,
   CreatePrinter,
   UpdatePrinter,
   getPrintersByRestaurant,
   createPrinter as createPrinterService,
   updatePrinter as updatePrinterService,
   deletePrinter as deletePrinterService,
+  PrintAgentPublic,
+  regenerateAgentKey,
 } from "@/services/printer";
 import useRestaurant from "@/hooks/useRestaurant";
 
 export function usePrinters() {
   const { selectedRestaurant } = useRestaurant();
 
-  const [printers, setPrinters] = useState<Printer[]>([]);
+  const [printers, setPrinters] = useState<PrintAgentPublic[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -55,12 +56,22 @@ export function usePrinters() {
     data: UpdatePrinter
   ) {
     await updatePrinterService(printerId, data);
+    
+
     await loadPrinters();
   }
 
   async function deletePrinter(printerId: string) {
     await deletePrinterService(printerId);
     await loadPrinters();
+  }
+
+    async function regenerateAgent(id: string) {
+    const res = await regenerateAgentKey(id);
+    setPrinters(prev =>
+      prev.map(p => (p.id === id ? { ...p, agentKey: res.agentKey } : p))
+    );
+    return res;
   }
 
   return {
@@ -71,5 +82,6 @@ export function usePrinters() {
     createPrinter,
     updatePrinter,
     deletePrinter,
+    regenerateAgent,
   };
 }
