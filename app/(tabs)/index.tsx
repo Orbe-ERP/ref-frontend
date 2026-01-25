@@ -486,11 +486,10 @@ async function handleOpenBillingPortal() {
                   />
                 </ButtonWrapper>
                 <ButtonWrapper isTablet={isTablet} isDesktop={isDesktop}>
-<Button
-  label={isMobile ? "Planos" : "🍀 Gerenciar Faturas"}
-  onPress={handleOpenBillingPortal}
-/>
-
+                    <Button
+                      label={isMobile ? "Histórico de Faturas" : "🍀 Histórico de Faturas"}
+                      onPress={handleOpenBillingPortal}
+                    />
                 </ButtonWrapper>
               </MenuColumn>
             </MenuSection>
