@@ -1,5 +1,5 @@
 import React from "react";
-import { Platform } from "react-native";
+import { Platform, ScrollView } from "react-native";
 import { Stack, router } from "expo-router";
 import * as S from "./styles";
 import Title from "@/components/atoms/Title";
@@ -20,52 +20,58 @@ export default function PurchaseIndexScreen() {
         }} 
       />
 
-      <S.ScreenContainer>
-        <S.Card>
-          <Title>Listar Compras</Title>
-          <S.InfoText>
-            Veja suas compras.
-          </S.InfoText>
+      <ScrollView 
+        contentContainerStyle={{ flexGrow: 1 }}
+        showsVerticalScrollIndicator={true}
+        bounces={true}
+      >
+        <S.ScreenContainer>
+          <S.Card>
+            <Title>Listar Compras</Title>
+            <S.InfoText>
+              Veja suas compras.
+            </S.InfoText>
 
-          <Button
-            label="Listar Compras"
-            onPress={() => router.push("/stock/purchases/list-purchases")}
-          />
-        </S.Card>
-        <S.Card>
-          <Title>Compra manual</Title>
-          <S.InfoText>
-            Registre uma compra informando fornecedor e itens manualmente.
-          </S.InfoText>
-
-          <Button
-            label="Criar compra manual"
-            onPress={() => router.push("/stock/purchases/manual")}
-          />
-        </S.Card>
-
-        <S.Card>
-          <Title>Importar XML</Title>
-          <S.InfoText>
-            Importe uma nota fiscal em XML para preencher a compra
-            automaticamente.
-          </S.InfoText>
-
-          {isWeb ? (
             <Button
-              label="Importar XML"
-              onPress={() => router.push("/stock/purchases/import-upload")}
+              label="Listar Compras"
+              onPress={() => router.push("/stock/purchases/list-purchases")}
             />
-          ) : (
-            <>
-              <Button label="Importar XML" disabled onPress={() => {}} />
-              <S.HelpText>
-                Disponível apenas na versão web.
-              </S.HelpText>
-            </>
-          )}
-        </S.Card>
-      </S.ScreenContainer>
+          </S.Card>
+          <S.Card>
+            <Title>Compra manual</Title>
+            <S.InfoText>
+              Registre uma compra informando fornecedor e itens manualmente.
+            </S.InfoText>
+
+            <Button
+              label="Criar compra manual"
+              onPress={() => router.push("/stock/purchases/manual")}
+            />
+          </S.Card>
+
+          <S.Card>
+            <Title>Importar XML</Title>
+            <S.InfoText>
+              Importe uma nota fiscal em XML para preencher a compra
+              automaticamente.
+            </S.InfoText>
+
+            {isWeb ? (
+              <Button
+                label="Importar XML"
+                onPress={() => router.push("/stock/purchases/import-upload")}
+              />
+            ) : (
+              <>
+                <Button label="Importar XML" disabled onPress={() => {}} />
+                <S.HelpText>
+                  Disponível apenas na versão web.
+                </S.HelpText>
+              </>
+            )}
+          </S.Card>
+        </S.ScreenContainer>
+      </ScrollView>
     </>
   );
 }
