@@ -82,7 +82,7 @@ export async function confirmPurchaseXml(data: any) {
 
 export function calculatePurchaseTotal(items: PurchaseItem[]): number {
   return items.reduce(
-    (total, item) => total + item.quantity * item.unitCost,
+    (total, item: any) => total + item.quantity * item.unitCost,
     0,
   );
 }
@@ -94,7 +94,7 @@ export function validatePurchaseItems(items: PurchaseItem[]) {
     errors.push("A compra deve conter pelo menos um item");
   }
 
-  items.forEach((item, index) => {
+  items.forEach((item: any, index) => {
     if (!item.stockItemId) {
       errors.push(`Item ${index + 1}: Produto não informado`);
     }

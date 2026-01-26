@@ -21,9 +21,17 @@ import {
 import { getSuppliers, Supplier } from "@/services/supplier";
 import { getStockItems, StockItem } from "@/services/stock";
 
-interface ItemForm extends PurchaseItem {
+interface ItemForm {
   id: string;
+  stockItemId: string;
+  quantity: string;
+  unitCost: string;
 }
+
+const parseToNumber = (value: string) => {
+  if (!value) return 0;
+  return Number(value.replace(",", ".")) || 0;
+};
 
 export default function ManualPurchaseScreen() {
   const { theme } = useAppTheme();
@@ -39,7 +47,7 @@ export default function ManualPurchaseScreen() {
   const [invoiceKey, setInvoiceKey] = useState("");
 
   const [items, setItems] = useState<ItemForm[]>([
-    { id: Date.now().toString(), stockItemId: "", quantity: 0, unitCost: 0 },
+    { id: Date.now().toString(), stockItemId: "", quantity: "", unitCost: "" },
   ]);
 
   useEffect(() => {
@@ -72,7 +80,12 @@ export default function ManualPurchaseScreen() {
   function addItem() {
     setItems((prev) => [
       ...prev,
-      { id: Date.now().toString(), stockItemId: "", quantity: 0, unitCost: 0 },
+      {
+        id: Date.now().toString(),
+        stockItemId: "",
+        quantity: "",
+        unitCost: "",
+      },
     ]);
   }
 
@@ -81,25 +94,20 @@ export default function ManualPurchaseScreen() {
     setItems((prev) => prev.filter((i) => i.id !== id));
   }
 
-  function updateItem(
-    id: string,
-    field: keyof PurchaseItem,
-    value: number | string
-  ) {
+  function updateItem(id: string, field: keyof ItemForm, value: string) {
     setItems((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, [field]: value } : item
-      )
+      prev.map((item) => (item.id === id ? { ...item, [field]: value } : item)),
     );
   }
 
-  function getValidItems(items: ItemForm[]) {
-    return items.filter(
-      (i) =>
-        i.stockItemId &&
-        i.quantity > 0 &&
-        i.unitCost > 0
-    );
+  function getValidItems(itemsForm: ItemForm[]): PurchaseItem[] {
+    return itemsForm
+      .map((i) => ({
+        stockItemId: i.stockItemId,
+        quantity: parseToNumber(i.quantity),
+        unitCost: parseToNumber(i.unitCost),
+      }))
+      .filter((i) => i.stockItemId && i.quantity > 0 && i.unitCost > 0);
   }
 
   async function handleConfirmPurchase() {
@@ -118,7 +126,7 @@ export default function ManualPurchaseScreen() {
       Toast.show({
         type: "error",
         text1: "Itens obrigatórios",
-        text2: "Adicione ao menos um item válido",
+        text2: "Adicione ao menos um item válido (qtd e valor > 0)",
       });
       return;
     }
@@ -141,11 +149,7 @@ export default function ManualPurchaseScreen() {
         supplierId,
         invoiceKey: invoiceKey || undefined,
         issuedAt: dayjs().toISOString(),
-        items: validItems.map((i) => ({
-          stockItemId: i.stockItemId,
-          quantity: i.quantity,
-          unitCost: i.unitCost,
-        })),
+        items: validItems,
       });
 
       Toast.show({
@@ -174,6 +178,8 @@ export default function ManualPurchaseScreen() {
     );
   }
 
+  const currentTotal = calculatePurchaseTotal(getValidItems(items));
+
   return (
     <>
       <Stack.Screen
@@ -201,7 +207,7 @@ export default function ManualPurchaseScreen() {
               >
                 <Picker.Item label="Selecione o fornecedor" value={undefined} />
                 {suppliers.map((s) => (
-                  <Picker.Item  key={s.id} label={s.name} value={s.id} />
+                  <Picker.Item key={s.id} label={s.name} value={s.id} />
                 ))}
               </Picker>
             </S.PickerContainer>
@@ -242,9 +248,7 @@ export default function ManualPurchaseScreen() {
                 <S.PickerContainer>
                   <Picker
                     selectedValue={item.stockItemId}
-                    onValueChange={(v) =>
-                      updateItem(item.id, "stockItemId", v)
-                    }
+                    onValueChange={(v) => updateItem(item.id, "stockItemId", v)}
                   >
                     <Picker.Item label="Selecione o produto" value="" />
                     {stockItems.map((s) => (
@@ -252,34 +256,48 @@ export default function ManualPurchaseScreen() {
                     ))}
                   </Picker>
                 </S.PickerContainer>
+                <Button
+                  label="Cadastrar Item"
+                  variant="secondary"
+                  onPress={() =>
+                    router.push("/(private)/stock/items/create-stock")
+                  }
+                />
               </S.FormGroup>
 
               <S.FormGroup>
                 <S.Label>Quantidade</S.Label>
                 <Input
-                  keyboardType="numeric"
-                  value={String(item.quantity || "")}
-                  onChangeText={(v) =>
-                    updateItem(item.id, "quantity", Number(v))
-                  }
+                  keyboardType="decimal-pad"
+                  placeholder="0,00"
+                  value={item.quantity}
+                  onChangeText={(v) => {
+                    const text = v.replace(/[^0-9,.]/g, "");
+                    updateItem(item.id, "quantity", text);
+                  }}
                 />
               </S.FormGroup>
 
               <S.FormGroup>
-                <S.Label>Custo unitário</S.Label>
+                <S.Label>Custo unitário (R$)</S.Label>
                 <Input
                   keyboardType="decimal-pad"
-                  value={String(item.unitCost || "")}
-                  onChangeText={(v) =>
-                    updateItem(item.id, "unitCost", Number(v))
-                  }
+                  placeholder="0,00"
+                  value={item.unitCost}
+                  onChangeText={(v) => {
+                    const text = v.replace(/[^0-9,.]/g, "");
+                    updateItem(item.id, "unitCost", text);
+                  }}
                 />
               </S.FormGroup>
 
               <S.ItemTotal>
-                <S.Label>Total do item</S.Label>
+                <S.Label>Total do item </S.Label>
                 <S.ItemTotalValue>
-                  R$ {(item.quantity * item.unitCost || 0).toFixed(2)}
+                  R${" "}
+                  {(
+                    parseToNumber(item.quantity) * parseToNumber(item.unitCost)
+                  ).toFixed(2)}
                 </S.ItemTotalValue>
               </S.ItemTotal>
             </S.ItemCard>
@@ -289,9 +307,7 @@ export default function ManualPurchaseScreen() {
 
           <S.TotalSection>
             <S.TotalLabelLarge>Total da compra</S.TotalLabelLarge>
-            <S.TotalLarge>
-              R$ {calculatePurchaseTotal(getValidItems(items)).toFixed(2)}
-            </S.TotalLarge>
+            <S.TotalLarge>R$ {currentTotal.toFixed(2)}</S.TotalLarge>
           </S.TotalSection>
 
           <Button

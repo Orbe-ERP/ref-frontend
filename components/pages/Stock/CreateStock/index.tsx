@@ -123,7 +123,7 @@ export default function CreateStock() {
         });
         
         router.replace({
-          pathname: "/stock/items",
+          pathname: "/stock",
           params: { refresh: Date.now() }
         });
       } else {
