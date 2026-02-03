@@ -19,6 +19,10 @@ export const Row = styled.View`
   margin-bottom: 12px;
 `;
 
+export const ActionButton = styled.TouchableOpacity`
+  padding: 8px;
+`;
+
 export const Label = styled.Text`
   color: ${({ theme }) => theme.colors.text.primary};
   font-weight: 500;
@@ -36,6 +40,7 @@ export const Info = styled.Text`
 `;
 
 export const Form = styled.View`
+margin-bottom: 10px;
   padding: 16px;
   border-bottom-width: 1px;
   border-bottom-color: ${({ theme }) => theme.colors.text.secondary}30;

@@ -16,6 +16,7 @@ import useRestaurant from "@/hooks/useRestaurant";
 import useAuth from "@/hooks/useAuth";
 import { getStockItems, deleteStockItem, StockItem } from "@/services/stock";
 import Toast from "react-native-toast-message";
+import { Loader } from "@/components/atoms/Loader";
 
 type StockStatus = "ok" | "warning" | "critical";
 
@@ -56,7 +57,7 @@ export default function StockItems() {
         const response = await getStockItems(
           selectedRestaurant.id,
           page,
-          limit
+          limit,
         );
 
         let itemsData: StockItem[] = [];
@@ -98,11 +99,10 @@ export default function StockItems() {
         setLoadingMore(false);
       }
     },
-    [selectedRestaurant?.id]
+    [selectedRestaurant?.id],
   );
 
   useEffect(() => {
-
     loadStock(1);
   }, [selectedRestaurant?.id, refresh]);
 
@@ -122,43 +122,42 @@ export default function StockItems() {
     }
   }, [currentPage, totalPages, loadStock]);
 
-async function handleDelete(id: string) {
-  const itemToDelete = items.find((item) => item.id === id);
+  async function handleDelete(id: string) {
+    const itemToDelete = items.find((item) => item.id === id);
 
-  if (!itemToDelete) {
-    Toast.show({
-      type: "error",
-      text1: "Item não encontrado",
-      position: "top",
-      visibilityTime: 3000,
-    });
-    return;
+    if (!itemToDelete) {
+      Toast.show({
+        type: "error",
+        text1: "Item não encontrado",
+        position: "top",
+        visibilityTime: 3000,
+      });
+      return;
+    }
+
+    try {
+      await deleteStockItem(id);
+
+      setItems((prev) => prev.filter((item) => item.id !== id));
+      setTotalItems((prev) => Math.max(prev - 1, 0));
+
+      Toast.show({
+        type: "success",
+        text1: "Item removido",
+        text2: `${itemToDelete.name} foi excluído do estoque`,
+        position: "top",
+        visibilityTime: 3000,
+      });
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Erro ao remover item",
+        text2: "Tente novamente",
+        position: "top",
+        visibilityTime: 3000,
+      });
+    }
   }
-
-  try {
-    await deleteStockItem(id);
-
-    setItems((prev) => prev.filter((item) => item.id !== id));
-    setTotalItems((prev) => Math.max(prev - 1, 0));
-
-    Toast.show({
-      type: "success",
-      text1: "Item removido",
-      text2: `${itemToDelete.name} foi excluído do estoque`,
-      position: "top",
-      visibilityTime: 3000,
-    });
-  } catch (error) {
-    Toast.show({
-      type: "error",
-      text1: "Erro ao remover item",
-      text2: "Tente novamente",
-      position: "top",
-      visibilityTime: 3000,
-    });
-  }
-}
-
 
   function getStatus(item: StockItem): StockStatus {
     if (!item.minimum) return "ok";
@@ -306,25 +305,24 @@ async function handleDelete(id: string) {
           style={{ flex: 1 }}
         />
 
-        {totalPages > 1 && items.length > 0 && (
-          <View
-            style={{
-              paddingHorizontal: 16,
-              paddingVertical: 12,
-              borderTopWidth: 1,
-              borderTopColor: theme.colors.border,
-              backgroundColor: theme.colors.background,
-            }}
-          >
-            <Pagination
-              page={currentPage}
-              totalPages={totalPages}
-              onPrev={handlePrevPage}
-              onNext={handleNextPage}
-              isLoading={loading || loadingMore}
-            />
-          </View>
-        )}
+        <View
+          style={{
+            paddingHorizontal: 16,
+            paddingVertical: 12,
+            borderTopWidth: 1,
+            borderTopColor: theme.colors.border,
+            backgroundColor: theme.colors.background,
+          }}
+        >
+          <Pagination
+            page={currentPage}
+            totalPages={totalPages}
+            onPrev={handlePrevPage}
+            onNext={handleNextPage}
+            isLoading={loading || loadingMore}
+          />
+        </View>
+        {loading && items.length === 0 && <Loader size="large" />}
       </S.ScreenContainer>
     </>
   );

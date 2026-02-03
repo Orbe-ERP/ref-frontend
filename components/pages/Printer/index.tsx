@@ -9,7 +9,9 @@ import { useResponsive } from "@/hooks/useResponsive";
 import { ToastNotice } from "@/components/molecules/ToastNotice";
 import * as S from "./styles";
 import { Picker } from "@react-native-picker/picker";
-import Clipboard from "@react-native-clipboard/clipboard";
+import * as Clipboard from "expo-clipboard";
+import Input from "@/components/atoms/Input";
+import CustomSwitch from "@/components/atoms/CustomSwitch";
 
 export default function PrinterListScreen() {
   const theme = useAppTheme();
@@ -27,15 +29,13 @@ export default function PrinterListScreen() {
   const [editingPrinter, setEditingPrinter] = useState<any | null>(null);
   const [isDefault, setIsDefault] = useState(false);
   const [printerName, setPrinterName] = useState("");
+  const [visibleAgentKey, setVisibleAgentKey] = useState<string | null>(null);
 
   const [printerType, setPrinterType] = useState<
     "RECEIPT" | "KITCHEN" | "BAR" | "OTHER"
   >("RECEIPT");
 
   const [isActive, setIsActive] = useState(true);
-
-  // agentKey temporário (aparece só após criar)
-  const [createdAgentKey, setCreatedAgentKey] = useState<string | null>(null);
 
   function resetForm() {
     setEditingPrinter(null);
@@ -88,7 +88,7 @@ export default function PrinterListScreen() {
           restaurantId: printers[0]?.restaurantId,
         });
 
-        setCreatedAgentKey(created.agentKey);
+        setVisibleAgentKey(created.agentKey);
 
         Toast.show({
           type: "success",
@@ -125,6 +125,9 @@ export default function PrinterListScreen() {
   async function handleRegenerateKey(printer: any) {
     try {
       const res = await regenerateAgent(printer.id);
+
+      setVisibleAgentKey(res.agentKey);
+
       Toast.show({
         type: "success",
         text1: "Agent Key regenerada",
@@ -139,10 +142,10 @@ export default function PrinterListScreen() {
   }
 
   async function copyAgentKey() {
-    if (!createdAgentKey) return;
+    if (!visibleAgentKey) return;
 
-    Clipboard.setString(createdAgentKey);
-    setCreatedAgentKey(null);
+    await Clipboard.setStringAsync(visibleAgentKey);
+    setVisibleAgentKey(null);
 
     Toast.show({
       type: "success",
@@ -188,70 +191,66 @@ export default function PrinterListScreen() {
                 {editingPrinter ? "Editar Agente" : "Novo Agente"}
               </S.FormTitle>
 
+              <S.Label>Nome do Agente*</S.Label>
               <S.Field>
-                <S.Label>Nome do Agente*</S.Label>
-                <S.Input
+                <Input
                   value={printerName}
                   onChangeText={setPrinterName}
                   placeholder="Ex: Caixa Principal, Balcão, Cozinha"
                   returnKeyType="next"
                 />
               </S.Field>
-
-              <S.Field>
-                <S.Label>Tipo do Agente*</S.Label>
-
-                <Picker
+              <S.Label>Tipo do Agente*</S.Label>
+              <S.PickerContainer>
+                <S.StyledPicker
                   selectedValue={printerType}
                   onValueChange={(value) => setPrinterType(value)}
                   style={{ color: theme.theme.colors.text.primary }}
+                  dropdownIconColor={theme.theme.colors.primary}
                 >
-                  <Picker.Item label="RECEIPT" value="RECEIPT" />
-                  <Picker.Item label="KITCHEN" value="KITCHEN" />
-                  <Picker.Item label="BAR" value="BAR" />
-                  <Picker.Item label="OTHER" value="OTHER" />
-                </Picker>
-              </S.Field>
+                  <Picker.Item
+                    label="Recibo"
+                    value="RECEIPT"
+                    color={theme.theme.colors.primary}
+                  />
+                  <Picker.Item
+                    label="Cozinha"
+                    value="KITCHEN"
+                    color={theme.theme.colors.primary}
+                  />
+                  <Picker.Item
+                    label="Bar"
+                    value="BAR"
+                    color={theme.theme.colors.primary}
+                  />
+                  <Picker.Item
+                    label="Outro"
+                    value="OTHER"
+                    color={theme.theme.colors.primary}
+                  />
+                </S.StyledPicker>
+              </S.PickerContainer>
 
               {editingPrinter && (
                 <S.SwitchRow>
                   <S.Label>Ativo</S.Label>
-                  <Switch
+
+                  <CustomSwitch
                     value={isActive}
                     onValueChange={setIsActive}
-                    trackColor={{
-                      false: theme.theme.colors.border + "80",
-                      true: theme.theme.colors.primary,
-                    }}
-                    thumbColor={
-                      isActive
-                        ? theme.theme.colors.surface
-                        : theme.theme.colors.text.secondary
-                    }
-                    ios_backgroundColor={theme.theme.colors.border}
                   />
                 </S.SwitchRow>
               )}
 
               <S.SwitchRow>
                 <S.Label>Agente padrão</S.Label>
-                <Switch
+                <CustomSwitch
                   value={isDefault}
                   onValueChange={setIsDefault}
-                  trackColor={{
-                    false: theme.theme.colors.border + "80",
-                    true: theme.theme.colors.primary,
-                  }}
-                  thumbColor={
-                    isDefault
-                      ? theme.theme.colors.surface
-                      : theme.theme.colors.text.secondary
-                  }
-                  ios_backgroundColor={theme.theme.colors.border}
                 />
               </S.SwitchRow>
 
-              <S.HelpText style={{ marginTop: -8, marginBottom: 16 }}>
+              <S.HelpText style={{ marginTop: -8 }}>
                 {isDefault
                   ? "Este agente será usado como padrão para novas impressoras"
                   : "Marque se este é o agente principal de impressão"}
@@ -268,16 +267,26 @@ export default function PrinterListScreen() {
               </S.Actions>
             </S.FormCard>
 
-            {createdAgentKey && (
+            {visibleAgentKey && (
               <S.Card isTablet={isTablet} isDesktop={isDesktop}>
                 <S.InfoContainer>
-                  <S.Name>Agent Key</S.Name>
-                  <S.Info>{createdAgentKey}</S.Info>
+                  <S.Name>Nova Chave</S.Name>
+                  <S.Info>{visibleAgentKey}</S.Info>
+                  <S.Info>• Essa chave será usada para autenticação do agente de impressão.</S.Info>
                 </S.InfoContainer>
 
-                <S.ActionsRow>
-                  <Button label="Copiar" onPress={copyAgentKey} />
-                </S.ActionsRow>
+                      <S.ActionsRow>
+
+                      <S.ActionButtonWrapper>
+                          <Button
+                          variant="danger"
+                            label="Copiar"
+                            onPress={copyAgentKey}
+                          />
+                        </S.ActionButtonWrapper>
+                                              </S.ActionsRow>
+
+
               </S.Card>
             )}
 
@@ -315,21 +324,28 @@ export default function PrinterListScreen() {
                       </S.InfoContainer>
 
                       <S.ActionsRow>
-                        <Button
-                          label="Editar"
-                          onPress={() => handleEdit(item)}
-                        />
+                        <S.ActionButtonWrapper>
+                          <Button
+                            label="Editar"
+                            onPress={() => handleEdit(item)}
+                          />
+                        </S.ActionButtonWrapper>
 
-                        <Button
-                          label="Regenerar Agent Key"
-                          onPress={() => handleRegenerateKey(item)}
-                        />
+                        <S.ActionButtonWrapper>
+                          <Button
+                            variant="secondary"
+                            label="Nova Chave"
+                            onPress={() => handleRegenerateKey(item)}
+                          />
+                        </S.ActionButtonWrapper>
 
-                        <Button
-                          variant="danger"
-                          label="Excluir"
-                          onPress={() => handleDelete(item)}
-                        />
+                        <S.ActionButtonWrapper>
+                          <Button
+                            variant="danger"
+                            label="Excluir"
+                            onPress={() => handleDelete(item)}
+                          />
+                        </S.ActionButtonWrapper>
                       </S.ActionsRow>
                     </S.Card>
                   )}

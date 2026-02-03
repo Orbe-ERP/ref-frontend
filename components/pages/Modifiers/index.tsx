@@ -23,10 +23,12 @@ import {
   Title,
   Info,
   Empty,
+  ActionButton,
 } from "./styles";
 import Button from "@/components/atoms/Button";
 import CustomSwitch from "@/components/atoms/CustomSwitch";
 import { StockPicker } from "@/components/atoms/StockItemPicker";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function ProductModifiersPage() {
   const { productId } = useLocalSearchParams<{ productId: string }>();
@@ -34,7 +36,7 @@ export default function ProductModifiersPage() {
   const { selectedRestaurant } = useRestaurant();
 
   const [stockItems, setStockItems] = useState<{ id: string; name: string }[]>(
-    []
+    [],
   );
   const [modifiers, setModifiers] = useState<Modifier[]>([]);
   const [loading, setLoading] = useState(true);
@@ -85,6 +87,11 @@ export default function ProductModifiersPage() {
       return;
     }
 
+    if (stockEffect === "ADD" && trackStock && !stockItemId) {
+      Toast.show({ type: "error", text1: "Selecione um item de estoque" });
+      return;
+    }
+
     try {
       setCreating(true);
 
@@ -106,7 +113,7 @@ export default function ProductModifiersPage() {
         selectedRestaurant.id,
         productId,
         modifier.id,
-        { required: false, limit: null, default: false }
+        { required: false, limit: null, default: false },
       );
 
       setName("");
@@ -116,7 +123,7 @@ export default function ProductModifiersPage() {
       setAllowFreeText(false);
       setStockMultiplier("1");
 
-      Toast.show({ type: "success", text1: "Modifier criado" });
+      Toast.show({ type: "success", text1: "Modificador criado" });
       loadModifiers();
     } catch {
       Toast.show({ type: "error", text1: "Erro ao criar modificador" });
@@ -176,15 +183,19 @@ export default function ProductModifiersPage() {
                   setStockItemId={setStockItemId}
                 />
                 <View style={{ marginTop: 12 }}>
-                  <Label style={{ marginBottom: 8 }}>Efeito do modificador</Label>                  
+                  <Label style={{ marginBottom: 8 }}>
+                    Efeito do modificador
+                  </Label>
                   <View style={{ gap: 8 }}>
                     <Button
-                      label="➖ Consumir Estoque"
-                      variant={stockEffect === "REMOVE" ? "primary" : "secondary"}
+                      label="Consumir Estoque"
+                      variant={
+                        stockEffect === "REMOVE" ? "primary" : "secondary"
+                      }
                       onPress={() => setStockEffect("REMOVE")}
                     />
                     <Button
-                      label="➕ Não Consumir Estoque"
+                      label="Não Consumir Estoque"
                       variant={stockEffect === "ADD" ? "primary" : "secondary"}
                       onPress={() => setStockEffect("ADD")}
                     />
@@ -246,11 +257,10 @@ export default function ProductModifiersPage() {
               <Info>Altera estoque: {item.trackStock ? "Sim" : "Não"}</Info>
             </View>
 
-            <Button
-              variant="danger"
-              label="🗑️"
+            <ActionButton
               onPress={async () => {
                 if (!selectedRestaurant?.id || !productId) return;
+
                 try {
                   await deleteModifier(item.id);
                   setModifiers((prev) => prev.filter((m) => m.id !== item.id));
@@ -262,7 +272,13 @@ export default function ProductModifiersPage() {
                   });
                 }
               }}
-            />
+            >
+              <Ionicons
+                name="trash-outline"
+                size={18}
+                color={theme.colors.feedback.error}
+              />
+            </ActionButton>
           </Card>
         )}
       />

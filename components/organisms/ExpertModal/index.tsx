@@ -73,32 +73,45 @@ const ExpertModal: React.FC<ExpertModalProps> = ({
             style={{
               flexDirection: "row",
               alignItems: "center",
-              marginTop: 12,
+              justifyContent: "space-between",
+              width: "100%",
             }}
           >
             <Label>{switchLabel}</Label>
-            <CustomSwitch value={switchValue} onValueChange={onSwitchChange}/>
+            <CustomSwitch value={switchValue} onValueChange={onSwitchChange} />
           </View>
         )}
 
         {showColorPicker && colors && onColorChange && (
           <View
-            style={{ flexDirection: "row", flexWrap: "wrap", marginTop: 12 }}
+            style={{
+              flexDirection: "row",
+              flexWrap: "wrap",
+              marginTop: 12,
+              width: "100%",
+            }}
           >
             {colors.map((color) => (
               <View
                 key={color}
                 style={{
-                  width: 30,
-                  height: 30,
-                  borderRadius: 15,
-                  backgroundColor: color,
-                  margin: 4,
-                  borderColor: "#fff",
+                  width: "14%",
+                  alignItems: "center",
+                  marginBottom: 20,
                 }}
               >
+                <View
+                  style={{
+                    width: 30,
+                    height: 30,
+                    borderRadius: 15,
+                    backgroundColor: color,
+                    borderWidth: 1,
+                    borderColor: "#fff",
+                  }}
+                />
                 <Text
-                  style={{ flex: 1 }}
+                  style={{ position: "absolute", inset: 0 }}
                   onPress={() => onColorChange(color)}
                 />
               </View>
@@ -116,7 +129,9 @@ const ExpertModal: React.FC<ExpertModalProps> = ({
             <ActionText>Cancelar</ActionText>
           </ActionButton>
           <ActionButton backgroundColor="#2BAE66" onPress={onConfirm}>
-            <ActionText numberOfLines={1} ellipsizeMode="clip">{confirmLabel}</ActionText>
+            <ActionText numberOfLines={1} ellipsizeMode="clip">
+              {confirmLabel}
+            </ActionText>
           </ActionButton>
         </Actions>
       </ModalContent>

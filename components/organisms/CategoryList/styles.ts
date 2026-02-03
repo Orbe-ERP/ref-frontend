@@ -1,5 +1,10 @@
 import styled from "styled-components/native";
 
+export const Container = styled.View`
+  display: flex;
+  align-items: center;
+`;
+
 export const Category = styled.View`
   margin-bottom: 16px;
   border-radius: 12px;
@@ -8,6 +13,7 @@ export const Category = styled.View`
   shadow-color: #000;
   shadow-offset: 0px 2px;
   shadow-opacity: 0.1;
+  width: 90vw;
   shadow-radius: 4px;
   elevation: 3;
 `;

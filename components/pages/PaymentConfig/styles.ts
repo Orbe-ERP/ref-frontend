@@ -26,12 +26,11 @@ export const Label = styled.Text`
   font-size: 14px;
   font-weight: 500;
   margin-bottom: 5px;
-  color: #ffffff;
   color: ${({ theme }) => theme.colors.text.primary};
 `;
 
 export const Input = styled.TextInput`
-  border: 1px solid ${({ theme }) => theme.colors.text.primary};
+  border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: 8px;
   padding: 10px;
   margin-bottom: 15px;
@@ -39,24 +38,31 @@ export const Input = styled.TextInput`
 `;
 
 export const PickerContainer = styled.View`
-  border: 1px solid #ccc;
+  border-width: 1px;
+  border-color: ${({ theme }) => theme.colors.border};
   border-radius: 8px;
+  color: ${({ theme }) => theme.colors.text.primary};
   margin-bottom: 15px;
   overflow: hidden;
-  height: 40px;
+  min-height: 48px;
   justify-content: center;
 `;
 
 export const StyledPicker = styled(Picker)`
   color: ${({ theme }) => theme.colors.text.primary};
   background-color: transparent;
-  height: 100%;
+  height: 48px;
 `;
 
 export const Row = styled.View`
   flex-direction: row;
-  justify-content: space-between;
+  gap: 10px;
   margin-top: 10px;
+  width: 100%;
+`;
+
+export const ButtonWrapper = styled.View`
+  flex: 1;
 `;
 
 export const DeleteButton = styled.TouchableOpacity`

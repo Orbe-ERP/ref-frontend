@@ -36,7 +36,7 @@ const CreateButton = styled.TouchableOpacity`
   align-items: center;
   justify-content: center;
   margin-bottom: 16px;
-  border-width: 2;
+  border-width: 1;
   border-color: ${({ theme }) => theme.colors.primary};
   border-style: dashed;
 `;
@@ -115,26 +115,25 @@ export default function SelectRestaurantScreen() {
     }
   };
 
-const handleCreateRestaurant = () => {
-  if (loadingStatus) return;
+  const handleCreateRestaurant = () => {
+    if (loadingStatus) return;
 
-  if (
-    !status ||
-    !status.plan ||
-    status.isExpired ||
-    status.isPendingFirstInvoice
-  ) {
-    Toast.show({
-      type: "error",
-      text1: "Plano necessário",
-      text2: "Você precisa de um plano ativo para criar restaurantes",
-    });
-    return;
-  }
+    if (
+      !status ||
+      !status.plan ||
+      status.isExpired ||
+      status.isPendingFirstInvoice
+    ) {
+      Toast.show({
+        type: "error",
+        text1: "Plano necessário",
+        text2: "Você precisa de um plano ativo para criar restaurantes",
+      });
+      return;
+    }
 
-  router.push("/(private)/create-restaurant");
-};
-
+    router.push("/(private)/create-restaurant");
+  };
 
   return (
     <>
@@ -143,21 +142,19 @@ const handleCreateRestaurant = () => {
           title: "Selecionar Restaurante",
           headerStyle: { backgroundColor: theme.colors.background },
           headerTintColor: theme.colors.text.primary,
-    headerLeft: () => (
-      <Pressable
-        onPress={() => router.replace("/(tabs)")}
-        style={{ paddingHorizontal: 16 }}
-      >
-        <Ionicons
-          name="arrow-back"
-          size={24}
-          color={theme.colors.text.primary}
-        />
-      </Pressable>
-    ),
-          
+          headerLeft: () => (
+            <Pressable
+              onPress={() => router.replace("/(tabs)")}
+              style={{ paddingHorizontal: 16 }}
+            >
+              <Ionicons
+                name="arrow-back"
+                size={24}
+                color={theme.colors.text.primary}
+              />
+            </Pressable>
+          ),
         }}
-        
       />
       <Container>
         <Subtitle>Restaurantes Disponíveis</Subtitle>

@@ -1,10 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  FlatList,
-  RefreshControl,
-  TouchableOpacity,
-} from "react-native";
+import { View, FlatList, RefreshControl, TouchableOpacity } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import dayjs from "dayjs";
@@ -27,31 +22,27 @@ export default function CompletedOrdersPage() {
   const router = useRouter();
   const { selectedRestaurant } = useRestaurant();
   const { theme } = useAppTheme();
-  const { isTablet, isDesktop, } = useResponsive();
+  const { isTablet, isDesktop } = useResponsive();
   const isWide = isTablet || isDesktop;
 
   const [orders, setOrders] = useState<Order[]>([]);
-  const [pagination, setPagination] =
-    useState<PaginatedResponse<Order> | null>(null);
+  const [pagination, setPagination] = useState<PaginatedResponse<Order> | null>(
+    null,
+  );
 
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
   const [startDate, setStartDate] = useState(
-    dayjs().subtract(30, "day").format("YYYY-MM-DD")
+    dayjs().subtract(30, "day").format("YYYY-MM-DD"),
   );
-  const [endDate, setEndDate] = useState(
-    dayjs().format("YYYY-MM-DD")
-  );
+  const [endDate, setEndDate] = useState(dayjs().format("YYYY-MM-DD"));
 
-  const [showCalendarFor, setShowCalendarFor] =
-    useState<"start" | "end" | null>(null);
+  const [showCalendarFor, setShowCalendarFor] = useState<
+    "start" | "end" | null
+  >(null);
 
-  async function loadOrders(
-    page = 1,
-    sd = startDate,
-    ed = endDate
-  ) {
+  async function loadOrders(page = 1, sd = startDate, ed = endDate) {
     try {
       if (!selectedRestaurant?.id) return;
 
@@ -62,7 +53,7 @@ export default function CompletedOrdersPage() {
         page,
         20,
         sd,
-        ed
+        ed,
       );
 
       setOrders(response.data);
@@ -172,18 +163,14 @@ export default function CompletedOrdersPage() {
                 <S.ProductQuantity>(x{p.quantity})</S.ProductQuantity>
               </View>
 
-              <S.ProductPrice>
-                {formatCurrency(total)}
-              </S.ProductPrice>
+              <S.ProductPrice>{formatCurrency(total)}</S.ProductPrice>
             </S.ProductItem>
           );
         })}
 
         <S.TotalContainer>
           <S.TotalLabel>Total:</S.TotalLabel>
-          <S.TotalValue>
-            {formatCurrency(item.totalValue)}
-          </S.TotalValue>
+          <S.TotalValue>{formatCurrency(item.totalValue)}</S.TotalValue>
         </S.TotalContainer>
       </S.OrderCard>
     );
@@ -219,9 +206,7 @@ export default function CompletedOrdersPage() {
               </S.DateInput>
 
               <S.SearchButtonWide onPress={handleSearch} disabled={loading}>
-                <S.SearchButtonText>
-                  {"Buscar"}
-                </S.SearchButtonText>
+                <S.SearchButtonText>{"Buscar"}</S.SearchButtonText>
               </S.SearchButtonWide>
             </S.DateRowWide>
           </S.FilterContainerWide>
@@ -242,14 +227,12 @@ export default function CompletedOrdersPage() {
             </S.DateRowMobile>
 
             <S.SearchButtonMobile onPress={handleSearch} disabled={loading}>
-              <S.SearchButtonText>
-                {"Buscar"}
-              </S.SearchButtonText>
+              <S.SearchButtonText>{"Buscar"}</S.SearchButtonText>
             </S.SearchButtonMobile>
           </S.FilterContainerMobile>
         )}
 
-        <CalendarModal 
+        <CalendarModal
           visible={!!showCalendarFor}
           startDate={startDate}
           endDate={endDate}
@@ -288,31 +271,17 @@ export default function CompletedOrdersPage() {
           }
         />
 
-        {pagination && pagination.totalPages > 1 && (
+        {pagination && (
           <Pagination
             page={pagination.page}
             totalPages={pagination.totalPages}
-            onPrev={() =>
-              loadOrders(
-                pagination.page - 1,
-                startDate,
-                endDate
-              )
-            }
-            onNext={() =>
-              loadOrders(
-                pagination.page + 1,
-                startDate,
-                endDate
-              )
-            }
+            onPrev={() => loadOrders(pagination.page - 1, startDate, endDate)}
+            onNext={() => loadOrders(pagination.page + 1, startDate, endDate)}
             isLoading={loading || refreshing}
           />
         )}
 
-        {loading && orders.length === 0 && (
-          <Loader size="large" />
-        )}
+        {loading && orders.length === 0 && <Loader size="large" />}
       </S.Container>
     </>
   );

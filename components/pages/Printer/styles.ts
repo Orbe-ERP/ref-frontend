@@ -1,4 +1,4 @@
-// styles.ts
+import { Picker } from "@react-native-picker/picker";
 import styled from "styled-components/native";
 
 interface ResponsiveProps {
@@ -7,35 +7,50 @@ interface ResponsiveProps {
   isDesktop?: boolean;
   isWeb?: boolean;
 }
+export const PickerContainer = styled.View`
+  border-width: 1px;
+  border-color: ${({ theme }) => theme.colors.border};
+  border-radius: 8px;
+  color: ${({ theme }) => theme.colors.text.primary};
+  margin-bottom: 15px;
+  overflow: hidden;
+  min-height: 50px;
+  justify-content: center;
+`;
 
-// Container principal - CORREÇÃO AQUI
+export const StyledPicker = styled(Picker)`
+  color: ${({ theme }) => theme.colors.text.primary};
+  background-color: transparent;
+  height: 50px;
+`;
+
 export const Container = styled.View<ResponsiveProps>`
   flex: 1;
   background-color: ${({ theme }) => theme.colors.background};
-  
-  ${({ isWeb, isTablet, isDesktop }) => 
-    (isTablet || isDesktop) && isWeb ? `
+
+  ${({ isWeb, isTablet, isDesktop }) =>
+    (isTablet || isDesktop) && isWeb
+      ? `
     align-items: center;
-  ` : ''}
+  `
+      : ""}
 `;
 
-// ContentWrapper - CORREÇÃO AQUI
 export const ContentWrapper = styled.View<ResponsiveProps>`
   flex: 1;
-  padding: ${({ isTablet, isDesktop }) => 
-    isDesktop ? '24px' : 
-    isTablet ? '20px' : 
-    '16px'};
-  
-  ${({ isTablet, isDesktop }) => 
-    (isTablet || isDesktop) ? `
+  padding: ${({ isTablet, isDesktop }) =>
+    isDesktop ? "24px" : isTablet ? "20px" : "16px"};
+
+  ${({ isTablet, isDesktop }) =>
+    isTablet || isDesktop
+      ? `
     max-width: 800px;
     width: 100%;
     align-self: center;
-  ` : ''}
+  `
+      : ""}
 `;
 
-// Remova ou altere o ToastNotice - não use position: absolute
 export const ToastNotice = styled.View<ResponsiveProps>`
   flex-direction: row;
   align-items: flex-start;
@@ -45,18 +60,25 @@ export const ToastNotice = styled.View<ResponsiveProps>`
   background-color: ${({ theme }) => theme.colors.surface};
   border-left-width: 4px;
   border-left-color: ${({ theme }) => theme.colors.feedback.warning};
-  
-  ${({ isTablet, isDesktop }) => 
-    (isTablet || isDesktop) ? `
-    width: 100%;
-  ` : ''}
-`;
 
-// Mantenha o restante dos estilos como estão...
+  ${({ isTablet, isDesktop }) =>
+    isTablet || isDesktop
+      ? `
+    width: 100%;
+  `
+      : ""}
+`;
 export const ActionsRow = styled.View`
   flex-direction: row;
-  align-items: center;
+  width: 100%;
   gap: 8px;
+  flex-wrap: wrap;
+`;
+
+export const ActionButtonWrapper = styled.View`
+  flex-grow: 1;
+  flex-basis: 48%;
+  min-width: 160px;
 `;
 
 export const FormCard = styled.View<ResponsiveProps>`
@@ -65,11 +87,13 @@ export const FormCard = styled.View<ResponsiveProps>`
   border-radius: 16px;
   margin-bottom: 16px;
   gap: 12px;
-  
-  ${({ isTablet, isDesktop }) => 
-    (isTablet || isDesktop) ? `
+
+  ${({ isTablet, isDesktop }) =>
+    isTablet || isDesktop
+      ? `
     width: 100%;
-  ` : ''}
+  `
+      : ""}
 `;
 
 export const FormTitle = styled.Text`
@@ -80,6 +104,7 @@ export const FormTitle = styled.Text`
 
 export const Field = styled.View`
   gap: 6px;
+  margin-bottom: 5px;
 `;
 
 export const Label = styled.Text`
@@ -87,38 +112,31 @@ export const Label = styled.Text`
   color: ${({ theme }) => theme.colors.text.secondary};
 `;
 
-export const Input = styled.TextInput`
-  border-width: 1px;
-  border-color: ${({ theme }) => theme.colors.border};
-  border-radius: 8px;
-  padding: 10px 12px;
-  color: ${({ theme }) => theme.colors.text.primary};
-  font-size: 16px;
-`;
-
 export const SwitchRow = styled.View`
   flex-direction: row;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
 `;
 
 export const Card = styled.View<ResponsiveProps>`
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: ${({ isTablet, isDesktop }) =>
+    isTablet || isDesktop ? "row" : "column"};
+
+  align-items: ${({ isTablet, isDesktop }) =>
+    isTablet || isDesktop ? "center" : "flex-start"};
+
+  gap: 12px;
   padding: 14px;
   border-radius: 12px;
   background-color: ${({ theme }) => theme.colors.surface};
   margin-bottom: 8px;
-  
-  ${({ isTablet, isDesktop }) => 
-    (isTablet || isDesktop) ? `
-    width: 100%;
-  ` : ''}
+  width: 100%;
 `;
 
 export const InfoContainer = styled.View`
   flex: 1;
+  width: 100%;
 `;
 
 export const Name = styled.Text`
@@ -159,7 +177,7 @@ export const ToastText = styled.Text`
 `;
 
 export const SectionTitle = styled.Text<ResponsiveProps>`
-  font-size: ${({ isTablet, isDesktop }) => 
+  font-size: ${({ isTablet, isDesktop }) =>
     isDesktop ? 18 : isTablet ? 16 : 14}px;
   font-weight: 600;
   color: ${({ theme }) => theme.colors.text.primary};
@@ -261,7 +279,7 @@ export const InstructionHighlight = styled.Text`
 
 export const InstructionCode = styled.Text`
   font-family: monospace;
-  background-color: ${({ theme }) => theme.colors.surface + '80'};
+  background-color: ${({ theme }) => theme.colors.surface + "80"};
   padding: 2px 6px;
   border-radius: 4px;
   color: ${({ theme }) => theme.colors.text.primary};
@@ -289,8 +307,10 @@ export const HelpButtonText = styled.Text`
 `;
 
 export const Actions = styled.View<ResponsiveProps>`
-  flex-direction: ${({ isTablet, isDesktop }) => 
-    (isTablet || isDesktop) ? 'row' : 'column'};
+  flex-direction: ${({ isTablet, isDesktop }) =>
+    isTablet || isDesktop ? "row" : "column"};
+
   gap: 12px;
-  margin-top: 8px;
+  margin-top: 12px;
+  width: 100%;
 `;

@@ -194,7 +194,7 @@ export default function KitchenPage() {
         onConfirm={handleCreateKitchen}
         confirmLabel="Criar Cozinha"
         showSwitch
-        switchLabel="Mostrar na Cozinha"
+        switchLabel="Mostrar na Cozinha?"
         switchValue={showOnKitchen}
         onSwitchChange={setShowOnKitchen}
         showColorPicker
@@ -215,7 +215,7 @@ export default function KitchenPage() {
         showDelete
         onDelete={handleDeleteKitchen}
         showSwitch
-        switchLabel="Mostrar na Cozinha"
+        switchLabel="Mostrar na Cozinha?"
         switchValue={showOnKitchen}
         onSwitchChange={setShowOnKitchen}
         showColorPicker

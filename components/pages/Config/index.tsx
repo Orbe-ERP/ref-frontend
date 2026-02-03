@@ -67,7 +67,7 @@ export default function ConfigPage() {
                     size={22}
                     color={theme.theme.colors.primary}
                   />
-                  <S.ItemText>Taxas</S.ItemText>
+                  <S.ItemText>Taxas de Cartão</S.ItemText>
                 </S.ItemRow>
                 <S.ItemRow onPress={() => router.push("/create-user")}>
                   <Ionicons
@@ -75,7 +75,7 @@ export default function ConfigPage() {
                     size={22}
                     color={theme.theme.colors.primary}
                   />
-                  <S.ItemText>Criar Usuários</S.ItemText>
+                  <S.ItemText>Gerenciar Usuários</S.ItemText>
                 </S.ItemRow>
                 <S.ItemRow onPress={() => router.push("/completed-orders")}>
                   <Ionicons

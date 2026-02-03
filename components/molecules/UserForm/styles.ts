@@ -3,9 +3,9 @@ import styled from "styled-components/native";
 export const Container = styled.View`
   flex: 1;
   background-color: ${({ theme }) => theme.colors.background};
-  padding: 0 20px;
 `;
 
 export const ScrollContainer = styled.ScrollView`
-  padding: 50px 0 30px 0;
+  border-radius: 12px;
+  padding: 24px;
 `;

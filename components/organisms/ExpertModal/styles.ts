@@ -25,6 +25,7 @@ export const ModalTitle = styled.Text`
 
 export const Actions = styled.View`
   flex-direction: row;
+  margin-bottom: 10px;
   justify-content: space-between;
   width: 100%;
 `;

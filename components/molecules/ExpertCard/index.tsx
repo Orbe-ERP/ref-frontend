@@ -35,7 +35,6 @@ interface ExpertCardProps {
   onEdit: () => void;
 }
 
-// Mapeamento de palavras-chave para ícones
 const getIconForCategory = (categoryName: string, isCategory: boolean, isProduct: boolean) => {
   const name = categoryName.toLowerCase();
   
@@ -57,7 +56,6 @@ const getIconForCategory = (categoryName: string, isCategory: boolean, isProduct
   if (name.includes('leite') || name.includes('milk')) return Milk;
   if (name.includes('maçã') || name.includes('apple') || name.includes('fruit')) return Apple;
   
-  // Fallbacks baseados no tipo
   if (isCategory) return Utensils;
   if (isProduct) return ChefHat;
   
@@ -72,11 +70,9 @@ const ExpertCard: React.FC<ExpertCardProps> = ({
 }) => {
   const { theme } = useAppTheme();
   
-  // Determina se é categoria ou produto (não podemos usar instanceof com types)
-  const isCategory = 'active' in cardType; // Categoria geralmente tem 'active'
-  const isProduct = 'price' in cardType; // Produto geralmente tem 'price'
+  const isCategory = 'active' in cardType;
+  const isProduct = 'price' in cardType;
   
-  // Determina qual ícone usar
   const IconComponent = getIconForCategory(cardType.name, isCategory, isProduct);
   
   return (
@@ -92,7 +88,7 @@ const ExpertCard: React.FC<ExpertCardProps> = ({
         <CardLabel>{cardType.name}</CardLabel>
       </Card>
       <View style={{ position: "absolute", top: 8, right: 8 }}>
-        <IconButton icon={"pencil"} size={18} onPress={onEdit} />
+        <IconButton icon={"pencil"} size={16} onPress={onEdit} />
       </View>
     </View>
   );

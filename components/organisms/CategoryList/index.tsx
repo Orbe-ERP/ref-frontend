@@ -1,7 +1,7 @@
 import React from "react";
 import { Ionicons } from "@expo/vector-icons";
 import ProductOption from "@/components/molecules/ProductOption";
-import { Header, Products, Category, CategoryText } from "./styles";
+import { Header, Products, Category, CategoryText, Container } from "./styles";
 import { Product } from "@/services/product";
 
 interface Props {
@@ -24,7 +24,7 @@ export default function CategoryList({
   handleAddProduct,
 }: Props) {
   return (
-    <>
+    <Container>
       {categories.map((category) => (
         <Category key={category.id}>
           <Header
@@ -76,6 +76,6 @@ export default function CategoryList({
           )}
         </Category>
       ))}
-    </>
+    </Container>
   );
 }

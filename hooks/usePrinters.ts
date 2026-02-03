@@ -43,12 +43,14 @@ export function usePrinters() {
       throw new Error("Nenhum restaurante selecionado");
     }
 
-    await createPrinterService({
+    const created = await createPrinterService({
       ...data,
       restaurantId: selectedRestaurant.id,
     });
 
     await loadPrinters();
+
+    return created
   }
 
   async function updatePrinter(
@@ -71,6 +73,7 @@ export function usePrinters() {
     setPrinters(prev =>
       prev.map(p => (p.id === id ? { ...p, agentKey: res.agentKey } : p))
     );
+
     return res;
   }
 

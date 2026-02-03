@@ -171,6 +171,7 @@ export const NoOrdersText = styled.Text`
 
 export const PaymentMethodsContainer = styled.View`
   margin-top: 12px;
+  width: 100%;
 `;
 
 export const PaymentMethodsText = styled.Text`
@@ -182,12 +183,15 @@ export const PaymentMethodsText = styled.Text`
 
 export const PaymentOptions = styled.View`
   flex-direction: row;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
   flex-wrap: wrap;
 `;
 
 export const PaymentButton = styled.TouchableOpacity<{ selected?: boolean }>`
   flex-basis: 48%;
-  max-width: 40%;
   flex-direction: row;
   justify-content: center;
   align-items: center;
@@ -195,11 +199,12 @@ export const PaymentButton = styled.TouchableOpacity<{ selected?: boolean }>`
   height: 42px;
   border-radius: 6px;
   margin-bottom: 8px;
-  background-color: ${({ selected, theme }) => selected ? theme.colors.primary : theme.colors.background};
+  margin: 5px;;
+  background-color: ${({ selected, theme }) => selected ? theme.colors.primary : theme.colors.overlay};
 `;
 
 export const PaymentButtonText = styled.Text<{ selected?: boolean }>`
-  color: ${({ selected, theme }) => selected ? theme.colors.surface : theme.colors.text.secondary};
+  color: ${({ selected, theme }) => selected ? theme.colors.text.primary : theme.colors.text.secondary};
   font-size: 12px;
   font-weight: 600;
   margin-left: 4px;

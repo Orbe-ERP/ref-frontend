@@ -406,7 +406,7 @@ export default function OppenedOrderPage() {
                         <S.PaymentMethodsText>
                           Método de pagamento:
                         </S.PaymentMethodsText>
-                        <S.PaymentOptions style={{ width: screenWidth * 0.9 }}>
+                        <S.PaymentOptions>
                           {["PIX", "CASH", "CREDIT_CARD", "DEBIT_CARD"].map(
                             (method) => {
                               const selected = order.paymentMethod === method;
@@ -484,6 +484,7 @@ export default function OppenedOrderPage() {
                         placeholderTextColor="#ddd"
                         style={{
                           backgroundColor: theme.theme.colors.overlay,
+                          color: theme.theme.colors.text.primary,
                           padding: 10,
                           borderRadius: 5,
                           fontSize: 16,

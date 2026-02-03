@@ -1,6 +1,5 @@
 import styled from "styled-components/native";
 
-// Interface para props responsivas
 interface ResponsiveProps {
   isMobile?: boolean;
   isTablet?: boolean;
@@ -11,49 +10,22 @@ interface ResponsiveProps {
 export const ScrollContent = styled.ScrollView<ResponsiveProps>`
   flex: 1;
 
-  ${({ isTablet, isDesktop }) =>
-    isTablet || isDesktop
-      ? `
-    width: 100%;
-  `
-      : ""}
+  width: 100vw;
 `;
 
 export const Container = styled.View<ResponsiveProps>`
   flex: 1;
   background-color: ${({ theme }) => theme.colors.background};
   padding: 16px;
-
-  ${({ isWeb, isTablet, isDesktop }) =>
-    (isTablet || isDesktop) && isWeb
-      ? `
-    align-items: center;
-  `
-      : ""}
 `;
 
 export const ContentWrapper = styled.View<ResponsiveProps>`
   flex: 1;
-
-  ${({ isTablet, isDesktop }) =>
-    isTablet || isDesktop
-      ? `
-    max-width: 600px;
-    width: 100%;
-    align-self: center;
-  `
-      : ""}
+  width: 100vw;
 `;
 
 export const Footer = styled.View<ResponsiveProps>`
-  padding: 20px;
 
-  ${({ isTablet, isDesktop }) =>
-    isTablet || isDesktop
-      ? `
-    align-items: center;
-  `
-      : ""}
 `;
 
 export const CartContainer = styled.TouchableOpacity`

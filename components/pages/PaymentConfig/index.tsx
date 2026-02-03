@@ -151,12 +151,13 @@ export default function PaymengConfigPage() {
           <S.StyledPicker
             selectedValue={method}
             onValueChange={(value: string) => setMethod(value as PaymentMethod)}
-            dropdownIconColor="#ffffff"
+            dropdownIconColor={theme.theme.colors.primary}
+            itemStyle={{ height: 48, fontSize: 14 }}
           >
             <Picker.Item
               label="Selecione o tipo"
               value=""
-              color="#a0aec0"
+              color={theme.theme.colors.text.secondary}
               style={{ fontSize: 14 }}
             />
             {Object.entries(PaymentMethodLabels).map(([key, label]) => (
@@ -164,7 +165,7 @@ export default function PaymengConfigPage() {
                 key={key}
                 label={label}
                 value={key}
-                color="#000"
+                color={theme.theme.colors.primary}
                 style={{ fontSize: 14 }}
               />
             ))}
@@ -176,12 +177,13 @@ export default function PaymengConfigPage() {
           <S.StyledPicker
             selectedValue={brand}
             onValueChange={(value: string) => setBrand(value as CardBrand)}
-            dropdownIconColor="#ffffff"
+            dropdownIconColor={theme.theme.colors.primary}
+            itemStyle={{ height: 48, fontSize: 14 }}
           >
             <Picker.Item
               label="Selecione a bandeira"
               value=""
-              color="#a0aec0"
+              color={theme.theme.colors.text.secondary}
               style={{ fontSize: 14 }}
             />
             {Object.entries(CardBrandLabels).map(([key, label]) => (
@@ -189,7 +191,7 @@ export default function PaymengConfigPage() {
                 key={key}
                 label={label}
                 value={key}
-                color="#000"
+                color={theme.theme.colors.primary}
                 style={{ fontSize: 14 }}
               />
             ))}
@@ -200,21 +202,26 @@ export default function PaymengConfigPage() {
         <S.Input
           keyboardType="numeric"
           placeholder="Ex: 2.5"
+          placeholderTextColor={theme.theme.colors.text.primary}
           value={feePercent}
           onChangeText={setFeePercent}
         />
-
         <S.Row>
-          <Button
-            label="Limpar"
-            variant="secondary"
-            onPress={() => {
-              setFeePercent("");
-              setMethod("");
-              setBrand("");
-            }}
-          ></Button>
-          <Button label="Adicionar Taxa" onPress={handleAdd}></Button>
+          <S.ButtonWrapper>
+            <Button
+              label="Limpar"
+              variant="danger"
+              onPress={() => {
+                setFeePercent("");
+                setMethod("");
+                setBrand("");
+              }}
+            />
+          </S.ButtonWrapper>
+
+          <S.ButtonWrapper>
+            <Button label="Adicionar Taxa" onPress={handleAdd} />
+          </S.ButtonWrapper>
         </S.Row>
 
         <S.Title style={{ marginTop: 30 }}>Taxas Cadastradas</S.Title>

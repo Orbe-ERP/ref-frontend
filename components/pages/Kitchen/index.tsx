@@ -156,8 +156,7 @@ const socket = io(process.env.EXPO_PUBLIC_API_URL as string);
     if (!order?.products) return;
     setOrders((prev) => [...prev, order]);
   });
-
-  // ✅ cleanup correto
+  
   return () => {
     socket.disconnect();
   };

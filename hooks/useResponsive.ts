@@ -8,10 +8,8 @@ export function useResponsive() {
   const isDesktop = width >= 1024;
   const isLargeDesktop = width >= 1440;
 
-  // Fatores de escala mais granulares
   const scale = isMobile ? 1 : isTablet ? 0.9 : isLargeDesktop ? 0.8 : 0.85;
   
-  // Fator de escala para textos
   const textScale = isMobile ? 1 : isTablet ? 1.1 : 1.2;
 
   return {

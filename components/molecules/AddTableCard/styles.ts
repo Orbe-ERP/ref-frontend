@@ -1,7 +1,7 @@
 import styled from "styled-components/native";
 
 export const AddButton = styled.TouchableOpacity`
-  border-width: 2;
+  border-width: 1;
   border-color: ${({ theme }) => theme.colors.primary};
   border-style: dashed;
   width: 120;
@@ -9,12 +9,8 @@ export const AddButton = styled.TouchableOpacity`
   justify-content: center;
   align-items: center;
   border-radius: 10px;
-  background-color: ${({ theme }) => theme.colors.surface};
+  background-color: rgba(255, 255, 255, 0.06);
   shadow-color: ${({ theme }) => theme.colors.text.primary};
-  shadow-offset: 0px 2px;
-  shadow-opacity: 0.2;
-  shadow-radius: 4px;
-  elevation: 6;
 `;
 
 export const AddLabel = styled.Text`

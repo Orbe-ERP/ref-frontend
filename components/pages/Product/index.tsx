@@ -45,7 +45,6 @@ export default function ProductScreen() {
     if (!selectedRestaurant) return;
     try {
       const data = await getKitchens(selectedRestaurant.id);
-
       setKitchens(data);
     } catch (error: any) {
       if (error.response?.status === 404) {
@@ -74,50 +73,52 @@ export default function ProductScreen() {
           headerTintColor: theme.colors.text.primary,
         }}
       />
+
       <ScrollView
         contentContainerStyle={{
           flexDirection: "row",
           flexWrap: "wrap",
           justifyContent: "center",
-          gap: "15px"
         }}
       >
         {products.length === 0 ? (
           <Text
             style={{
-              color: "white",
-              marginTop: 20,
-              marginBottom: 20,
+              color: theme.colors.text.primary,
               textAlign: "center",
               width: "100%",
+              marginTop: 20,
             }}
           >
             Nenhum produto encontrado nesta categoria.
           </Text>
         ) : (
           products.map((product) => (
-            <ExpertCard
-              icon="cube-outline"
-              key={product.id}
-              cardType={product}
-              onPress={() =>
-                router.push(`/observation?productId=${product.id}`)
-              }
-              onEdit={() => {
-                setSelectedProduct(product);
-                setIsModalVisible(true);
-              }}
-            />
+            <View key={product.id} style={{ marginInline: 16 }}>
+              <ExpertCard
+                icon="cube-outline"
+                cardType={product}
+                onPress={() =>
+                  router.push(`/observation?productId=${product.id}`)
+                }
+                onEdit={() => {
+                  setSelectedProduct(product);
+                  setIsModalVisible(true);
+                }}
+              />
+            </View>
           ))
         )}
 
-        <AddExpertCard
-          onPress={() => {
-            setSelectedProduct(null);
-            setIsModalVisible(true);
-          }}
-          label="Criar Produto"
-        />
+        <View style={{ marginBottom: 16 }}>
+          <AddExpertCard
+            onPress={() => {
+              setSelectedProduct(null);
+              setIsModalVisible(true);
+            }}
+            label="Criar Produto"
+          />
+        </View>
       </ScrollView>
 
       {selectedRestaurant && categoryId && (
