@@ -175,15 +175,12 @@ export default function ProductModifiersPage() {
                   stockItemId={stockItemId}
                   setStockItemId={setStockItemId}
                 />
-
-                <Row style={{ marginTop: 12 }}>
-                  <Label>Efeito do modificador</Label>
-                  <View style={{ flexDirection: "row", gap: 12 }}>
+                <View style={{ marginTop: 12 }}>
+                  <Label style={{ marginBottom: 8 }}>Efeito do modificador</Label>                  
+                  <View style={{ gap: 8 }}>
                     <Button
                       label="➖ Consumir Estoque"
-                      variant={
-                        stockEffect === "REMOVE" ? "primary" : "secondary"
-                      }
+                      variant={stockEffect === "REMOVE" ? "primary" : "secondary"}
                       onPress={() => setStockEffect("REMOVE")}
                     />
                     <Button
@@ -192,7 +189,7 @@ export default function ProductModifiersPage() {
                       onPress={() => setStockEffect("ADD")}
                     />
                   </View>
-                </Row>
+                </View>
 
                 {stockEffect === "REMOVE" && (
                   <Input
