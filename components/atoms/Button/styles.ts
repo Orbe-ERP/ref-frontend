@@ -1,7 +1,9 @@
 import styled from "styled-components/native";
+import { LinearGradient } from "expo-linear-gradient";
+type Variant = "primary" | "secondary" | "third" | "danger" | "icon";
 
 export const StyledButton = styled.TouchableOpacity<{
-  variant: "primary" | "secondary" | "danger" | "icon";
+  variant: Variant;
   hasFlex1?: boolean;
 }>`
   flex-direction: row;
@@ -9,39 +11,25 @@ export const StyledButton = styled.TouchableOpacity<{
   justify-content: center;
   ${({ hasFlex1 }) => hasFlex1 && "flex: 1;"}
 
-  background-color: ${({ theme, variant }) =>
-    variant === "icon"
-      ? "transparent"
-      : variant === "primary"
-      ? theme.colors.primary
-      : variant === "secondary"
-      ? theme.colors.secondary
-      : theme.colors.feedback.error};
+  border-radius: ${({ variant }) => (variant === "icon" ? "0px" : "14px")};
+  overflow: hidden;
 
-  border-radius: ${({ variant }) => (variant === "icon" ? "0px" : "12px")};
+  margin-vertical: ${({ variant }) => (variant === "icon" ? "0px" : "6px")};
 
-  padding-vertical: ${({ variant }) => (variant === "icon" ? "0px" : "16px")};
-  padding-horizontal: ${({ variant }) => (variant === "icon" ? "0px" : "18px")};
-
-  margin-vertical: ${({ variant }) => (variant === "icon" ? "0px" : "4px")};
-
-  shadow-color: ${({ variant }) => (variant === "icon" ? "transparent" : "#000")};
-  shadow-offset: 0px 3px;
-  shadow-opacity: ${({ variant }) => (variant === "icon" ? 0 : 0.2)};
-  shadow-radius: 4px;
-  elevation: ${({ variant }) => (variant === "icon" ? 0 : 4)};
+  shadow-color: #000;
+  shadow-offset: 0px 6px;
+  shadow-opacity: 0.25;
+  shadow-radius: 8px;
+  elevation: 6;
 `;
 
-export const Label = styled.Text<{ $hasIcon?: boolean; $isIcon?: boolean }>`
-  font-size: 16px;
-  font-weight: 600;
+export const Label = styled.Text`
+  font-size: 15px;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: ${({ theme }) => theme.colors.text.primary};
+  letter-spacing: 0.6px;
+  color: white;
   text-align: center;
-  flex-shrink: 1;
-
-  ${({ $isIcon }) => $isIcon && "display: none;"}
 `;
 
 export const IconContainer = styled.View<{ $isIcon?: boolean }>`
@@ -57,4 +45,14 @@ export const IconContainer = styled.View<{ $isIcon?: boolean }>`
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+`;
+
+export const Gradient = styled(LinearGradient)<{ variant: Variant }>`
+  flex: 1;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+
+  padding-vertical: ${({ variant }) => (variant === "icon" ? "0px" : "16px")};
+  padding-horizontal: ${({ variant }) => (variant === "icon" ? "0px" : "20px")};
 `;

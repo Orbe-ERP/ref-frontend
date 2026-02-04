@@ -439,7 +439,8 @@ async function handleOpenBillingPortal() {
                     {canAccessDashboard && (
                       <ActionsRow isMobile={isMobile} hasMarginTop>
                         <Button
-                          label="📊 Dashboard Completo"
+                        variant="primary"
+                          label="Dashboard"
                           onPress={() => router.push("/(private)/dashboard")}
                         />
                       </ActionsRow>
@@ -481,12 +482,14 @@ async function handleOpenBillingPortal() {
                 )}
                 <ButtonWrapper isTablet={isTablet} isDesktop={isDesktop}>
                   <Button
+                  variant="third"
                     label={isMobile ? "Planos" : "💳 Planos"}
                     onPress={() => router.push("/plans")}
                   />
                 </ButtonWrapper>
                 <ButtonWrapper isTablet={isTablet} isDesktop={isDesktop}>
                     <Button
+                    variant="secondary"
                       label={isMobile ? "Histórico de Faturas" : "🍀 Histórico de Faturas"}
                       onPress={handleOpenBillingPortal}
                     />

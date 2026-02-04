@@ -17,6 +17,7 @@ import { Pagination } from "@/components/organisms/Pagination";
 import { Loader } from "@/components/atoms/Loader";
 import { useResponsive } from "@/hooks/useResponsive";
 import { CalendarModal } from "@/components/molecules/Calendar";
+import Button from "@/components/atoms/Button";
 
 export default function CompletedOrdersPage() {
   const router = useRouter();
@@ -226,9 +227,7 @@ export default function CompletedOrdersPage() {
               </S.DateInputMobile>
             </S.DateRowMobile>
 
-            <S.SearchButtonMobile onPress={handleSearch} disabled={loading}>
-              <S.SearchButtonText>{"Buscar"}</S.SearchButtonText>
-            </S.SearchButtonMobile>
+            <Button label="Buscar" onPress={handleSearch} disabled={loading} />
           </S.FilterContainerMobile>
         )}
 

@@ -191,7 +191,10 @@ export default function ManualPurchaseScreen() {
       />
 
       <S.ScreenContainer>
-        <ScrollView>
+        <ScrollView
+        
+          showsVerticalScrollIndicator={false}
+>
           <S.FormSection>
             <S.SectionHeader>
               <S.SectionTitle>Fornecedor</S.SectionTitle>

@@ -36,7 +36,7 @@ export default function AddComposition() {
 
   const showToast = (
     type: "success" | "error" | "info" | "warning",
-    message: string
+    message: string,
   ) => {
     Toast.show({
       type,
@@ -44,10 +44,10 @@ export default function AddComposition() {
         type === "error"
           ? "Erro"
           : type === "success"
-          ? "Sucesso"
-          : type === "warning"
-          ? "Aviso"
-          : "Informação",
+            ? "Sucesso"
+            : type === "warning"
+              ? "Aviso"
+              : "Informação",
       text2: message,
       position: "top",
       visibilityTime: 3000,
@@ -89,7 +89,7 @@ export default function AddComposition() {
     searchTerm.trim() === ""
       ? stockItems
       : stockItems.filter((item) =>
-          item.name.toLowerCase().includes(searchTerm.toLowerCase())
+          item.name.toLowerCase().includes(searchTerm.toLowerCase()),
         );
 
   const selectedStockItem = stockItems.find((i) => i.id === stockItemId);
@@ -177,7 +177,9 @@ export default function AddComposition() {
                   overflow: "hidden",
                 }}
               >
-                <Picker selectedValue={kitchenId} onValueChange={setKitchenId}>
+                <Picker selectedValue={kitchenId} onValueChange={setKitchenId}
+                                    style={{ color: theme.colors.primary}}
+>
                   <Picker.Item label="Selecione a cozinha" value="" />
                   {kitchens.map((k) => (
                     <Picker.Item key={k.id} label={k.name} value={k.id} />
@@ -203,6 +205,8 @@ export default function AddComposition() {
                 <Picker
                   selectedValue={stockItemId}
                   onValueChange={setStockItemId}
+                    style={{ color: theme.colors.primary}}
+
                 >
                   <Picker.Item label="Selecione o ingrediente" value="" />
                   {filteredItems.map((item) => (
@@ -231,7 +235,11 @@ export default function AddComposition() {
               }}
             >
               <TextInput
-                style={{ flex: 1, height: 44, color: theme.colors.text.primary }}
+                style={{
+                  flex: 1,
+                  height: 44,
+                  color: theme.colors.text.primary,
+                }}
                 keyboardType="numeric"
                 value={quantity}
                 onChangeText={setQuantity}

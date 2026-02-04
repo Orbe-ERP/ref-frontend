@@ -6,6 +6,7 @@ import { Text } from "@/components/atoms/Text";
 import Button from "@/components/atoms/Button";
 import KitchenLabel from "@/components/atoms/KitchenLabel";
 import ConfirmActionModal from "../ConfirmModal";
+import { useAppTheme } from "@/context/ThemeProvider/theme";
 
 export interface KitchenCompositionItem {
   orderId: string;
@@ -82,6 +83,7 @@ export default function KitchenOrderCard({
 
   const kitchen = items[0].kitchen;
   const kitchenColor = kitchen?.color ?? "#CBD5E1";
+  const {theme} = useAppTheme();
 
   const isPreparing = items.some((item) => item.status === "WORK_IN_PROGRESS");
 
@@ -128,9 +130,9 @@ export default function KitchenOrderCard({
 
         {items.map((item, index) => (
           <View key={index} style={{ marginBottom: 12 }}>
-            <Text weight="bold">{item.productName}</Text>
-            <Text color="#6B7280" weight="bold" size={20}>
-              ↳ {item.compositionName} x{item.quantity}
+            <Text size={24} color={theme.colors.primary} weight="bold">{item.quantity}x - {item.productName }</Text>
+            <Text color={theme.colors.feedback.warning} weight="bold" size={20}>
+              {' '}↳ {item.quantity}x - {item.compositionName} 
             </Text>
 
             {item.customObservation && (
@@ -152,20 +154,17 @@ export default function KitchenOrderCard({
 
         <View style={{ flexDirection: "column", marginTop: 8 }}>
           <Button
-            hasFlex1
             label="Preparar"
             variant="secondary"
             onPress={() => setModalType("prepare")}
           />
           <Button
-            hasFlex1
             label="Pedido Pronto"
             variant="primary"
             onPress={() => setModalType("ready")}
           />
           {onCancelOrder && (
             <Button
-              hasFlex1
               label="Cancelar Pedido"
               variant="danger"
               onPress={() => setModalType("cancel")}

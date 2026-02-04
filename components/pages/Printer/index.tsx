@@ -235,19 +235,13 @@ export default function PrinterListScreen() {
                 <S.SwitchRow>
                   <S.Label>Ativo</S.Label>
 
-                  <CustomSwitch
-                    value={isActive}
-                    onValueChange={setIsActive}
-                  />
+                  <CustomSwitch value={isActive} onValueChange={setIsActive} />
                 </S.SwitchRow>
               )}
 
               <S.SwitchRow>
                 <S.Label>Agente padrão</S.Label>
-                <CustomSwitch
-                  value={isDefault}
-                  onValueChange={setIsDefault}
-                />
+                <CustomSwitch value={isDefault} onValueChange={setIsDefault} />
               </S.SwitchRow>
 
               <S.HelpText style={{ marginTop: -8 }}>
@@ -257,7 +251,7 @@ export default function PrinterListScreen() {
               </S.HelpText>
 
               <S.Actions>
-                <Button label="Cancelar" onPress={resetForm} />
+                <Button label="Cancelar" onPress={resetForm} variant="danger" />
                 <Button
                   label={
                     editingPrinter ? "Salvar alterações" : "Adicionar agente"
@@ -272,21 +266,21 @@ export default function PrinterListScreen() {
                 <S.InfoContainer>
                   <S.Name>Nova Chave</S.Name>
                   <S.Info>{visibleAgentKey}</S.Info>
-                  <S.Info>• Essa chave será usada para autenticação do agente de impressão.</S.Info>
+                  <S.Info>
+                    • Essa chave será usada para autenticação do agente de
+                    impressão.
+                  </S.Info>
                 </S.InfoContainer>
 
-                      <S.ActionsRow>
-
-                      <S.ActionButtonWrapper>
-                          <Button
-                          variant="danger"
-                            label="Copiar"
-                            onPress={copyAgentKey}
-                          />
-                        </S.ActionButtonWrapper>
-                                              </S.ActionsRow>
-
-
+                <S.ActionsRow>
+                  <S.ActionButtonWrapper>
+                    <Button
+                      variant="danger"
+                      label="Copiar"
+                      onPress={copyAgentKey}
+                    />
+                  </S.ActionButtonWrapper>
+                </S.ActionsRow>
               </S.Card>
             )}
 
@@ -299,7 +293,7 @@ export default function PrinterListScreen() {
                 <FlatList
                   data={printers}
                   keyExtractor={(item) => item.id}
-                  scrollEnabled={false}
+                  scrollEnabled={true}
                   contentContainerStyle={{
                     paddingBottom: 120,
                   }}
@@ -326,7 +320,7 @@ export default function PrinterListScreen() {
                       <S.ActionsRow>
                         <S.ActionButtonWrapper>
                           <Button
-                            label="Editar"
+                            label="Editar" variant="third"
                             onPress={() => handleEdit(item)}
                           />
                         </S.ActionButtonWrapper>

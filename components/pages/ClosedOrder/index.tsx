@@ -4,16 +4,13 @@ import { getCompletedOrdersByTable, Order } from "@/services/order";
 import { Ionicons } from "@expo/vector-icons";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { 
-  ActivityIndicator, 
-  FlatList, 
-  RefreshControl,
-} from "react-native";
+import { ActivityIndicator, FlatList, RefreshControl } from "react-native";
 import Toast from "react-native-toast-message";
 import * as S from "./styles";
 import dayjs from "dayjs";
 import { Loader } from "@/components/atoms/Loader";
 import { CalendarModal } from "@/components/molecules/Calendar";
+import Button from "@/components/atoms/Button";
 
 export default function ClosedOrdersPage() {
   const { tableId } = useLocalSearchParams();
@@ -27,15 +24,23 @@ export default function ClosedOrdersPage() {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [startDate, setStartDate] = useState<string>(dayjs().subtract(30, "day").format("YYYY-MM-DD"));
+  const [startDate, setStartDate] = useState<string>(
+    dayjs().subtract(30, "day").format("YYYY-MM-DD"),
+  );
   const [endDate, setEndDate] = useState<string>(dayjs().format("YYYY-MM-DD"));
-  const [showCalendarFor, setShowCalendarFor] = useState<"start" | "end" | null>(null);
+  const [showCalendarFor, setShowCalendarFor] = useState<
+    "start" | "end" | null
+  >(null);
 
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [showPrintModal, setShowPrintModal] = useState(false);
   const [printing, setPrinting] = useState(false);
 
-  const loadOrders = async (pageNum = 1, sd: string = startDate, ed: string = endDate) => {
+  const loadOrders = async (
+    pageNum = 1,
+    sd: string = startDate,
+    ed: string = endDate,
+  ) => {
     try {
       if (!tableId || typeof tableId !== "string")
         throw new Error("ID da mesa não encontrado");
@@ -43,7 +48,13 @@ export default function ClosedOrdersPage() {
       setError(null);
       setLoading(true);
 
-      const response = await getCompletedOrdersByTable(tableId, pageNum, 10, sd, ed);
+      const response = await getCompletedOrdersByTable(
+        tableId,
+        pageNum,
+        10,
+        sd,
+        ed,
+      );
 
       setOrders(response.data);
       setPage(response.page);
@@ -214,9 +225,7 @@ export default function ClosedOrdersPage() {
   };
 
   if (loading && orders.length === 0) {
-    return (
-      <Loader size="large" />
-    );
+    return <Loader size="large" />;
   }
 
   return (
@@ -244,14 +253,10 @@ export default function ClosedOrdersPage() {
           </S.DateInput>
         </S.DateRow>
 
-        <S.SearchButton onPress={handleSearch} disabled={loading}>
-          <S.SearchButtonText>
-            {"Buscar"}
-          </S.SearchButtonText>
-        </S.SearchButton>
+        <Button onPress={handleSearch} disabled={loading} label="Buscar" />
       </S.FilterContainer>
 
-      <CalendarModal 
+      <CalendarModal
         visible={!!showCalendarFor}
         startDate={startDate}
         endDate={endDate}
@@ -280,7 +285,9 @@ export default function ClosedOrdersPage() {
               color={theme.colors.text.secondary}
             />
             <S.EmptyText>
-              {loading ? "Carregando..." : "Nenhuma comanda fechada encontrada\npara esta mesa no período selecionado."}
+              {loading
+                ? "Carregando..."
+                : "Nenhuma comanda fechada encontrada\npara esta mesa no período selecionado."}
             </S.EmptyText>
           </S.EmptyState>
         }
@@ -297,9 +304,7 @@ export default function ClosedOrdersPage() {
         isLoading={loading}
       />
 
-      {loading && orders.length > 0 && (
-        <Loader size="small" /> 
-      )}
+      {loading && orders.length > 0 && <Loader size="small" />}
 
       {showPrintModal && selectedOrder && (
         <S.ModalOverlay>
@@ -326,9 +331,7 @@ export default function ClosedOrdersPage() {
 
               <S.PrintButtonModal onPress={confirmPrint} disabled={printing}>
                 {printing ? (
-                  <ActivityIndicator
-                    size="small"
-                  />
+                  <ActivityIndicator size="small" />
                 ) : (
                   <S.ButtonText>Imprimir</S.ButtonText>
                 )}

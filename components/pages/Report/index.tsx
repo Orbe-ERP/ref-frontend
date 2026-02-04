@@ -8,6 +8,7 @@ import { useAppTheme } from "@/context/ThemeProvider/theme";
 import * as S from "./styles";
 import { useResponsive } from "@/hooks/useResponsive";
 import { CalendarModal } from "@/components/molecules/Calendar";
+import Button from "@/components/atoms/Button";
 
 export default function ReportScreen() {
   const { selectedRestaurant } = useRestaurant();
@@ -124,9 +125,12 @@ export default function ReportScreen() {
                 </S.DateInputMobile>
               </S.DateRowMobile>
 
-              <S.SearchButtonMobile onPress={handleSearch} disabled={loading}>
-                <S.SearchButtonText>{"Buscar"}</S.SearchButtonText>
-              </S.SearchButtonMobile>
+              <Button
+                label="Buscar"
+                variant="primary"
+                onPress={handleSearch}
+                disabled={loading}
+              />
             </S.FilterContainerMobile>
           )}
 
@@ -179,6 +183,19 @@ export default function ReportScreen() {
                 </S.Cell>
               </S.RowFooter>
 
+              <S.RowFooter>
+                <S.Cell
+                  style={{ flex: 0.8, textAlign: "left", paddingLeft: 12 }}
+                >
+                  Total Cartão:
+                </S.Cell>
+                <S.Cell>
+                  R${" "}
+                  {reportData
+                    .reduce((sum, order) => sum + order.feePaidValue, 0)
+                    .toFixed(2)}
+                </S.Cell>
+              </S.RowFooter>
               <S.RowFooter>
                 <S.Cell
                   style={{ flex: 0.8, textAlign: "left", paddingLeft: 12 }}

@@ -188,7 +188,7 @@ export const PaymentTitle = styled.Text`
 `;
 
 export const PaymentInfo = styled.Text`
-  color: ${({ theme }) => theme.colors.text.secondary};
+  color: ${({ theme }) => theme.colors.primary};
   font-size: 14px;
 `;
 

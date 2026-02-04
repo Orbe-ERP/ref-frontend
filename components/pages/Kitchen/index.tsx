@@ -127,7 +127,7 @@ export default function KitchenPage() {
   const [loading, setLoading] = useState(true);
 
   const { selectedRestaurant } = useRestaurant();
-  const theme = useAppTheme();
+  const {theme} = useAppTheme();
 
 useEffect(() => {
   if (!selectedRestaurant) return;
@@ -216,25 +216,38 @@ const socket = io(process.env.EXPO_PUBLIC_API_URL as string);
       <Stack.Screen
         options={{
           title: "Cozinha",
-          headerStyle: { backgroundColor: theme.theme.colors.background },
-          headerTintColor: theme.theme.colors.text.primary,
+          headerStyle: { backgroundColor: theme.colors.background },
+          headerTintColor: theme.colors.text.primary,
         }}
       />
 
       <S.Container>
-        <S.PickerContainer>
-          <Picker
-            selectedValue={selectedKitchenId}
-            onValueChange={setSelectedKitchenId}
-          >
-            <Picker.Item label="Todas as cozinhas" value="null" />
-            {kitchens
-              .filter((k) => k.showOnKitchen)
-              .map((k) => (
-                <Picker.Item key={k.id} label={k.name} value={k.id} />
-              ))}
-          </Picker>
-        </S.PickerContainer>
+<S.PickerContainer>
+  <S.StyledPicker
+    selectedValue={selectedKitchenId}
+    onValueChange={setSelectedKitchenId}
+    style={{
+      color: selectedKitchenId ? theme.colors.primary : theme.colors.text.primary,
+    }}
+  >
+    <Picker.Item
+      label="Todas as cozinhas"
+      value={null}
+      color={theme.colors.text.muted}
+    />
+
+    {kitchens
+      .filter((k) => k.showOnKitchen)
+      .map((k) => (
+        <Picker.Item
+          key={k.id}
+          label={k.name}
+          value={k.id}
+          color={theme.colors.primary}
+        />
+      ))}
+  </S.StyledPicker>
+</S.PickerContainer>
 
         {filteredKitchens.length === 0 && (
           <S.EmptyText>Nenhum item para esta cozinha.</S.EmptyText>
