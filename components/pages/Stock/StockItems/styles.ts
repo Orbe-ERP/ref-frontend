@@ -11,6 +11,7 @@ const statusToFeedback = {
 export const ScreenContainer = styled.ScrollView`
   flex: 1;
   padding: 16px;
+  height: 100vh;
   background-color: ${({ theme }) => theme.colors.background};
 `;
 

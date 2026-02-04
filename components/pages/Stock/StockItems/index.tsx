@@ -14,11 +14,22 @@ import { Pagination } from "@/components/organisms/Pagination";
 import { useAppTheme } from "@/context/ThemeProvider/theme";
 import useRestaurant from "@/hooks/useRestaurant";
 import useAuth from "@/hooks/useAuth";
-import { getStockItems, deleteStockItem, StockItem } from "@/services/stock";
+import { getStockItems, deleteStockItem, StockItem, Unit } from "@/services/stock";
 import Toast from "react-native-toast-message";
 import { Loader } from "@/components/atoms/Loader";
 
 type StockStatus = "ok" | "warning" | "critical";
+
+
+export const unitLabelMap: Record<Unit, string> = {
+  [Unit.UNIT]: "Un",
+  [Unit.GRAM]: "G",
+  [Unit.KILOGRAM]: "Kg",
+  [Unit.MILLILITER]: "ML",
+  [Unit.LITER]: "L",
+  [Unit.PACKAGE]: "Pct",
+  [Unit.OTHER]: "Outro",
+};
 
 export default function StockItems() {
   const router = useRouter();
@@ -159,6 +170,11 @@ export default function StockItems() {
     }
   }
 
+ function formatUnit(unit?: Unit) {
+  if (unit === undefined || unit === null) return "";
+  return unitLabelMap[unit] ?? "";
+}
+
   function getStatus(item: StockItem): StockStatus {
     if (!item.minimum) return "ok";
     if (item.quantity <= item.minimum) return "critical";
@@ -173,9 +189,9 @@ export default function StockItems() {
       <S.StockRow status={status}>
         <S.ColumnName numberOfLines={1}>{item.name}</S.ColumnName>
 
-        <S.ColumnQty>
-          {item.quantity} {item.unit ?? ""}
-        </S.ColumnQty>
+<S.ColumnQty>
+  {item.quantity} {formatUnit(item.unit)}
+</S.ColumnQty>
 
         <S.ColumnMin>
           {item.minimum !== undefined ? `Min: ${item.minimum}` : "-"}
@@ -262,7 +278,7 @@ export default function StockItems() {
           <S.Header>
             <Button
               label="Novo Item"
-              icon={<Ionicons name="add" size={18} color="#fff" />}
+              icon={<Ionicons name="add" size={18} color={theme.colors.text.primary} />}
               onPress={() => router.push("/(private)/stock/items/create-stock")}
             />
           </S.Header>
@@ -307,6 +323,7 @@ export default function StockItems() {
 
         <View
           style={{
+            justifyContent: "flex-end",
             paddingHorizontal: 16,
             paddingVertical: 12,
             borderTopWidth: 1,

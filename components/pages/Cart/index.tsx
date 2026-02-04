@@ -5,7 +5,6 @@ import {
   View,
   Text,
   Animated,
-  Easing,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Toast from "react-native-toast-message";
@@ -15,11 +14,10 @@ import { useAppTheme } from "@/context/ThemeProvider/theme";
 import { useResponsive } from "@/hooks/useResponsive";
 import Button from "@/components/atoms/Button";
 import CustomSwitch from "@/components/atoms/CustomSwitch";
-
 import { createOrder, NewOrder } from "@/services/order";
 import { getModifiersProduct, Modifier } from "@/services/modifier";
-
 import * as S from "./styles";
+import Input from "@/components/atoms/Input";
 
 interface ProductWithModifiers {
   modifiersSelected: Record<string, { selected: boolean; customText: string }>;
@@ -44,11 +42,11 @@ export default function CartPage() {
       quantity: p.quantity || 1,
       customDescription: p.customDescription || "",
       modifiersSelected: {},
-    }))
+    })),
   );
 
   const [modifiersMap, setModifiersMap] = useState<Record<string, Modifier[]>>(
-    {}
+    {},
   );
   const [toTake, setToTake] = useState(false);
   const [responsible, setResponsible] = useState("");
@@ -77,7 +75,6 @@ export default function CartPage() {
     })();
   }, []);
 
-  // Toggle selected
   const toggleModifier = (productId: string, modifierId: string) => {
     setProducts((prev: any) =>
       prev.map((p: any) => {
@@ -93,14 +90,14 @@ export default function CartPage() {
             [modifierId]: { ...current, selected: !current.selected },
           },
         };
-      })
+      }),
     );
   };
 
   const setModifierCustomText = (
     productId: string,
     modifierId: string,
-    text: string
+    text: string,
   ) => {
     setProducts((prev: any) =>
       prev.map((p: any) => {
@@ -116,7 +113,7 @@ export default function CartPage() {
             [modifierId]: { ...current, customText: text },
           },
         };
-      })
+      }),
     );
   };
 
@@ -125,8 +122,8 @@ export default function CartPage() {
       prev.map((p: any) =>
         p.cartItemId === cartItemId
           ? { ...p, quantity: Math.max(1, p.quantity + delta) }
-          : p
-      )
+          : p,
+      ),
     );
   };
 
@@ -205,7 +202,7 @@ export default function CartPage() {
               const productModifiers = modifiersMap[product.productId] || [];
               return (
                 <S.Card key={product.cartItemId} isWide={isWide}>
-                  <S.Label>{product.productName}</S.Label>
+                  <S.Title>{product.productName}</S.Title>
                   <S.Label>Quantidade: {product.quantity}</S.Label>
 
                   <S.Row>
@@ -216,8 +213,8 @@ export default function CartPage() {
                     >
                       <Ionicons
                         name="remove-outline"
-                        size={24}
-                        color="#2BAE66"
+                        size={26}
+                        color={theme.theme.colors.feedback.success}
                       />
                     </TouchableOpacity>
                     <S.Label>{product.quantity}</S.Label>
@@ -226,22 +223,25 @@ export default function CartPage() {
                         handleQuantityChange(product.cartItemId, 1)
                       }
                     >
-                      <Ionicons name="add-outline" size={24} color="#2BAE66" />
+                      <Ionicons
+                        name="add-outline"
+                        size={26}
+                        color={theme.theme.colors.feedback.success}
+                      />
                     </TouchableOpacity>
                     <TouchableOpacity
                       onPress={() => handleRemoveProduct(product.cartItemId)}
                     >
                       <Ionicons
                         name="trash-outline"
-                        size={24}
+                        size={26}
                         color="#E74C3C"
                       />
                     </TouchableOpacity>
                   </S.Row>
 
-                  <S.Input
+                  <Input
                     placeholder="Observação livre..."
-                    placeholderTextColor="#ccc"
                     value={product.customDescription}
                     maxLength={50}
                     onChangeText={(text) =>
@@ -249,8 +249,8 @@ export default function CartPage() {
                         prev.map((p: any) =>
                           p.cartItemId === product.cartItemId
                             ? { ...p, customDescription: text }
-                            : p
-                        )
+                            : p,
+                        ),
                       )
                     }
                   />
@@ -284,8 +284,9 @@ export default function CartPage() {
                               }
                               style={{
                                 width: 24,
+                                borderRadius: 6,
                                 height: 24,
-                                borderWidth: 2,
+                                borderWidth: 1,
                                 borderColor: theme.theme.colors.primary,
 
                                 justifyContent: "center",
@@ -310,7 +311,7 @@ export default function CartPage() {
                                 style={{
                                   fontSize: 16,
                                   color: theme.theme.colors.text.primary,
-                                  fontWeight: "bold"
+                                  fontWeight: "bold",
                                 }}
                               >
                                 {mod.name}
@@ -328,7 +329,7 @@ export default function CartPage() {
                                     setModifierCustomText(
                                       product.productId,
                                       mod.id,
-                                      text
+                                      text,
                                     )
                                   }
                                   style={{ marginTop: 4, paddingLeft: 0 }}
@@ -344,9 +345,8 @@ export default function CartPage() {
               );
             })}
 
-            <S.Input
+            <Input
               placeholder="Responsável"
-              placeholderTextColor="#ccc"
               value={responsible}
               onChangeText={setResponsible}
               style={isWide ? { width: "100%" } : undefined}

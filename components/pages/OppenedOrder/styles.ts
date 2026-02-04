@@ -223,7 +223,7 @@ export const TaxItem = styled.TouchableOpacity<{ selected?: boolean }>`
   background-color: ${({ selected, theme }) =>
     selected ? theme.colors.primary : theme.colors.surface};
 
-  border-width: 2;
+  border-width: 1;
   border-color: ${({ theme }) => theme.colors.secondary};
   border-style: dashed;
 `;
@@ -235,7 +235,6 @@ export const TaxText = styled.Text<{ selected?: boolean }>`
     selected ? theme.colors.surface : theme.colors.text.secondary};
 `;
 
-// Adicione esses estilos ao seu arquivo styles.ts
 export const SearchContainer = styled.View`
   flex-direction: row;
   align-items: center;

@@ -52,6 +52,12 @@ export const Card = styled.View<ResponsiveProps>`
       : ""}
 `;
 
+export const Title = styled.Text`
+  color: ${({ theme }) => theme.colors.primary};
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 8px;
+`;
 export const Label = styled.Text`
   color: ${({ theme }) => theme.colors.text.primary};
   font-size: 16px;
