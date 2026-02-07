@@ -213,7 +213,7 @@ export default function ProductCompositions() {
           </S.ItemInfo>
           <S.ItemInfo>
             Item de Estoque:{" "}
-            <Text style={{ fontWeight: "600" }}>{quantityText}</Text>
+            <Text style={{ fontWeight: "600" }}>{stockItemName}</Text>
           </S.ItemInfo>
           <S.ItemInfo>
             Cozinha:{" "}
