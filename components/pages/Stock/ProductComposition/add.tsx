@@ -177,9 +177,11 @@ export default function AddComposition() {
                   overflow: "hidden",
                 }}
               >
-                <Picker selectedValue={kitchenId} onValueChange={setKitchenId}
-                                    style={{ color: theme.colors.primary}}
->
+                <Picker
+                  selectedValue={kitchenId}
+                  onValueChange={setKitchenId}
+                  style={{ color: theme.colors.primary }}
+                >
                   <Picker.Item label="Selecione a cozinha" value="" />
                   {kitchens.map((k) => (
                     <Picker.Item key={k.id} label={k.name} value={k.id} />
@@ -205,8 +207,7 @@ export default function AddComposition() {
                 <Picker
                   selectedValue={stockItemId}
                   onValueChange={setStockItemId}
-                    style={{ color: theme.colors.primary}}
-
+                  style={{ color: theme.colors.primary }}
                 >
                   <Picker.Item label="Selecione o ingrediente" value="" />
                   {filteredItems.map((item) => (
@@ -301,11 +302,15 @@ export default function AddComposition() {
             )}
 
           <View style={{ flexDirection: "row", gap: 12 }}>
-            <Button label="Cancelar" onPress={() => router.back()} />
             <Button
               label={isSubmitting ? "Salvando..." : "Salvar"}
               onPress={handleSave}
               disabled={isSubmitting}
+            />
+            <Button
+              label="Cancelar"
+              onPress={() => router.back()}
+              variant="danger"
             />
           </View>
         </S.ScreenContainer>

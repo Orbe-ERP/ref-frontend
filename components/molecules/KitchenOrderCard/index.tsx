@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { View } from "react-native";
 import Card from "@/components/atoms/Card";
 import Title from "@/components/atoms/Title";
@@ -13,8 +13,9 @@ export interface KitchenCompositionItem {
   orderProductId: string;
   tableName: string;
   productName: string;
+  productQuantity: number;
   compositionName: string;
-  quantity: number;
+  compositionQuantity: number;
   kitchen: {
     id: string;
     name: string;
@@ -22,12 +23,7 @@ export interface KitchenCompositionItem {
   };
   status: string;
   customObservation?: string;
-  modifiers?: {
-    modifierId: string;
-    name: string;
-    quantity: number;
-    textValue?: string;
-  }[];
+  modifiers: any;
 }
 
 type ModalType = "prepare" | "ready" | "cancel" | null;
@@ -35,79 +31,70 @@ type ModalType = "prepare" | "ready" | "cancel" | null;
 interface KitchenOrderCardProps {
   tableName: string;
   items: KitchenCompositionItem[];
-  totalQuantity: number;
   onUpdateStatus: (orderProductId: string, status: string) => void;
-  onCancelOrder?: (orderId: string) => void;
+  onCancelOrder?: (orderProductId: string) => void;
 }
-
-const MODAL_CONFIG: Record<
-  Exclude<ModalType, null>,
-  {
-    title: string;
-    description: string;
-    confirmLabel: string;
-    variant: "primary" | "secondary" | "danger";
-  }
-> = {
-  prepare: {
-    title: "Iniciar preparo?",
-    description: "Isso marcará como em preparo todos itens desse prato.",
-    confirmLabel: "Sim, preparar",
-    variant: "secondary",
-  },
-  ready: {
-    title: "Pedido pronto?",
-    description: "O prato será marcado como pronto para entrega ao cliente.",
-    confirmLabel: "Sim, finalizar",
-    variant: "primary",
-  },
-  cancel: {
-    title: "Cancelar pedido?",
-    description:
-      "Essa ação irá cancelar o prato inteiro e não poderá ser desfeito.",
-    confirmLabel: "Sim, cancelar",
-    variant: "danger",
-  },
-};
 
 export default function KitchenOrderCard({
   tableName,
   items,
-  totalQuantity,
   onUpdateStatus,
   onCancelOrder,
 }: KitchenOrderCardProps) {
   const [modalType, setModalType] = useState<ModalType>(null);
+  const { theme } = useAppTheme();
 
   if (!items.length) return null;
 
   const kitchen = items[0].kitchen;
   const kitchenColor = kitchen?.color ?? "#CBD5E1";
-  const {theme} = useAppTheme();
 
-  const isPreparing = items.some((item) => item.status === "WORK_IN_PROGRESS");
+  const products = useMemo(() => {
+    const grouped: Record<string, any> = {};
+
+    items.forEach((item) => {
+      if (!grouped[item.orderProductId]) {
+        grouped[item.orderProductId] = {
+          orderProductId: item.orderProductId,
+          orderId: item.orderId,
+          productName: item.productName,
+          productQuantity: item.productQuantity,
+          status: item.status,
+          compositions: [],
+          customObservation: item.customObservation,
+        };
+      }
+
+      grouped[item.orderProductId].compositions.push({
+        name: item.compositionName,
+        quantity: item.compositionQuantity,
+      });
+    });
+
+    return Object.values(grouped);
+  }, [items]);
+
+  const isPreparing = products.some((p) => p.status === "WORK_IN_PROGRESS");
 
   const handleConfirm = () => {
     if (modalType === "prepare") {
-      items.forEach((item) =>
-        onUpdateStatus(item.orderProductId, "WORK_IN_PROGRESS")
+      products.forEach((product) =>
+        onUpdateStatus(product.orderProductId, "WORK_IN_PROGRESS"),
       );
     }
 
     if (modalType === "ready") {
-      items.forEach((item) =>
-        onUpdateStatus(item.orderProductId, "WAITING_DELIVERY")
+      products.forEach((product) =>
+        onUpdateStatus(product.orderProductId, "WAITING_DELIVERY"),
       );
     }
 
     if (modalType === "cancel" && onCancelOrder) {
-      onCancelOrder(items[0].orderProductId);
+      onCancelOrder(products[0].orderProductId);
     }
 
     setModalType(null);
   };
-
-  const modalConfig = modalType ? MODAL_CONFIG[modalType] : null;
 
   return (
     <>
@@ -116,7 +103,10 @@ export default function KitchenOrderCard({
           borderLeftWidth: 6,
           borderLeftColor: kitchenColor,
           paddingTop: 16,
-          ...(isPreparing && { borderWidth: 2, borderColor: "#FACC15" }),
+          ...(isPreparing && {
+            borderWidth: 2,
+            borderColor: "#FACC15",
+          }),
         }}
       >
         <View style={{ position: "absolute", top: 8, left: 8 }}>
@@ -126,33 +116,35 @@ export default function KitchenOrderCard({
         <Title style={{ textAlign: "center", marginBottom: 4 }}>
           {tableName}
         </Title>
-        <Text color="#6B7280">Pedido #{items[0].orderId.slice(0, 4)}</Text>
 
-        {items.map((item, index) => (
-          <View key={index} style={{ marginBottom: 12 }}>
-            <Text size={24} color={theme.colors.primary} weight="bold">{item.quantity}x - {item.productName }</Text>
-            <Text color={theme.colors.feedback.warning} weight="bold" size={20}>
-              {' '}↳ {item.quantity}x - {item.compositionName} 
+        <Text color="#6B7280">Pedido #{products[0].orderId.slice(0, 4)}</Text>
+
+        {products.map((product) => (
+          <View key={product.orderProductId} style={{ marginBottom: 16 }}>
+            <Text size={24} color={theme.colors.primary} weight="bold">
+              {product.productQuantity}x - {product.productName}
             </Text>
 
-            {item.customObservation && (
-              <Text color="#6B7280">Observação: {item.customObservation}</Text>
-            )}
+            {product.compositions.map((comp: any, index: any) => (
+              <Text
+                key={index}
+                size={20}
+                color={theme.colors.feedback.warning}
+                weight="bold"
+              >
+                ↳ {comp.quantity}x - {comp.name}
+              </Text>
+            ))}
 
-            {item.modifiers && item.modifiers.length > 0 && (
-              <View>
-                {item.modifiers.map((m, i) => (
-                  <Text key={i} color="#F97316">
-                    {m.name} {m.quantity > 1 ? `x${m.quantity}` : ""}
-                    {m.textValue ? ` (${m.textValue})` : ""}
-                  </Text>
-                ))}
-              </View>
+            {product.customObservation && (
+              <Text color="#6B7280">
+                Observação: {product.customObservation}
+              </Text>
             )}
           </View>
         ))}
 
-        <View style={{ flexDirection: "column", marginTop: 8 }}>
+        <View style={{ marginTop: 8 }}>
           <Button
             label="Preparar"
             variant="secondary"
@@ -173,13 +165,25 @@ export default function KitchenOrderCard({
         </View>
       </Card>
 
-      {modalConfig && (
+      {modalType && (
         <ConfirmActionModal
           visible
-          title={modalConfig.title}
-          description={modalConfig.description}
-          confirmLabel={modalConfig.confirmLabel}
-          variant={modalConfig.variant}
+          title={
+            modalType === "prepare"
+              ? "Iniciar preparo?"
+              : modalType === "ready"
+                ? "Pedido pronto?"
+                : "Cancelar pedido?"
+          }
+          description="Essa ação será aplicada a todos os itens deste prato."
+          confirmLabel="Confirmar"
+          variant={
+            modalType === "cancel"
+              ? "danger"
+              : modalType === "ready"
+                ? "primary"
+                : "secondary"
+          }
           onCancel={() => setModalType(null)}
           onConfirm={handleConfirm}
         />

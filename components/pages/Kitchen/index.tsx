@@ -20,7 +20,6 @@ import KitchenOrderCard, {
 
 import * as S from "./styles";
 
-
 function normalizeKitchenItems(orders: Order[] = []) {
   const result: any[] = [];
 
@@ -67,7 +66,8 @@ function normalizeKitchenItems(orders: Order[] = []) {
           tableName,
           productName: product.name,
           compositionName: "Item simples",
-          quantity: productQuantity,
+          productQuantity: productQuantity,
+          compositionQuantity: 0,
           kitchen,
           status: orderProduct.status,
           customObservation: orderProduct.customObservation,
@@ -91,7 +91,8 @@ function normalizeKitchenItems(orders: Order[] = []) {
           tableName,
           productName: product.name,
           compositionName: comp?.stockItem?.name ?? "Item",
-          quantity: comp?.quantity ?? 0,
+          productQuantity,
+          compositionQuantity: comp?.quantity ?? 0,
           kitchen: comp.kitchen,
           status: orderProduct.status,
           customObservation: orderProduct.customObservation,
@@ -119,7 +120,6 @@ function normalizeKitchenItems(orders: Order[] = []) {
   return result;
 }
 
-
 export default function KitchenPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [kitchens, setKitchens] = useState<Kitchen[]>([]);
@@ -127,42 +127,53 @@ export default function KitchenPage() {
   const [loading, setLoading] = useState(true);
 
   const { selectedRestaurant } = useRestaurant();
-  const {theme} = useAppTheme();
+  const { theme } = useAppTheme();
 
-useEffect(() => {
-  if (!selectedRestaurant) return;
-
-const socket = io(process.env.EXPO_PUBLIC_API_URL as string);
-
-  const fetchData = async () => {
+  const refetchOrders = async () => {
     try {
-      const [ordersData, kitchensData] = await Promise.all([
-        getOrdersByRestaurant(selectedRestaurant.id),
-        getKitchens(selectedRestaurant.id),
-      ]);
-
+      const ordersData = await getOrdersByRestaurant(selectedRestaurant!.id);
       setOrders(Array.isArray(ordersData) ? ordersData : []);
-      setKitchens(Array.isArray(kitchensData) ? kitchensData : []);
     } catch {
-      Toast.show({ type: "error", text1: "Erro ao carregar dados" });
-    } finally {
-      setLoading(false);
+      Toast.show({ type: "error", text1: "Erro ao atualizar pedidos" });
     }
   };
 
-  fetchData();
+  useEffect(() => {
+    if (!selectedRestaurant) return;
 
-  socket.on("newOrder", (order: Order) => {
-    if (!order?.products) return;
-    setOrders((prev) => [...prev, order]);
-  });
-  
-  return () => {
-    socket.disconnect();
-  };
-}, [selectedRestaurant]);
+    const socket = io(process.env.EXPO_PUBLIC_API_URL as string);
 
-  const handleProductStatus = async (orderProductId: string, status: string) => {
+    const fetchData = async () => {
+      try {
+        const [ordersData, kitchensData] = await Promise.all([
+          getOrdersByRestaurant(selectedRestaurant.id),
+          getKitchens(selectedRestaurant.id),
+        ]);
+
+        setOrders(Array.isArray(ordersData) ? ordersData : []);
+        setKitchens(Array.isArray(kitchensData) ? kitchensData : []);
+      } catch {
+        Toast.show({ type: "error", text1: "Erro ao carregar dados" });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+
+    socket.on("newOrder", async () => {
+      await refetchOrders();
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [selectedRestaurant]);
+
+  const handleProductStatus = async (
+    orderProductId: string,
+    status: string,
+  ) => {
     try {
       const updated = await updateStatusOnProduct({ orderProductId, status });
 
@@ -170,9 +181,9 @@ const socket = io(process.env.EXPO_PUBLIC_API_URL as string);
         prev.map((order) => ({
           ...order,
           products: order.products.map((p) =>
-            p.id === orderProductId ? { ...p, status: updated.status } : p
+            p.id === orderProductId ? { ...p, status: updated.status } : p,
           ),
-        }))
+        })),
       );
     } catch {
       Toast.show({ type: "error", text1: "Erro ao atualizar status" });
@@ -180,24 +191,18 @@ const socket = io(process.env.EXPO_PUBLIC_API_URL as string);
   };
 
   const handleDeleteProduct = async (orderId: string, productId: string) => {
-    try {
-      await deleteProductFromOrder(productId);
+    await deleteProductFromOrder(productId);
 
-      setOrders((prev) =>
-        prev.map((order) =>
-          order.id === orderId
-            ? {
-                ...order,
-                products: order.products.filter((p) => p.id !== productId),
-              }
-            : order
-        )
-      );
-
-      Toast.show({ type: "success", text1: "Item cancelado" });
-    } catch {
-      Toast.show({ type: "error", text1: "Erro ao cancelar item" });
-    }
+    setOrders((prev) =>
+      prev.map((order) =>
+        order.id === orderId
+          ? {
+              ...order,
+              products: order.products.filter((p) => p.id !== productId),
+            }
+          : order,
+      ),
+    );
   };
 
   if (loading) {
@@ -222,32 +227,34 @@ const socket = io(process.env.EXPO_PUBLIC_API_URL as string);
       />
 
       <S.Container>
-<S.PickerContainer>
-  <S.StyledPicker
-    selectedValue={selectedKitchenId}
-    onValueChange={setSelectedKitchenId}
-    style={{
-      color: selectedKitchenId ? theme.colors.primary : theme.colors.text.primary,
-    }}
-  >
-    <Picker.Item
-      label="Todas as cozinhas"
-      value={null}
-      color={theme.colors.text.muted}
-    />
+        <S.PickerContainer>
+          <S.StyledPicker
+            selectedValue={selectedKitchenId}
+            onValueChange={setSelectedKitchenId}
+            style={{
+              color: selectedKitchenId
+                ? theme.colors.primary
+                : theme.colors.text.primary,
+            }}
+          >
+            <Picker.Item
+              label="Todas as cozinhas"
+              value={null}
+              color={theme.colors.text.muted}
+            />
 
-    {kitchens
-      .filter((k) => k.showOnKitchen)
-      .map((k) => (
-        <Picker.Item
-          key={k.id}
-          label={k.name}
-          value={k.id}
-          color={theme.colors.primary}
-        />
-      ))}
-  </S.StyledPicker>
-</S.PickerContainer>
+            {kitchens
+              .filter((k) => k.showOnKitchen)
+              .map((k) => (
+                <Picker.Item
+                  key={k.id}
+                  label={k.name}
+                  value={k.id}
+                  color={theme.colors.primary}
+                />
+              ))}
+          </S.StyledPicker>
+        </S.PickerContainer>
 
         {filteredKitchens.length === 0 && (
           <S.EmptyText>Nenhum item para esta cozinha.</S.EmptyText>
@@ -261,10 +268,9 @@ const socket = io(process.env.EXPO_PUBLIC_API_URL as string);
             <KitchenOrderCard
               tableName={kitchenOrder.tableName}
               items={kitchenOrder.items}
-              totalQuantity={kitchenOrder.totalQuantity}
               onUpdateStatus={handleProductStatus}
-              onCancelOrder={(productId) =>
-                handleDeleteProduct(kitchenOrder.orderId, productId)
+              onCancelOrder={(orderProductId) =>
+                handleDeleteProduct(kitchenOrder.orderId, orderProductId)
               }
             />
           </View>
