@@ -132,7 +132,7 @@ export default function KitchenOrderCard({
                 color={theme.colors.feedback.warning}
                 weight="bold"
               >
-                ↳ {comp.quantity}x - {comp.name}
+                ↳ {comp.name}
               </Text>
             ))}
 

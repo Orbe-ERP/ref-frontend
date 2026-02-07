@@ -90,7 +90,7 @@ function normalizeKitchenItems(orders: Order[] = []) {
           orderProductId: orderProduct.id,
           tableName,
           productName: product.name,
-          compositionName: comp?.stockItem?.name ?? "Item",
+          compositionName: comp?.name ?? "Item",
           productQuantity,
           compositionQuantity: comp?.quantity ?? 0,
           kitchen: comp.kitchen,
@@ -128,6 +128,8 @@ export default function KitchenPage() {
 
   const { selectedRestaurant } = useRestaurant();
   const { theme } = useAppTheme();
+
+  console.log(orders)
 
   const refetchOrders = async () => {
     try {

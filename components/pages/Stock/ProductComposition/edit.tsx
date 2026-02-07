@@ -13,11 +13,17 @@ export default function EditComposition() {
   const router = useRouter();
   const { theme } = useAppTheme();
 
-  const { id, quantity: initialQuantity } = useLocalSearchParams<{
+  const {
+    id,
+    name: initialName,
+    quantity: initialQuantity,
+  } = useLocalSearchParams<{
     id: string;
+    name: string;
     quantity: string;
   }>();
 
+  const [name, setName] = useState(initialName ?? "");
   const [quantity, setQuantity] = useState(initialQuantity ?? "");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -25,12 +31,13 @@ export default function EditComposition() {
     if (isSubmitting) return;
 
     const parsedQuantity = Number(quantity.replace(",", "."));
-    if (!parsedQuantity || parsedQuantity <= 0) return;
+    if (!name || !parsedQuantity || parsedQuantity <= 0) return;
 
     try {
       setIsSubmitting(true);
 
       await updateComposition(id, {
+        name,
         quantity: parsedQuantity,
       });
 
@@ -66,8 +73,10 @@ export default function EditComposition() {
       />
 
       <S.ScreenContainer>
-        <S.Label>Quantidade</S.Label>
+        <S.Label>Nome</S.Label>
+        <Input value={name} onChangeText={setName} placeholder="Ex: Farinha" />
 
+        <S.Label>Quantidade</S.Label>
         <Input
           keyboardType="numeric"
           value={quantity}

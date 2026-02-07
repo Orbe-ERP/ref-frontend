@@ -3,12 +3,13 @@ import { StockItem, Unit } from "./stock";
 
 export interface ProductComposition {
   id: string;
+  name: string;
   productId: string;
   stockItemId: string;
   quantity: number;
-  unit?: Unit
+  unit?: Unit;
   createdAt?: string;
-  kitchenId: string
+  kitchenId: string;
   stockItem?: StockItem;
 }
 
@@ -16,18 +17,19 @@ export async function getCompositionsByProduct(productId: string) {
   if (!productId) throw new Error("productId is required");
 
   const response = await api.get<ProductComposition[]>(
-    `/products/${productId}/composition`
+    `/products/${productId}/composition`,
   );
 
   return response.data;
 }
 
 export async function addComposition(payload: {
+  name: string;
   productId: string;
   stockItemId: string;
   quantity: number;
-  unit: Unit
-  kitchenId: string
+  unit: Unit;
+  kitchenId: string;
   restaurantId: string;
 }) {
   const response = await api.post("/products/composition", payload);
@@ -36,7 +38,12 @@ export async function addComposition(payload: {
 
 export async function updateComposition(
   id: string,
-  data: { quantity?: number; unit?: Unit }
+  data: {
+    quantity?: number;
+    name?: string;
+    stockItemId?: string;
+    kitchenId?: string;
+  },
 ) {
   if (!id) throw new Error("id required");
 

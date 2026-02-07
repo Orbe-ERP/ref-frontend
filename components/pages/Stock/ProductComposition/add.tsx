@@ -24,20 +24,19 @@ export default function AddComposition() {
   const { selectedRestaurant } = useRestaurant();
   const { productId } = useLocalSearchParams<{ productId: string }>();
 
+  const [name, setName] = useState("");
   const [stockItems, setStockItems] = useState<StockItem[]>([]);
   const [kitchens, setKitchens] = useState<Kitchen[]>([]);
   const [stockItemId, setStockItemId] = useState("");
   const [kitchenId, setKitchenId] = useState("");
   const [quantity, setQuantity] = useState("");
+
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingKitchens, setIsLoadingKitchens] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const showToast = (
-    type: "success" | "error" | "info" | "warning",
-    message: string,
-  ) => {
+  const showToast = (type: "success" | "error" | "info", message: string) => {
     Toast.show({
       type,
       text1:
@@ -45,9 +44,7 @@ export default function AddComposition() {
           ? "Erro"
           : type === "success"
             ? "Sucesso"
-            : type === "warning"
-              ? "Aviso"
-              : "Informação",
+            : "Informação",
       text2: message,
       position: "top",
       visibilityTime: 3000,
@@ -73,8 +70,7 @@ export default function AddComposition() {
         if (kitchens.length === 1) {
           setKitchenId(kitchens[0].id);
         }
-      } catch (error) {
-        console.error(error);
+      } catch {
         showToast("error", "Erro ao carregar dados");
       } finally {
         setIsLoading(false);
@@ -96,32 +92,44 @@ export default function AddComposition() {
   const selectedKitchen = kitchens.find((k) => k.id === kitchenId);
   const unit = selectedStockItem?.unit;
 
-  const validateQuantity = () => {
-    if (!quantity.trim()) return { isValid: true, message: "" };
-    const value = parseFloat(quantity.replace(",", "."));
-    if (isNaN(value)) return { isValid: false, message: "Quantidade inválida" };
-    if (value <= 0)
-      return { isValid: false, message: "Deve ser maior que zero" };
-    return { isValid: true, message: "" };
-  };
-
-  const quantityValidation = validateQuantity();
+  useEffect(() => {
+    if (selectedStockItem && !name) {
+      setName(selectedStockItem.name);
+    }
+  }, [selectedStockItem]);
 
   async function handleSave() {
     if (isSubmitting) return;
 
+    // 🔒 validações (única mudança real)
+    if (!name.trim()) {
+      showToast("info", "Informe o nome da composição");
+      return;
+    }
+
     if (!kitchenId) {
-      showToast("warning", "Selecione uma cozinha");
+      showToast("info", "Selecione uma cozinha");
       return;
     }
 
     if (!stockItemId) {
-      showToast("warning", "Selecione um ingrediente");
+      showToast("info", "Selecione um ingrediente");
       return;
     }
 
-    if (!quantityValidation.isValid || !quantity.trim()) {
-      showToast("warning", quantityValidation.message);
+    if (!quantity.trim()) {
+      showToast("info", "Informe a quantidade");
+      return;
+    }
+
+    const parsedQuantity = parseFloat(quantity.replace(",", "."));
+    if (isNaN(parsedQuantity) || parsedQuantity <= 0) {
+      showToast("info", "Quantidade inválida");
+      return;
+    }
+
+    if (!unit) {
+      showToast("error", "Ingrediente sem unidade");
       return;
     }
 
@@ -129,18 +137,18 @@ export default function AddComposition() {
 
     try {
       await addComposition({
+        name: name.trim(),
         productId,
         stockItemId,
         kitchenId,
-        quantity: parseFloat(quantity.replace(",", ".")),
+        quantity: parsedQuantity,
         unit: unit as Unit,
-        restaurantId: selectedRestaurant?.id,
+        restaurantId: selectedRestaurant!.id,
       });
 
       showToast("success", "Ingrediente adicionado");
       setTimeout(() => router.back(), 800);
-    } catch (error) {
-      console.error(error);
+    } catch {
       showToast("error", "Erro ao salvar ingrediente");
     } finally {
       setIsSubmitting(false);
@@ -152,13 +160,9 @@ export default function AddComposition() {
       <Stack.Screen
         options={{
           title: "Adicionar Ingrediente",
-          headerStyle: {
-            backgroundColor: theme.colors.background,
-          },
+          headerStyle: { backgroundColor: theme.colors.background },
           headerTintColor: theme.colors.text.primary,
-          headerTitleStyle: {
-            fontWeight: "600",
-          },
+          headerTitleStyle: { fontWeight: "600" },
         }}
       />
 
@@ -189,6 +193,26 @@ export default function AddComposition() {
                 </Picker>
               </View>
             )}
+          </View>
+
+          <View style={{ marginBottom: 24 }}>
+            <S.Label>Nome da composição</S.Label>
+            <View
+              style={{
+                borderWidth: 1,
+                borderColor: theme.colors.border,
+                borderRadius: 8,
+                paddingHorizontal: 12,
+              }}
+            >
+              <TextInput
+                style={{ height: 44, color: theme.colors.text.primary }}
+                value={name}
+                onChangeText={setName}
+                placeholder="Ex: Massa, Recheio, Molho especial"
+                placeholderTextColor={theme.colors.text.secondary}
+              />
+            </View>
           </View>
 
           <View style={{ marginBottom: 24 }}>
@@ -224,7 +248,6 @@ export default function AddComposition() {
 
           <View style={{ marginBottom: 24 }}>
             <S.Label>Quantidade</S.Label>
-
             <View
               style={{
                 flexDirection: "row",
@@ -247,7 +270,6 @@ export default function AddComposition() {
                 placeholder="Ex: 0.5"
                 placeholderTextColor={theme.colors.text.secondary}
               />
-
               {unit && (
                 <Text
                   style={{
@@ -260,46 +282,6 @@ export default function AddComposition() {
               )}
             </View>
           </View>
-
-          {selectedKitchen &&
-            selectedStockItem &&
-            quantity.trim() &&
-            quantityValidation.isValid && (
-              <View
-                style={{
-                  backgroundColor: theme.colors.feedback.success + "10",
-                  borderRadius: 8,
-                  padding: 12,
-                  marginBottom: 24,
-                  gap: 8,
-                }}
-              >
-                <Text style={{ color: theme.colors.feedback.success }}>
-                  ✓ {quantity.replace(",", ".")} {unit} de{" "}
-                  {selectedStockItem.name}
-                </Text>
-
-                <View
-                  style={{
-                    alignSelf: "flex-start",
-                    paddingHorizontal: 10,
-                    paddingVertical: 4,
-                    borderRadius: 20,
-                    backgroundColor: theme.colors.primary + "20",
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontSize: 12,
-                      fontWeight: "600",
-                      color: theme.colors.primary,
-                    }}
-                  >
-                    🍳 {selectedKitchen.name}
-                  </Text>
-                </View>
-              </View>
-            )}
 
           <View style={{ flexDirection: "row", gap: 12 }}>
             <Button
