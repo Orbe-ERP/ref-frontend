@@ -1,9 +1,4 @@
-import React, {
-  createContext,
-  useState,
-  useEffect,
-  useCallback,
-} from "react";
+import React, { createContext, useState, useEffect, useCallback } from "react";
 import { IContext, IAuthProvider, IUser, AuthResult } from "./types";
 import {
   LoginRequest,
@@ -14,6 +9,7 @@ import {
 import useRestaurant from "@/hooks/useRestaurant";
 import { getRestaurantById } from "@/services/restaurant";
 import axios from "axios";
+import { setLogoutHandler } from "@/services/api";
 
 export const AuthContext = createContext<IContext>({} as IContext);
 
@@ -25,6 +21,8 @@ export const AuthProvider = ({ children }: IAuthProvider) => {
   } as IUser);
   const [loading, setLoading] = useState(true);
 
+  console.log(user);
+
   useEffect(() => {
     const loadUser = async () => {
       setLoading(true);
@@ -33,25 +31,24 @@ export const AuthProvider = ({ children }: IAuthProvider) => {
       if (storedUser) {
         const isTokenValid = await validateToken(storedUser.token);
 
-if (isTokenValid) {
-  setUser(storedUser);
+        if (isTokenValid) {
+          setUser(storedUser);
 
-  if (storedUser.defaultRestaurantId && storedUser.token) {
-    try {
-      const restaurant = await getRestaurantById(
-        storedUser.defaultRestaurantId
-      );
-      if (restaurant) {
-        selectRestaurant(restaurant);
-      }
-    } catch (err) {
-      console.warn("Não foi possível carregar restaurante", err);
-    }
-  }
-} else {
-  await logout();
-}
-
+          if (storedUser.defaultRestaurantId && storedUser.token) {
+            try {
+              const restaurant = await getRestaurantById(
+                storedUser.defaultRestaurantId,
+              );
+              if (restaurant) {
+                selectRestaurant(restaurant);
+              }
+            } catch (err) {
+              console.warn("Não foi possível carregar restaurante", err);
+            }
+          }
+        } else {
+          await logout();
+        }
       }
       setLoading(false);
     };
@@ -70,8 +67,7 @@ if (isTokenValid) {
     }
   }, []);
 
-const authenticate = useCallback(
-  async (email: string, password: string) => {
+  const authenticate = useCallback(async (email: string, password: string) => {
     try {
       const response = await LoginRequest(email, password);
 
@@ -94,14 +90,28 @@ const authenticate = useCallback(
       setUser(payload);
       await setUserAsyncStorage(payload);
 
+      if (payload.defaultRestaurantId) {
+        try {
+          const restaurant = await getRestaurantById(
+            payload.defaultRestaurantId,
+          );
+
+          if (restaurant) {
+            selectRestaurant(restaurant);
+          }
+        } catch (err) {
+          console.warn(
+            "Restaurante padrão inválido ou inacessível. Usuário precisará selecionar outro.",
+          );
+        }
+      }
+
       return { success: true };
     } catch (error: any) {
       if (axios.isAxiosError(error)) {
         return {
           success: false,
-          message:
-            error.response?.data?.message ??
-            "E-mail ou senha inválidos",
+          message: error.response?.data?.message ?? "E-mail ou senha inválidos",
         };
       }
 
@@ -110,17 +120,17 @@ const authenticate = useCallback(
         message: "Erro inesperado",
       };
     }
-  },
-  []
-);
+  }, []);
 
+  const logout = useCallback(async () => {
+    setUser(null);
+    selectRestaurant(null);
+    await setUserAsyncStorage(null);
+  }, []);
 
-const logout = useCallback(async () => {
-  setUser(null);
-  selectRestaurant(null);
-  await setUserAsyncStorage(null);
-}, []);
-
+  useEffect(() => {
+    setLogoutHandler(logout);
+  }, [logout]);
 
   return (
     <AuthContext.Provider

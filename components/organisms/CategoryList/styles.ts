@@ -22,6 +22,7 @@ export const Header = styled.TouchableOpacity`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  width: 100%;
   padding-vertical: 14px;
   padding-horizontal: 18px;
   background-color: ${({ theme }) => theme.colors.primary};

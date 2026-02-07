@@ -101,7 +101,6 @@ export default function AddComposition() {
   async function handleSave() {
     if (isSubmitting) return;
 
-    // 🔒 validações (única mudança real)
     if (!name.trim()) {
       showToast("info", "Informe o nome da composição");
       return;

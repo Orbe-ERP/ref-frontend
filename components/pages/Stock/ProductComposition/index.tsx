@@ -145,16 +145,6 @@ export default function ProductCompositions() {
     });
   }
 
-  const handleBackToCategories = () => {
-    setSelectedCategory(null);
-    setSelectedProduct(null);
-    setCompositions([]);
-  };
-
-  const handleBackToProducts = () => {
-    setSelectedProduct(null);
-    setCompositions([]);
-  };
 
   const handleAddComposition = () => {
     if (!selectedProduct) return;
@@ -256,7 +246,7 @@ export default function ProductCompositions() {
               }}
             >
               <Ionicons
-                name="tablet-portrait"
+                name="pencil-outline"
                 size={18}
                 color={theme.colors.primary}
               />
@@ -399,7 +389,6 @@ export default function ProductCompositions() {
           backgroundColor={theme.colors.feedback.info + "10"}
         />
 
-        {/* 🔹 TELA 1: Lista de Categorias */}
         {!selectedCategory && !selectedProduct && (
           <>
             <View style={{ padding: 16 }}>
@@ -463,7 +452,6 @@ export default function ProductCompositions() {
           </>
         )}
 
-        {/* 🔹 TELA 2: Produtos da Categoria */}
         {selectedCategory && !selectedProduct && (
           <>
             <View style={{ padding: 16 }}>
@@ -528,10 +516,8 @@ export default function ProductCompositions() {
           </>
         )}
 
-        {/* 🔹 TELA 3: Composição do Produto */}
         {selectedProduct && (
           <>
-            {/* Header do Produto */}
             <View
               style={{
                 paddingHorizontal: 16,
@@ -571,55 +557,56 @@ export default function ProductCompositions() {
                 />
               </View>
 
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  marginTop: 8,
-                }}
-              >
-                <View style={{ flexDirection: "row", alignItems: "center" }}>
-                  <Ionicons
-                    name="list-outline"
-                    size={14}
-                    color={theme.colors.text.secondary}
-                  />
-                  <Text
-                    style={{
-                      fontSize: 12,
-                      color: theme.colors.text.secondary,
-                      marginLeft: 4,
-                    }}
-                  >
-                    {totalIngredients} ingredientes
-                  </Text>
-                </View>
+<View
+  style={{
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginTop: 8,
+  }}
+>
+  <View style={{ flexDirection: "row", alignItems: "center" }}>
+    <Ionicons
+      name="list-outline"
+      size={14}
+      color={theme.colors.text.secondary}
+    />
+    <Text
+      style={{
+        fontSize: 12,
+        color: theme.colors.text.secondary,
+        marginLeft: 4,
+      }}
+    >
+      {totalIngredients} ingredientes
+    </Text>
+  </View>
 
-                <TouchableOpacity
-                  onPress={onRefresh}
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    padding: 4,
-                  }}
-                >
-                  <Ionicons
-                    name="refresh-outline"
-                    size={14}
-                    color={theme.colors.text.secondary}
-                  />
-                  <Text
-                    style={{
-                      fontSize: 12,
-                      color: theme.colors.text.secondary,
-                      marginLeft: 4,
-                    }}
-                  >
-                    Atualizar
-                  </Text>
-                </TouchableOpacity>
-              </View>
+  <TouchableOpacity
+    onPress={onRefresh}
+    style={{
+      flexDirection: "row",
+      alignItems: "center",
+      padding: 4,
+    }}
+  >
+    <Ionicons
+      name="refresh-outline"
+      size={14}
+      color={theme.colors.text.secondary}
+    />
+    <Text
+      style={{
+        fontSize: 12,
+        color: theme.colors.text.secondary,
+        marginLeft: 4,
+      }}
+    >
+      Atualizar
+    </Text>
+  </TouchableOpacity>
+</View>
+
             </View>
 
             {loadingCompositions ? (

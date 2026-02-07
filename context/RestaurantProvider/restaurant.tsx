@@ -1,28 +1,26 @@
 import React, { createContext, useState, ReactNode } from "react";
 import { IRestaurant } from "./types";
 
-export interface IContext {
+export interface IRestaurantContext {
   selectedRestaurant: IRestaurant | null;
   selectRestaurant: (restaurant: IRestaurant | null) => void;
 }
 
-export const RestaurantContext = createContext<IContext | undefined>(undefined);
+export const RestaurantContext =
+  createContext<IRestaurantContext | null>(null);
 
-interface RestaurantProviderProps {
-  children: ReactNode;
-}
-
-export const RestaurantProvider = ({ children }: RestaurantProviderProps) => {
+export const RestaurantProvider = ({ children }: { children: ReactNode }) => {
   const [selectedRestaurant, setSelectedRestaurant] =
     useState<IRestaurant | null>(null);
 
-  const selectRestaurant = (restaurant: IRestaurant) => {
+  const selectRestaurant = (restaurant: IRestaurant | null) => {
     setSelectedRestaurant(restaurant);
   };
 
   return (
     <RestaurantContext.Provider
-      value={{ selectedRestaurant, selectRestaurant }}>
+      value={{ selectedRestaurant, selectRestaurant }}
+    >
       {children}
     </RestaurantContext.Provider>
   );

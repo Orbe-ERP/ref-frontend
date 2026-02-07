@@ -9,11 +9,6 @@ export interface IRestaurant {
     selected?: boolean;
   }
   
-  export interface IContext extends IRestaurant {
-    selectRestaurant: (i: IRestaurant | null) => Promise<void>;
-    selectedRestaurant: () => IRestaurant | null;
-  }
-  
   export interface IAuthProvider {
     children: JSX.Element;
   }

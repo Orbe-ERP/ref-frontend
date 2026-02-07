@@ -41,13 +41,11 @@ export async function updateComposition(
   data: {
     quantity?: number;
     name?: string;
-    stockItemId?: string;
-    kitchenId?: string;
   },
 ) {
   if (!id) throw new Error("id required");
 
-  const response = await api.patch(`/product/composition/${id}`, data);
+  const response = await api.patch(`/products/composition/${id}`, data);
 
   return response.data;
 }
