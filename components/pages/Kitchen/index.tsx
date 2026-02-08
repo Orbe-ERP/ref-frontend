@@ -129,7 +129,6 @@ export default function KitchenPage() {
   const { selectedRestaurant } = useRestaurant();
   const { theme } = useAppTheme();
 
-  console.log(orders)
 
   const refetchOrders = async () => {
     try {

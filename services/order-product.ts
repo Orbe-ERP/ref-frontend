@@ -15,26 +15,22 @@ export async function updateStatusOnProduct(data: UpdateOrderProductStatus) {
     const response = await api.patch("/order-product/status", data);
     return response.data;
   } catch (error: any) {
-    console.error(
-      "Erro ao atualizar status do produto:",
-      error?.response?.data || error.message
+    throw new Error(
+      `Erro ao atualizar status do produto: ${error?.response?.data || error.message}`,
     );
-    throw error;
   }
 }
 
 export async function updateQuantityOnProduct(
-  data: UpdateOrderProductQuantity
+  data: UpdateOrderProductQuantity,
 ) {
   try {
     const response = await api.patch("/order-product/quantity", data);
     return response.data;
   } catch (error: any) {
-    console.error(
-      "Erro ao atualizar quantidade do produto:",
-      error?.response?.data || error.message
+    throw new Error(
+      `Erro ao atualizar quantidade do produto: ${error?.response?.data || error.message}`,
     );
-    throw error;
   }
 }
 
@@ -43,11 +39,9 @@ export async function updateCustomObservation(productId: string) {
     const response = await api.patch(`/order-product/custom/${productId}`);
     return response.data;
   } catch (error: any) {
-    console.error(
-      "Erro ao atualizar observação do produto:",
-      error?.response?.data || error.message
+    throw new Error(
+      `Erro ao atualizar observação do produto: ${error?.response?.data || error.message}`,
     );
-    throw error;
   }
 }
 
@@ -57,10 +51,8 @@ export async function deleteProductFromOrder(productId: string) {
 
     return response.data;
   } catch (error: any) {
-    console.error(
-      "Erro ao deletar produto do pedido:",
-      error?.response?.data || error.message
+    throw new Error(
+      `Erro ao deletar produto do pedido: ${error?.response?.data || error.message}`,
     );
-    throw error;
   }
 }

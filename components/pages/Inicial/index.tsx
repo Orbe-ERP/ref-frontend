@@ -44,7 +44,6 @@ export default function IndexPage() {
   
         setSalesData(todayProductSales);
       } catch (err) {
-        console.error(err);
         setError("Erro ao carregar dados de vendas");
       } finally {
         setLoading(false);

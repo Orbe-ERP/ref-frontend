@@ -34,7 +34,6 @@ export default function RestaurantScreen() {
       });
       router.push("/(tabs)");
     } catch (error) {
-      console.error("Erro ao criar restaurante:", error);
       Toast.show({
         type: "error",
         text1: "Erro ao salvar o restaurante.",

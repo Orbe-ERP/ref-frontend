@@ -66,7 +66,6 @@ export default function ProductCompositions() {
         const data = await getCategories(selectedRestaurant.id);
         setCategories(data);
       } catch (error) {
-        console.error("Error loading categories:", error);
         showToast("error", "Não foi possível carregar as categorias");
       } finally {
         setLoadingCategories(false);
@@ -94,7 +93,6 @@ export default function ProductCompositions() {
         );
       }
     } catch (error) {
-      console.error("Error loading compositions:", error);
       showToast("error", "Não foi possível carregar a composição");
       setCompositions([]);
     } finally {
@@ -128,7 +126,6 @@ export default function ProductCompositions() {
       showToast("success", "Ingrediente removido da composição");
       loadCompositions();
     } catch (error) {
-      console.error(error);
       showToast("error", "Erro ao remover ingrediente");
     }
   };

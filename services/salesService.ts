@@ -1,8 +1,5 @@
 import dayjs from "dayjs";
-import {
-  ReportData,
-  PaymentMethod,
-} from "@/services/report";
+import { ReportData, PaymentMethod } from "@/services/report";
 
 const paymentMethodLabels: Record<PaymentMethod, string> = {
   CREDIT_CARD: "Cartão de Crédito",
@@ -36,7 +33,7 @@ export interface PaymentMethodMetrics {
 export function filterReportsByDate(
   reports: ReportData[],
   startDate: Date,
-  endDate: Date
+  endDate: Date,
 ): ReportData[] {
   return reports.filter((report) => {
     const createdAt = new Date(report.createdAt);
@@ -44,14 +41,12 @@ export function filterReportsByDate(
   });
 }
 
-export function buildDashboardMetrics(
-  reports: ReportData[]
-): DashboardMetrics {
+export function buildDashboardMetrics(reports: ReportData[]): DashboardMetrics {
   const totalOrders = reports.length;
 
   const totalRevenue = reports.reduce(
     (sum, report) => sum + report.totalValue,
-    0
+    0,
   );
 
   const totalProductsSold = reports.reduce((sum, report) => {
@@ -59,13 +54,12 @@ export function buildDashboardMetrics(
       sum +
       report.products.reduce(
         (productSum, product) => productSum + product.quantity,
-        0
+        0,
       )
     );
   }, 0);
 
-  const averageTicket =
-    totalOrders > 0 ? totalRevenue / totalOrders : 0;
+  const averageTicket = totalOrders > 0 ? totalRevenue / totalOrders : 0;
 
   return {
     totalRevenue,
@@ -76,19 +70,18 @@ export function buildDashboardMetrics(
 }
 
 export function buildProductSales(
-  reports: ReportData[]
+  reports: ReportData[],
 ): DashboardProductSales[] {
   const productMap = new Map<string, DashboardProductSales>();
 
   reports.forEach((report) => {
-    report.products.forEach((item) => {
+    report.products.forEach((item: any) => {
       const productId = item.product?.id;
       const productName = item.product?.name;
       const price = item.product?.price ?? 0;
       const quantity = item.quantity ?? 0;
 
       if (!productId || !productName) {
-        console.warn("Produto inválido recebido:", item);
         return;
       }
 
@@ -111,26 +104,23 @@ export function buildProductSales(
   });
 
   return Array.from(productMap.values()).sort(
-    (a, b) => b.salesCount - a.salesCount
+    (a, b) => b.salesCount - a.salesCount,
   );
 }
 
 export function buildPaymentMethodMetrics(
-  reports: ReportData[]
+  reports: ReportData[],
 ): PaymentMethodMetrics[] {
   const map = new Map<PaymentMethod, number>();
 
   reports.forEach((report) => {
     map.set(
       report.paymentMethod,
-      (map.get(report.paymentMethod) || 0) + report.totalValue
+      (map.get(report.paymentMethod) || 0) + report.totalValue,
     );
   });
 
-  const total = Array.from(map.values()).reduce(
-    (sum, value) => sum + value,
-    0
-  );
+  const total = Array.from(map.values()).reduce((sum, value) => sum + value, 0);
 
   return Array.from(map.entries()).map(([method, totalValue]) => ({
     method,
@@ -145,9 +135,7 @@ export interface DailySalesItem {
   totalValue: number;
 }
 
-export function buildDailySalesChart(
-  reports: ReportData[]
-): DailySalesItem[] {
+export function buildDailySalesChart(reports: ReportData[]): DailySalesItem[] {
   const map = new Map<string, number>();
 
   reports.forEach((report) => {
@@ -165,16 +153,12 @@ export function buildDailySalesChart(
 }
 
 export function getTodayProductSales(
-  reports: ReportData[] = []
+  reports: ReportData[] = [],
 ): DashboardProductSales[] {
   const startOfDay = dayjs().startOf("day").toDate();
   const endOfDay = dayjs().endOf("day").toDate();
 
-  const todayReports = filterReportsByDate(
-    reports,
-    startOfDay,
-    endOfDay
-  );
+  const todayReports = filterReportsByDate(reports, startOfDay, endOfDay);
 
   return buildProductSales(todayReports);
 }

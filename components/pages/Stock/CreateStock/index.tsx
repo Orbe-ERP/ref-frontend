@@ -144,7 +144,6 @@ export default function CreateStock() {
       }
       
     } catch (error: any) {
-      console.error('Erro ao salvar item:', error);
       Toast.show({
         type: "error",
         text1: "Erro",

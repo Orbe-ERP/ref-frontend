@@ -49,15 +49,14 @@ export async function getUserById(id: string) {
 }
 
 export async function updateUser(data: UpdateUser) {
-try {
+  try {
     const response = await api.patch<User>("/users/update", data);
-  return response.data;
-} catch (error: any) {
-  console.error(
-      "Erro ao deletar no service:",
-      error.response?.data || error.message
+    return response.data;
+  } catch (error: any) {
+    throw new Error(
+      "Erro ao atualizar usuário: " +
+        (error.response?.data?.message || error.message),
     );
-    throw error;
   }
 }
 
@@ -67,11 +66,7 @@ export async function defineFavoriteRestaurant(restaurant: Restaurant) {
 
     return response.data;
   } catch (error: any) {
-    console.error(
-      "Erro ao deletar no service:",
-      error.response?.data || error.message
-    );
-    throw error;
+    throw new Error("Erro ao definir restaurante favorito");
   }
 }
 
@@ -81,10 +76,9 @@ export async function deleteUser(id: string) {
 
     return response.data;
   } catch (error: any) {
-    console.error(
-      "Erro ao deletar no service:",
-      error.response?.data || error.message
+    throw new Error(
+      "Erro ao deletar usuário: " +
+        (error.response?.data?.message || error.message),
     );
-    throw error;
   }
 }

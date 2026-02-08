@@ -32,8 +32,8 @@ export const AppThemeProvider = ({ children }: { children: React.ReactNode }) =>
 
   useEffect(() => {
     if (!loading) {
-      AsyncStorage.setItem(STORAGE_KEY, isDark ? "dark" : "light").catch((err) =>
-        console.warn("Erro ao salvar tema:", err)
+      AsyncStorage.setItem(STORAGE_KEY, isDark ? "dark" : "light").catch((error) =>
+        console.warn("Erro ao salvar tema:", error)
       );
     }
   }, [isDark, loading]);

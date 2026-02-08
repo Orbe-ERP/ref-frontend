@@ -38,13 +38,19 @@ export async function addModifierToProduct(
   restaurantId: string,
   productId: string,
   modifierId: string,
-  opts?: AddModifierToProductOpts
+  opts?: AddModifierToProductOpts,
 ) {
-  const response = await api.post(
-    `/modifiers/${restaurantId}/${modifierId}/add-to-product/${productId}`,
-    opts
-  );
-  return response.data;
+  try {
+    const response = await api.post(
+      `/modifiers/${restaurantId}/${modifierId}/add-to-product/${productId}`,
+      opts,
+    );
+    return response.data;
+  } catch (error: any) {
+    throw new Error(
+      `Erro ao adicionar modificador ao produto: ${error?.response?.data || error.message}`,
+    );
+  }
 }
 
 export async function createModifier(data: CreateModifierInput) {
@@ -55,8 +61,10 @@ export async function createModifier(data: CreateModifierInput) {
   try {
     const response = await api.post("/modifiers", data);
     return response.data;
-  } catch (error) {
-    throw new Error(`Erro ao criar modificador: ${error}`);
+  } catch (error: any) {
+    throw new Error(
+      `Erro ao criar modificador: ${error?.response?.data || error.message}`,
+    );
   }
 }
 
@@ -70,19 +78,29 @@ export async function getModifierById(id: string) {
 export async function getModifiersProduct(productId: string) {
   if (!productId) throw new Error("Product id é obrigatório");
 
-  const response = await api.get(`/modifiers/product/${productId}`);
+  try {
+    const response = await api.get(`/modifiers/product/${productId}`);
 
-  return response.data;
+    return response.data;
+  } catch (error: any) {
+    throw new Error(`Erro ao buscar modificadores do produto: ${error}`);
+  }
 }
 
 export async function updateModifier(
   id: string,
-  data: Partial<CreateModifierInput>
+  data: Partial<CreateModifierInput>,
 ) {
   if (!id) throw new Error("Modifier id é obrigatório");
 
-  const response = await api.patch(`/modifiers/${id}`, data);
-  return response.data;
+  try {
+    const response = await api.patch(`/modifiers/${id}`, data);
+    return response.data;
+  } catch (error: any) {
+    throw new Error(
+      `Erro ao atualizar modificador: ${error?.response?.data || error.message}`,
+    );
+  }
 }
 
 export async function deleteModifier(id: string) {
@@ -90,15 +108,27 @@ export async function deleteModifier(id: string) {
     throw new Error("id é obrigatórios");
   }
 
-  await api.delete(`/modifiers/${id}`);
+  try {
+    await api.delete(`/modifiers/${id}`);
+  } catch (error: any) {
+    throw new Error(
+      `Erro ao deletar modificador: ${error?.response?.data || error.message}`,
+    );
+  }
 }
 
 export async function getModifiersByProductIds(productIds: string[]) {
   if (!productIds?.length) return [];
 
-  const response = await api.post("/modifiers/product-modifiers", {
-    productIds,
-  });
+  try {
+    const response = await api.post("/modifiers/product-modifiers", {
+      productIds,
+    });
 
-  return response.data;
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      `Erro ao buscar modificadores por ids de produtos: ${error}`,
+    );
+  }
 }

@@ -194,7 +194,6 @@ export default function OppenedOrderPage() {
         params: { identifier: response.orderIdentifier },
       });
     } catch (error) {
-      console.error(error);
       Toast.show({
         type: "error",
         text1: "Erro ao concluir comandas",

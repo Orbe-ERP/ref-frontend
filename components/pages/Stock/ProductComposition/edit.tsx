@@ -8,6 +8,7 @@ import {
   deleteComposition,
 } from "@/services/product-composition";
 import Input from "@/components/atoms/Input";
+import Toast from "react-native-toast-message";
 
 export default function EditComposition() {
   const router = useRouter();
@@ -43,7 +44,11 @@ export default function EditComposition() {
 
       router.back();
     } catch (error) {
-      console.error("Erro ao atualizar ingrediente", error);
+      Toast.show({
+        type: "error",
+        text1: "Erro ao atualizar ingrediente",
+        text2: error instanceof Error ? error.message : "Erro desconhecido",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -55,7 +60,11 @@ export default function EditComposition() {
       await deleteComposition(id);
       router.back();
     } catch (error) {
-      console.error("Erro ao remover ingrediente", error);
+      Toast.show({
+        type: "error",
+        text1: "Erro ao remover ingrediente",
+        text2: error instanceof Error ? error.message : "Erro desconhecido",
+      });
     } finally {
       setIsSubmitting(false);
     }

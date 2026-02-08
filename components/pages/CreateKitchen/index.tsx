@@ -54,7 +54,6 @@ export default function KitchenPage() {
           text1: "Erro ao buscar cozinhas",
           text2: error.message,
         });
-        console.error("Erro ao buscar cozinhas:", error);
       }
     }
   }
@@ -85,7 +84,11 @@ export default function KitchenPage() {
       setSelectedColor(AVAILABLE_COLORS[0]);
       setIsCreateVisible(false);
     } catch (error) {
-      console.error(error);
+      Toast.show({
+        type: "error",
+        text1: "Erro ao criar cozinha",
+        text2: error instanceof Error ? error.message : "Erro desconhecido",
+      });
     }
   };
 
@@ -99,7 +102,7 @@ export default function KitchenPage() {
         color: selectedColor,
       });
       setKitchens((prev: any) =>
-        prev.map((k: any) => (k.id === updated.id ? updated : k))
+        prev.map((k: any) => (k.id === updated.id ? updated : k)),
       );
       setNewKitchenName("");
       setSelectedKitchen(null);
@@ -107,7 +110,10 @@ export default function KitchenPage() {
       setSelectedColor(AVAILABLE_COLORS[0]);
       setIsEditVisible(false);
     } catch (error) {
-      console.error(error);
+      Toast.show({
+        type: "error",
+        text1: "Erro ao atualizar cozinha",
+      });
     }
   };
 
@@ -122,7 +128,11 @@ export default function KitchenPage() {
       setShowOnKitchen(true);
       setSelectedColor(AVAILABLE_COLORS[0]);
     } catch (error) {
-      console.error(error);
+      Toast.show({
+        type: "error",
+        text1: "Erro ao deletar cozinha",
+        text2: error instanceof Error ? error.message : "Erro desconhecido",
+      });
     }
   };
 
@@ -131,7 +141,7 @@ export default function KitchenPage() {
       <Stack.Screen
         options={{
           title: "Cozinhas",
-          headerStyle: { backgroundColor: theme.colors.background},
+          headerStyle: { backgroundColor: theme.colors.background },
           headerTintColor: theme.colors.text.primary,
         }}
       />
@@ -156,7 +166,7 @@ export default function KitchenPage() {
                 <ExpertCard
                   icon="cube-outline"
                   cardType={kitchen}
-                  onPress={() => console.warn(kitchen.name)}
+                  onPress={() => {}}
                   onEdit={() => {
                     setSelectedKitchen(kitchen);
                     setNewKitchenName(kitchen.name);

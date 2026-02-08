@@ -1,7 +1,12 @@
 import { api } from "./api";
 import dayjs from "dayjs";
 
-export type PaymentMethod = 'CREDIT_CARD' | 'DEBIT_CARD' | 'CASH' | 'PIX' | 'OTHER';
+export type PaymentMethod =
+  | "CREDIT_CARD"
+  | "DEBIT_CARD"
+  | "CASH"
+  | "PIX"
+  | "OTHER";
 export interface ReportProduct {
   id: string;
   productId: string;
@@ -29,18 +34,16 @@ export interface GetReportDataInput {
   finalDate: string;
 }
 
-
 export interface TotalProductsSoldResponse {
   totalProductsSold: number;
   startDate: string;
   endDate: string;
 }
 
-
 export async function getTotalProductsSold(
   restaurantId: string,
   startDate: Date,
-  endDate: Date
+  endDate: Date,
 ): Promise<TotalProductsSoldResponse> {
   try {
     const response = await api.get("/products/total", {
@@ -53,21 +56,26 @@ export async function getTotalProductsSold(
 
     return response.data;
   } catch (error: any) {
-    console.error("Erro ao buscar total de produtos vendidos:", error);
-    throw error;
+    throw new Error(
+      `Erro ao buscar total de produtos vendidos: ${error.message}`,
+    );
   }
 }
 
-
-
-export async function getReportData({ restaurantId, initialDate, finalDate }: GetReportDataInput): Promise<ReportData> {
+export async function getReportData({
+  restaurantId,
+  initialDate,
+  finalDate,
+}: GetReportDataInput): Promise<ReportData> {
   if (!restaurantId || !initialDate || !finalDate) {
     throw new Error("Todos os parâmetros são obrigatórios");
   }
 
   try {
-    const response = await api.get<ReportData>(`/reports/?restaurantId=${restaurantId}&initialDate=${initialDate}&finalDate=${finalDate}`, {
-    });
+    const response = await api.get<ReportData>(
+      `/reports/?restaurantId=${restaurantId}&initialDate=${initialDate}&finalDate=${finalDate}`,
+      {},
+    );
     return response.data;
   } catch (error: any) {
     throw new Error(`Erro ao buscar relatório: ${error.message}`);

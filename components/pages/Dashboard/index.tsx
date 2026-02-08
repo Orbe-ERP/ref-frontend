@@ -16,6 +16,7 @@ import { TopProductsChart } from "@/components/organisms/Charts/TopProductsChart
 import { SalesInsights } from "@/components/organisms/Charts/SalesInsights";
 import { Ionicons } from "@expo/vector-icons";
 import { useResponsive } from "@/hooks/useResponsive";
+import Toast from "react-native-toast-message";
 
 export default function DashboardScreen() {
   const { selectedRestaurant } = useRestaurant();
@@ -74,7 +75,11 @@ const loadDashboardData = async () => {
 
     setOrders(response.data);
   } catch (error) {
-    console.error('Erro ao carregar dashboard:', error);
+              Toast.show({
+                type: "error",
+                text1: "Erro ao carregar dashboard",
+                text2: error instanceof Error ? error.message : "Erro desconhecido",
+              })
   } finally {
     setLoading(false);
     setRefreshing(false);

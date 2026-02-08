@@ -16,11 +16,15 @@ export interface ProductComposition {
 export async function getCompositionsByProduct(productId: string) {
   if (!productId) throw new Error("productId is required");
 
-  const response = await api.get<ProductComposition[]>(
-    `/products/${productId}/composition`,
-  );
+  try {
+    const response = await api.get<ProductComposition[]>(
+      `/products/${productId}/composition`,
+    );
 
-  return response.data;
+    return response.data;
+  } catch (error) {
+    throw new Error(`Error ao buscar composições do produto: ${error}`);
+  }
 }
 
 export async function addComposition(payload: {
@@ -32,8 +36,12 @@ export async function addComposition(payload: {
   kitchenId: string;
   restaurantId: string;
 }) {
-  const response = await api.post("/products/composition", payload);
-  return response.data;
+  try {
+    const response = await api.post("/products/composition", payload);
+    return response.data;
+  } catch (error) {
+    throw new Error(`Error ao adicionar composição: ${error}`);
+  }
 }
 
 export async function updateComposition(
@@ -45,19 +53,28 @@ export async function updateComposition(
 ) {
   if (!id) throw new Error("id required");
 
-  const response = await api.patch(`/products/composition/${id}`, data);
-
-  return response.data;
+  try {
+    const response = await api.patch(`/products/composition/${id}`, data);
+    return response.data;
+  } catch (error) {
+    throw new Error(`Error ao atualizar composição: ${error}`);
+  }
 }
 
 export async function deleteComposition(id: string) {
   if (!id) throw new Error("id required");
-  const request = await api.delete(`/products/composition/${id}`);
-  const response = request.data;
-  return response;
+
+  try {
+    const request = await api.delete(`/products/composition/${id}`);
+    return request.data;
+  } catch (error) {}
 }
 
 export async function updateProductCost(productId: string) {
-  const response = await api.patch(`/products/${productId}/update-cost`);
-  return response.data;
+  try {
+    const response = await api.patch(`/products/${productId}/update-cost`);
+    return response.data;
+  } catch (error) {
+    throw new Error(`Error ao atualizar custo do produto: ${error}`);
+  }
 }

@@ -9,6 +9,7 @@ import * as S from "./styles";
 import { useResponsive } from "@/hooks/useResponsive";
 import { CalendarModal } from "@/components/molecules/Calendar";
 import Button from "@/components/atoms/Button";
+import Toast from "react-native-toast-message";
 
 export default function ReportScreen() {
   const { selectedRestaurant } = useRestaurant();
@@ -51,7 +52,11 @@ export default function ReportScreen() {
 
       setReportData(Array.isArray(data) ? data : [data]);
     } catch (error) {
-      console.error(error);
+      Toast.show({
+        type: "error",
+        text1: "Erro ao carregar relatório",
+        text2: error instanceof Error ? error.message : "Erro desconhecido",
+      });
     } finally {
       setLoading(false);
     }

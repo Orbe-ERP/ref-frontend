@@ -1,5 +1,4 @@
 import { api } from "./api";
-import { Kitchen } from "./kitchen";
 
 export interface OrderProduct {
   customObservation: any;
@@ -144,7 +143,6 @@ export async function getCompletedOrdersByTable(
 
     return response.data;
   } catch (error) {
-    console.error(error);
     throw new Error(`Error fetching completed orders: ${error}`);
   }
 }
@@ -156,7 +154,6 @@ export async function createOrder(order: NewOrder) {
     const response = await api.post("/orders", order);
     return response.data;
   } catch (error) {
-    console.error(error);
     throw new Error(`Error creating order: ${error}`);
   }
 }
@@ -190,7 +187,6 @@ export async function getOrdersByRestaurant(
 
     return filteredOrders;
   } catch (error) {
-    console.error(error);
     throw new Error(`Error fetching orders by restaurant: ${error}`);
   }
 }
@@ -201,7 +197,6 @@ export async function getOrders(tableId: string) {
     const response = await api.get(`/orders/table/${tableId}`);
     return response.data;
   } catch (error) {
-    console.error(error);
     throw new Error(`Error fetching orders by table: ${error}`);
   }
 }
@@ -211,7 +206,6 @@ export async function addProductToOrder(productData: AddProductInput) {
     const response = await api.post("/orders/add-product", productData);
     return response.data;
   } catch (error) {
-    console.error(error);
     throw new Error(`Error adding product to order: ${error}`);
   }
 }
@@ -221,7 +215,6 @@ export async function updateStatus(orderData: UpdateOrderStatus) {
     const response = await api.patch("/orders", orderData);
     return response.data;
   } catch (error) {
-    console.error(error);
     throw new Error(`Error updating order: ${error}`);
   }
 }
@@ -232,7 +225,6 @@ export async function getOrderById(orderId: string) {
     const response = await api.get(`/orders/${orderId}`);
     return response.data;
   } catch (error) {
-    console.error(error);
     throw new Error(`Error fetching order: ${error}`);
   }
 }
@@ -242,7 +234,6 @@ export async function updatePaymentMethod(data: UpdatePaymentMethod) {
     const response = await api.patch("/orders", data);
     return response.data;
   } catch (error) {
-    console.error(error);
     throw new Error(`Error updating payment method: ${error}`);
   }
 }
@@ -274,7 +265,6 @@ export async function concludeOrders({
 
     return response.data;
   } catch (error) {
-    console.error(error);
     throw new Error(`Error concluding orders: ${error}`);
   }
 }
@@ -302,7 +292,6 @@ export async function concludeOrder({
 
     return response.data;
   } catch (error) {
-    console.error(error);
     throw new Error(`Error concluding single order: ${error}`);
   }
 }
@@ -318,7 +307,6 @@ export async function getOrderSummaryByIdentifier(
     });
     return response.data;
   } catch (error) {
-    console.error(error);
     throw new Error(`Failed to get order summary: ${error}`);
   }
 }
@@ -345,7 +333,6 @@ export async function getCompletedOrdersByDateRange(
 
     return response.data;
   } catch (error) {
-    console.error(error);
     throw new Error(`Error fetching completed orders by date range: ${error}`);
   }
 }

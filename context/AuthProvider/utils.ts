@@ -51,7 +51,6 @@ export async function ValidateToken(): Promise<{
     const request = await api.post("validateToken");
     return request.data;
   } catch (error) {
-    console.error("Erro ao validar token", error);
     return null;
   }
 }

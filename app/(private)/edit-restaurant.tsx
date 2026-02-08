@@ -21,7 +21,6 @@ export default function EditRestaurantScreen() {
         const response = await getRestaurantById(id);
         setRestaurant(response);
       } catch (error) {
-        console.error("Erro ao carregar restaurante:", error);
         Toast.show({
           type: "error",
           text1: "Erro ao carregar os dados do restaurante.",
@@ -45,7 +44,6 @@ export default function EditRestaurantScreen() {
       });
       router.push("/(tabs)");
     } catch (error) {
-      console.error("Erro ao atualizar restaurante:", error);
       Toast.show({
         type: "error",
         text1: "Erro ao atualizar o restaurante.",

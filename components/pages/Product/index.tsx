@@ -36,7 +36,11 @@ export default function ProductScreen() {
         });
         setProducts([]);
       } else {
-        console.error("Erro ao buscar produtos:", error);
+        Toast.show({
+          type: "error",
+          text1: "Erro ao carregar produtos",
+          text2: error instanceof Error ? error.message : "Erro desconhecido",
+        });
       }
     }
   }
@@ -54,7 +58,6 @@ export default function ProductScreen() {
           type: "error",
           text1: "Erro ao buscar cozinhas",
         });
-        console.error("Erro ao buscar cozinhas:", error);
       }
     }
   }

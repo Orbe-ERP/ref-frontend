@@ -46,10 +46,6 @@ export async function startSubscription(
       sessionId: sessionId,
     };
   } catch (error: any) {
-    console.error(
-      "Error starting subscription:",
-      error.response?.data || error.message
-    );
 
     if (error.response?.status === 401) {
       throw new Error("Email ou senha inválidos");
@@ -78,10 +74,6 @@ export async function confirmPayment(
       return data;
     }
   } catch (error: any) {
-    console.error(
-      "Error confirming payment:",
-      error.response?.data || error.message
-    );
 
     if (error.response?.status === 404) {
       throw new Error("Sessão de pagamento não encontrada ou expirada");
@@ -109,7 +101,6 @@ export async function cancelSubscription(): Promise<{
     const { data } = await api.post("/subscription/cancel");
     return data;
   } catch (error: any) {
-    console.error("Error canceling subscription:", error);
     throw new Error(
       error.response?.data?.message || "Erro ao cancelar assinatura"
     );
@@ -121,7 +112,6 @@ export async function getMySubscription(): Promise<any> {
     const { data } = await api.get("/subscription/me");
     return data;
   } catch (error: any) {
-    console.error("Error getting subscription:", error);
     throw new Error(
       error.response?.data?.message || "Erro ao buscar assinatura"
     );
@@ -138,7 +128,6 @@ export async function getBillingPortal(): Promise<{ url: string }> {
     const { data } = await api.get("/subscription/portal");
     return data;
   } catch (error: any) {
-    console.error("Error getting portal:", error);
     throw new Error(
       error.response?.data?.message || "Erro ao buscar portal"
     );
@@ -181,7 +170,9 @@ export async function saveSubscriptionCredentials(
       ["user_email", email],
       ["subscription_password", password],
     ]);
-  } catch (error) {
-    console.error("Error saving credentials:", error);
+  } catch (error: any) {
+        throw new Error(
+      error.response?.data?.message || "Erro ao salvar credenciais"
+    );
   }
 }

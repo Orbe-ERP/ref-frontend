@@ -89,7 +89,6 @@ export async function updateCategory(categoryData: UpdateCategoryInput) {
 
     return response.data;
   } catch (error: any) {
-    console.error("Erro ao atualizar categoria:", error);
     throw new Error(
       error.response?.data?.message || "Erro ao atualizar categoria"
     );

@@ -85,7 +85,6 @@ export async function createPrinter(
     );
     return response.data;
   } catch (error) {
-    console.log(error);
     throw new Error(`Erro ao criar impressora: ${error}`);
   }
 }
@@ -119,7 +118,6 @@ export async function updatePrinter(
       body,
     );
 
-    console.log(response.data)
     return response.data;
   } catch (error) {
     throw new Error(`Erro ao atualizar impressora: ${error}`);

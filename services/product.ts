@@ -1,5 +1,4 @@
 import { api } from "./api";
-import { Kitchen } from "./kitchen";
 
 export interface Observation {
   id: string;

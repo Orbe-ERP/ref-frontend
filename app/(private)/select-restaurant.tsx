@@ -61,7 +61,11 @@ export default function SelectRestaurantScreen() {
         const data = await getRestaurants();
         setRestaurants(data);
       } catch (error) {
-        console.error(error);
+        Toast.show({
+          type: "error",
+          text1: "Erro",
+          text2: "Não foi possível carregar os restaurantes",
+        });
       }
     };
     fetchRestaurants();
@@ -87,7 +91,6 @@ export default function SelectRestaurantScreen() {
         text2: "Restaurante excluído com sucesso",
       });
     } catch (error) {
-      console.error(error);
       Toast.show({
         type: "error",
         text1: "Erro",

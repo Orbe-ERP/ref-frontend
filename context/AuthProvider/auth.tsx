@@ -10,6 +10,7 @@ import useRestaurant from "@/hooks/useRestaurant";
 import { getRestaurantById } from "@/services/restaurant";
 import axios from "axios";
 import { setLogoutHandler } from "@/services/api";
+import Toast from "react-native-toast-message";
 
 export const AuthContext = createContext<IContext>({} as IContext);
 
@@ -20,8 +21,6 @@ export const AuthProvider = ({ children }: IAuthProvider) => {
     hasAuthenticatedUser: false,
   } as IUser);
   const [loading, setLoading] = useState(true);
-
-  console.log(user);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -43,7 +42,11 @@ export const AuthProvider = ({ children }: IAuthProvider) => {
                 selectRestaurant(restaurant);
               }
             } catch (err) {
-              console.warn("Não foi possível carregar restaurante", err);
+              Toast.show({
+                type: "error",
+                text1: "Erro ao carregar restaurante",
+                text2: `Erro ao carregar restaurante: ${err instanceof Error ? err.message : "Erro desconhecido"}`,
+              });
             }
           }
         } else {
@@ -62,7 +65,6 @@ export const AuthProvider = ({ children }: IAuthProvider) => {
       const response = await ValidateToken();
       return response?.hasAuthenticatedUser ?? false;
     } catch (error) {
-      console.error("Token inválido ou erro de autenticação", error);
       return false;
     }
   }, []);
@@ -100,9 +102,12 @@ export const AuthProvider = ({ children }: IAuthProvider) => {
             selectRestaurant(restaurant);
           }
         } catch (err) {
-          console.warn(
-            "Restaurante padrão inválido ou inacessível. Usuário precisará selecionar outro.",
-          );
+          Toast.show({
+            type: "error",
+            text1:
+              "Restaurante padrão inválido ou inacessível. Usuário precisará selecionar outro.",
+            text2: `Erro ao carregar restaurante: ${err instanceof Error ? err.message : "Erro desconhecido"}`,
+          });
         }
       }
 
