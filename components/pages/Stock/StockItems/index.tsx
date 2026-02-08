@@ -4,6 +4,7 @@ import {
   RefreshControl,
   ActivityIndicator,
   View,
+  Pressable,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Stack, useRouter, useLocalSearchParams } from "expo-router";
@@ -14,12 +15,16 @@ import { Pagination } from "@/components/organisms/Pagination";
 import { useAppTheme } from "@/context/ThemeProvider/theme";
 import useRestaurant from "@/hooks/useRestaurant";
 import useAuth from "@/hooks/useAuth";
-import { getStockItems, deleteStockItem, StockItem, Unit } from "@/services/stock";
+import {
+  getStockItems,
+  deleteStockItem,
+  StockItem,
+  Unit,
+} from "@/services/stock";
 import Toast from "react-native-toast-message";
 import { Loader } from "@/components/atoms/Loader";
 
 type StockStatus = "ok" | "warning" | "critical";
-
 
 export const unitLabelMap: Record<Unit, string> = {
   [Unit.UNIT]: "Un",
@@ -170,10 +175,10 @@ export default function StockItems() {
     }
   }
 
- function formatUnit(unit?: Unit) {
-  if (unit === undefined || unit === null) return "";
-  return unitLabelMap[unit] ?? "";
-}
+  function formatUnit(unit?: Unit) {
+    if (unit === undefined || unit === null) return "";
+    return unitLabelMap[unit] ?? "";
+  }
 
   function getStatus(item: StockItem): StockStatus {
     if (!item.minimum) return "ok";
@@ -189,9 +194,9 @@ export default function StockItems() {
       <S.StockRow status={status}>
         <S.ColumnName numberOfLines={1}>{item.name}</S.ColumnName>
 
-<S.ColumnQty>
-  {item.quantity} {formatUnit(item.unit)}
-</S.ColumnQty>
+        <S.ColumnQty>
+          {item.quantity} {formatUnit(item.unit)}
+        </S.ColumnQty>
 
         <S.ColumnMin>
           {item.minimum !== undefined ? `Min: ${item.minimum}` : "-"}
@@ -270,6 +275,18 @@ export default function StockItems() {
           title: `Estoque ${totalItems > 0 ? `(${totalItems})` : ""}`,
           headerStyle: { backgroundColor: theme.colors.background },
           headerTintColor: theme.colors.text.primary,
+          headerLeft: () => (
+            <Pressable
+              onPress={() => router.replace("/(private)/stock")}
+              style={{ paddingHorizontal: 16 }}
+            >
+              <Ionicons
+                name="arrow-back"
+                size={24}
+                color={theme.colors.text.primary}
+              />
+            </Pressable>
+          ),
         }}
       />
 
@@ -278,7 +295,13 @@ export default function StockItems() {
           <S.Header>
             <Button
               label="Novo Item"
-              icon={<Ionicons name="add" size={18} color={theme.colors.text.primary} />}
+              icon={
+                <Ionicons
+                  name="add"
+                  size={18}
+                  color={theme.colors.text.primary}
+                />
+              }
               onPress={() => router.push("/(private)/stock/items/create-stock")}
             />
           </S.Header>

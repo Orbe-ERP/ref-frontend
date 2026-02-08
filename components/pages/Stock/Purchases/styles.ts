@@ -1,5 +1,5 @@
 import styled from "styled-components/native";
-import { Platform } from "react-native";
+import { Picker } from "@react-native-picker/picker";
 
 
 export const ContentCard = styled.View`
@@ -157,19 +157,18 @@ export const SectionTitle = styled.Text`
 export const PickerContainer = styled.View`
   border-width: 1px;
   border-color: ${({ theme }) => theme.colors.border};
-  border-radius: 10px;
-
-  background-color: ${({ theme }) => theme.colors.surface};
-
-  padding-horizontal: 12px;
-
-  height: 52px;
+  border-radius: 8px;
+  color: ${({ theme }) => theme.colors.text.primary};
+  margin-bottom: 15px;
+  overflow: hidden;
+  min-height: 48px;
   justify-content: center;
+`;
 
-  ${Platform.OS === "android" &&
-  `
-    overflow: hidden;
-  `}
+export const StyledPicker = styled(Picker)`
+  color: ${({ theme }) => theme.colors.text.primary};
+  background-color: transparent;
+  height: 48px;
 `;
 
 export const CardHeader = styled.View`

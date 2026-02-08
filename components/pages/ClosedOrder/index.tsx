@@ -12,6 +12,13 @@ import { Loader } from "@/components/atoms/Loader";
 import { CalendarModal } from "@/components/molecules/Calendar";
 import Button from "@/components/atoms/Button";
 
+const paymentMethodLabelMap: Record<string, string> = {
+  CASH: "Dinheiro",
+  CREDIT_CARD: "Cartão de Crédito",
+  DEBIT_CARD: "Cartão de Débito",
+  PIX: "PIX",
+};
+
 export default function ClosedOrdersPage() {
   const { tableId } = useLocalSearchParams();
   const router = useRouter();
@@ -199,7 +206,10 @@ export default function ClosedOrdersPage() {
           <S.OrderText>
             Responsável: {item.responsible || "Não informado"}
           </S.OrderText>
-          <S.OrderText>Pagamento: {item.paymentMethod}</S.OrderText>
+          <S.OrderText>
+            Pagamento:{" "}
+            {paymentMethodLabelMap[item.paymentMethod] ?? item.paymentMethod}
+          </S.OrderText>{" "}
           {item.additional && (
             <S.OrderText>
               Taxa adicional: {formatCurrency(item.additional)}

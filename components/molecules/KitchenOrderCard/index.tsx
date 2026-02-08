@@ -31,6 +31,7 @@ type ModalType = "prepare" | "ready" | "cancel" | null;
 interface KitchenOrderCardProps {
   tableName: string;
   items: KitchenCompositionItem[];
+  toTake?: boolean;
   onUpdateStatus: (orderProductId: string, status: string) => void;
   onCancelOrder?: (orderProductId: string) => void;
 }
@@ -38,6 +39,7 @@ interface KitchenOrderCardProps {
 export default function KitchenOrderCard({
   tableName,
   items,
+  toTake,
   onUpdateStatus,
   onCancelOrder,
 }: KitchenOrderCardProps) {
@@ -111,6 +113,27 @@ export default function KitchenOrderCard({
       >
         <View style={{ position: "absolute", top: 8, left: 8 }}>
           <KitchenLabel color={kitchenColor}>{kitchen.name}</KitchenLabel>
+        </View>
+        <View
+          style={{
+            position: "absolute",
+            top: 8,
+            right: 8,
+            paddingHorizontal: 10,
+            paddingVertical: 4,
+            borderRadius: 12,
+            backgroundColor: toTake
+              ? theme.colors.primary + "20"
+              : theme.colors.secondary + "20",
+          }}
+        >
+          <Text
+            size={12}
+            weight="bold"
+            color={toTake ? theme.colors.primary : theme.colors.secondary}
+          >
+            {toTake ? "Delivery" : "Retirada"}
+          </Text>
         </View>
 
         <Title style={{ textAlign: "center", marginBottom: 4 }}>

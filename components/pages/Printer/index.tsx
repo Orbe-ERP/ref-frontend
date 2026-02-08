@@ -251,13 +251,13 @@ export default function PrinterListScreen() {
               </S.HelpText>
 
               <S.Actions>
-                <Button label="Cancelar" onPress={resetForm} variant="danger" />
                 <Button
                   label={
                     editingPrinter ? "Salvar alterações" : "Adicionar agente"
                   }
                   onPress={handleSave}
                 />
+                  <Button label="Cancelar" onPress={resetForm} variant="danger" />
               </S.Actions>
             </S.FormCard>
 
@@ -275,7 +275,7 @@ export default function PrinterListScreen() {
                 <S.ActionsRow>
                   <S.ActionButtonWrapper>
                     <Button
-                      variant="danger"
+                      variant="secondary"
                       label="Copiar"
                       onPress={copyAgentKey}
                     />

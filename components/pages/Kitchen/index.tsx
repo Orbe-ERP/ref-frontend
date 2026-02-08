@@ -112,6 +112,7 @@ function normalizeKitchenItems(orders: Order[] = []) {
           kitchen: data.items[0].kitchen,
           items: data.items,
           totalQuantity: data.totalQuantity,
+          toTake: order.toTake
         });
       }
     });
@@ -123,12 +124,11 @@ function normalizeKitchenItems(orders: Order[] = []) {
 export default function KitchenPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [kitchens, setKitchens] = useState<Kitchen[]>([]);
-  const [selectedKitchenId, setSelectedKitchenId] = useState("null");
+  const [selectedKitchenId, setSelectedKitchenId] = useState<string | null>("null");
   const [loading, setLoading] = useState(true);
 
   const { selectedRestaurant } = useRestaurant();
   const { theme } = useAppTheme();
-
 
   const refetchOrders = async () => {
     try {
@@ -217,6 +217,8 @@ export default function KitchenPage() {
       ? kitchenItems
       : kitchenItems.filter((k) => k.kitchenId === selectedKitchenId);
 
+
+
   return (
     <>
       <Stack.Screen
@@ -269,6 +271,7 @@ export default function KitchenPage() {
             <KitchenOrderCard
               tableName={kitchenOrder.tableName}
               items={kitchenOrder.items}
+              toTake={kitchenOrder.toTake}
               onUpdateStatus={handleProductStatus}
               onCancelOrder={(orderProductId) =>
                 handleDeleteProduct(kitchenOrder.orderId, orderProductId)

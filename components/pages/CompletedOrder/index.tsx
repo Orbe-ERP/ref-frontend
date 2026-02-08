@@ -19,6 +19,13 @@ import { useResponsive } from "@/hooks/useResponsive";
 import { CalendarModal } from "@/components/molecules/Calendar";
 import Button from "@/components/atoms/Button";
 
+const paymentMethodLabelMap: Record<string, string> = {
+  CASH: "Dinheiro",
+  CREDIT_CARD: "Cartão de Crédito",
+  DEBIT_CARD: "Cartão de Débito",
+  PIX: "PIX",
+};
+
 export default function CompletedOrdersPage() {
   const router = useRouter();
   const { selectedRestaurant } = useRestaurant();
@@ -145,8 +152,10 @@ export default function CompletedOrdersPage() {
           <S.OrderText>
             Responsável: {item.responsibles?.[0] ?? "Não informado"}
           </S.OrderText>
-          <S.OrderText>Pagamento: {item.paymentMethod}</S.OrderText>
-
+          <S.OrderText>
+            Pagamento:{" "}
+            {paymentMethodLabelMap[item.paymentMethod] ?? item.paymentMethod}
+          </S.OrderText>
           {item.additional > 0 && (
             <S.OrderText>
               Taxa adicional: {formatCurrency(item.additional)}

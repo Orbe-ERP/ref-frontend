@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ScrollView, ActivityIndicator } from "react-native";
+import { ScrollView, ActivityIndicator, Pressable } from "react-native";
 import { Stack, router } from "expo-router";
 import { Picker } from "@react-native-picker/picker";
 import Toast from "react-native-toast-message";
@@ -20,6 +20,7 @@ import {
 
 import { getSuppliers, Supplier } from "@/services/supplier";
 import { getStockItems, StockItem } from "@/services/stock";
+import { Ionicons } from "@expo/vector-icons";
 
 interface ItemForm {
   id: string;
@@ -187,14 +188,23 @@ export default function ManualPurchaseScreen() {
           title: "Compra Manual",
           headerStyle: { backgroundColor: theme.colors.background },
           headerTintColor: theme.colors.text.primary,
+          headerLeft: () => (
+            <Pressable
+              onPress={() => router.replace("/(private)/stock")}
+              style={{ paddingHorizontal: 16 }}
+            >
+              <Ionicons
+                name="arrow-back"
+                size={24}
+                color={theme.colors.text.primary}
+              />
+            </Pressable>
+          ),
         }}
       />
 
       <S.ScreenContainer>
-        <ScrollView
-        
-          showsVerticalScrollIndicator={false}
->
+        <ScrollView showsVerticalScrollIndicator={false}>
           <S.FormSection>
             <S.SectionHeader>
               <S.SectionTitle>Fornecedor</S.SectionTitle>
@@ -204,15 +214,25 @@ export default function ManualPurchaseScreen() {
             </S.SectionHeader>
 
             <S.PickerContainer>
-              <Picker
+              <S.StyledPicker
                 selectedValue={supplierId}
-                onValueChange={(v) => setSupplierId(v)}
+                dropdownIconColor={theme.colors.primary}
+                onValueChange={(v: any) => setSupplierId(v)}
               >
-                <Picker.Item label="Selecione o fornecedor" value={undefined} />
+                <Picker.Item
+                  label="Selecione o fornecedor"
+                  value={undefined}
+                  color={theme.colors.text.secondary}
+                />
                 {suppliers.map((s) => (
-                  <Picker.Item key={s.id} label={s.name} value={s.id} />
+                  <Picker.Item
+                    key={s.id}
+                    label={s.name}
+                    value={s.id}
+                    color={theme.colors.text.primary}
+                  />
                 ))}
-              </Picker>
+              </S.StyledPicker>
             </S.PickerContainer>
 
             <S.FormGroup>
@@ -249,15 +269,27 @@ export default function ManualPurchaseScreen() {
               <S.FormGroup>
                 <S.Label>Produto</S.Label>
                 <S.PickerContainer>
-                  <Picker
+                  <S.StyledPicker
+                    dropdownIconColor={theme.colors.primary}
                     selectedValue={item.stockItemId}
-                    onValueChange={(v) => updateItem(item.id, "stockItemId", v)}
+                    onValueChange={(v: any) =>
+                      updateItem(item.id, "stockItemId", v)
+                    }
                   >
-                    <Picker.Item label="Selecione o produto" value="" />
+                    <Picker.Item
+                      label="Selecione o produto"
+                      value=""
+                      color={theme.colors.text.secondary}
+                    />
                     {stockItems.map((s) => (
-                      <Picker.Item key={s.id} label={s.name} value={s.id} />
+                      <Picker.Item
+                        key={s.id}
+                        label={s.name}
+                        value={s.id}
+                        color={theme.colors.primary}
+                      />
                     ))}
-                  </Picker>
+                  </S.StyledPicker>
                 </S.PickerContainer>
                 <Button
                   label="Cadastrar Item"
