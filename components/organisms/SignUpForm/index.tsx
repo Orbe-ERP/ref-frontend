@@ -29,6 +29,7 @@ export default function SignUpForm({ onSuccess }: SignUpFormProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const isWeb = Platform.OS === 'web';
 
   const handleSubmit = async () => {
     if (!formData.name || !formData.email || !formData.password) {
@@ -111,136 +112,145 @@ export default function SignUpForm({ onSuccess }: SignUpFormProps) {
 
   return (
     <S.Container>
-      <KeyboardAvoidingView
-        style={{ flex: 1, backgroundColor: theme.colors.background }}
+      <KeyboardAvoidingView 
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
+        style={{ flex: 1 }}
+        enabled={Platform.OS !== 'web'}
       >
-        <ScrollView
-          keyboardShouldPersistTaps="handled"
-          contentContainerStyle={{ paddingBottom: 32, flexGrow: 1 }}
+        <ScrollView 
+          contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}
           showsVerticalScrollIndicator={false}
         >
-          <S.Header>
-            <S.BackButton onPress={() => router.replace("/login")}>
-              <Ionicons
-                name="arrow-back-outline"
-                size={24}
-                color={theme.colors.text.primary}
-              />
-            </S.BackButton>
-            <S.HeaderTitle>Crie sua conta</S.HeaderTitle>
-            <View style={{ width: 40 }} />
-          </S.Header>
-
-          <S.FormContainer>
-            <S.InputGroup>
-              <S.Label>Nome completo</S.Label>
-              <S.InputWrapper>
-                <S.IconWrapper>
-                  <Ionicons
-                    name="person-outline"
-                    size={20}
-                    color={theme.colors.text.muted}
-                  />
-                </S.IconWrapper>
-                <S.StyledInput
-                  placeholder="Seu nome"
-                  placeholderTextColor={theme.colors.text.muted}
-                  value={formData.name}
-                  onChangeText={(text) =>
-                    setFormData({ ...formData, name: text })
-                  }
-                  autoCapitalize="words"
-                  editable={!loading}
+          <S.ContentWrapper>
+            {/* <S.Header>
+              <S.BackButton onPress={() => router.replace("/login")}>
+                <Ionicons
+                  name="arrow-back-outline"
+                  size={24}
+                  color={theme.colors.text.primary}
                 />
-              </S.InputWrapper>
-              <S.HintText>Mínimo 2 caracteres</S.HintText>
-            </S.InputGroup>
+              </S.BackButton>
+              <S.HeaderTitle>Crie sua conta</S.HeaderTitle>
+              <View style={{ width: 40 }} />
+            </S.Header> */}
 
-            <S.InputGroup>
-              <S.Label>E-mail</S.Label>
-              <S.InputWrapper>
-                <S.IconWrapper>
-                  <Ionicons
-                    name="mail-outline"
-                    size={20}
-                    color={theme.colors.text.muted}
+            <S.Header>
+              <S.BackButton onPress={() => router.replace("/login")}>
+                <Ionicons name="arrow-back" size={22} color={theme.colors.text.primary} />
+              </S.BackButton>
+              <S.HeaderTitle>Cadastro</S.HeaderTitle>
+              <View style={{ width: 40 }} /> 
+            </S.Header>
+
+            <S.FormContainer>
+              <S.InputGroup>
+                <S.Label>Nome completo</S.Label>
+                <S.InputWrapper>
+                  <S.IconWrapper>
+                    <Ionicons
+                      name="person-outline"
+                      size={20}
+                      color={theme.colors.text.muted}
+                    />
+                  </S.IconWrapper>
+                  <S.StyledInput
+                    placeholder="Seu nome"
+                    placeholderTextColor={theme.colors.text.muted}
+                    value={formData.name}
+                    onChangeText={(text) =>
+                      setFormData({ ...formData, name: text })
+                    }
+                    autoCapitalize="words"
+                    editable={!loading}
                   />
-                </S.IconWrapper>
-                <S.StyledInput
-                  placeholder="seu@email.com"
-                  placeholderTextColor={theme.colors.text.muted}
-                  value={formData.email}
-                  onChangeText={(text) =>
-                    setFormData({ ...formData, email: text })
-                  }
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  editable={!loading}
-                />
-              </S.InputWrapper>
-            </S.InputGroup>
+                </S.InputWrapper>
+                <S.HintText>Mínimo 2 caracteres</S.HintText>
+              </S.InputGroup>
 
-            <S.InputGroup>
-              <S.Label>Senha</S.Label>
-              <S.InputWrapper>
-                <S.IconWrapper>
-                  <Ionicons
-                    name="lock-closed-outline"
-                    size={20}
-                    color={theme.colors.text.muted}
+              <S.InputGroup>
+                <S.Label>E-mail</S.Label>
+                <S.InputWrapper>
+                  <S.IconWrapper>
+                    <Ionicons
+                      name="mail-outline"
+                      size={20}
+                      color={theme.colors.text.muted}
+                    />
+                  </S.IconWrapper>
+                  <S.StyledInput
+                    placeholder="seu@email.com"
+                    placeholderTextColor={theme.colors.text.muted}
+                    value={formData.email}
+                    onChangeText={(text) =>
+                      setFormData({ ...formData, email: text })
+                    }
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    editable={!loading}
                   />
-                </S.IconWrapper>
-                <S.StyledInput
-                  placeholder="••••••••"
-                  placeholderTextColor={theme.colors.text.muted}
-                  value={formData.password}
-                  onChangeText={(text) =>
-                    setFormData({ ...formData, password: text })
-                  }
-                  secureTextEntry={!showPassword}
-                  editable={!loading}
-                />
-                <S.EyeButton onPress={() => setShowPassword(!showPassword)}>
-                  <Ionicons
-                    name={showPassword ? "eye-off-outline" : "eye-outline"}
-                    size={20}
-                    color={theme.colors.text.muted}
+                </S.InputWrapper>
+              </S.InputGroup>
+
+              <S.InputGroup>
+                <S.Label>Senha</S.Label>
+                <S.InputWrapper>
+                  <S.IconWrapper>
+                    <Ionicons
+                      name="lock-closed-outline"
+                      size={20}
+                      color={theme.colors.text.muted}
+                    />
+                  </S.IconWrapper>
+                  <S.StyledInput
+                    placeholder="••••••••"
+                    placeholderTextColor={theme.colors.text.muted}
+                    value={formData.password}
+                    onChangeText={(text) =>
+                      setFormData({ ...formData, password: text })
+                    }
+                    secureTextEntry={!showPassword}
+                    editable={!loading}
                   />
-                </S.EyeButton>
-              </S.InputWrapper>
-              <S.HintText>
-                Mínimo 6 caracteres, com uma letra maiúscula e um número
-              </S.HintText>
-            </S.InputGroup>
+                  <S.EyeButton onPress={() => setShowPassword(!showPassword)}>
+                    <Ionicons
+                      name={showPassword ? "eye-off-outline" : "eye-outline"}
+                      size={20}
+                      color={theme.colors.text.muted}
+                    />
+                  </S.EyeButton>
+                </S.InputWrapper>
+                <S.HintText>
+                  Mínimo 6 caracteres, com uma letra maiúscula e um número
+                </S.HintText>
+              </S.InputGroup>
 
-            {error && (
-              <S.ErrorContainer>
-                <S.ErrorText>{error}</S.ErrorText>
-              </S.ErrorContainer>
-            )}
-
-            <S.SubmitButton onPress={handleSubmit} disabled={loading}>
-              {loading ? (
-                <ActivityIndicator color={theme.colors.surface} />
-              ) : (
-                <S.SubmitButtonText>Criar conta</S.SubmitButtonText>
+              {error && (
+                <S.ErrorContainer>
+                  <S.ErrorText>{error}</S.ErrorText>
+                </S.ErrorContainer>
               )}
-            </S.SubmitButton>
 
-            <S.LoginContainer>
-              <S.LoginText>Já tem uma conta? </S.LoginText>
-              <S.LoginButton onPress={() => router.push("/login")}>
-                <S.LoginButtonText>Faça login</S.LoginButtonText>
-              </S.LoginButton>
-            </S.LoginContainer>
-          </S.FormContainer>
+              <S.SubmitButton onPress={handleSubmit} disabled={loading}>
+                {loading ? (
+                  <ActivityIndicator color={theme.colors.surface} />
+                ) : (
+                  <S.SubmitButtonText>Criar conta</S.SubmitButtonText>
+                )}
+              </S.SubmitButton>
+
+              <S.LoginContainer>
+                <S.LoginText>Já tem uma conta? </S.LoginText>
+                <S.LoginButton onPress={() => router.push("/login")}>
+                  <S.LoginButtonText>Faça login</S.LoginButtonText>
+                </S.LoginButton>
+              </S.LoginContainer>
+            </S.FormContainer>
+          </S.ContentWrapper>
 
           <S.TermsContainer>
             <S.TermsText>
               Ao continuar, você concorda com nossos{" "}
-              <S.TermsLink>Termos de Serviço</S.TermsLink> e S.
+              <S.TermsLink>Termos de Serviço</S.TermsLink> e{" "}
               <S.TermsLink>Política de Privacidade</S.TermsLink>
             </S.TermsText>
           </S.TermsContainer>
