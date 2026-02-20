@@ -17,13 +17,4 @@ export const Header = styled.View`
   border-bottom-color: ${({ theme }) => theme.colors.secondary};
 `;
 
-export const TableScroll = styled(ScrollView).attrs({
-  contentContainerStyle: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "center",
-    paddingTop: 20,
-    paddingBottom: 40,
-    gap: 15
-  },
-})``;
+export const TableScroll = styled(ScrollView)``;

@@ -6,14 +6,7 @@ export const Container = styled.View`
   background-color: ${({ theme }) => theme.colors.primary};
 `;
 
-export const StyledScrollView = styled(ScrollView).attrs({
-  showsVerticalScrollIndicator: false,
-  contentContainerStyle: {
-    padding: 16,
-    paddingBottom: 40,
-    minHeight: "100%",
-  },
-})``;
+export const StyledScrollView = styled(ScrollView)``;
 
 export const LogoutContainer = styled.View`
   flex-direction: row;

@@ -41,15 +41,19 @@ export const AppThemeProvider = ({ children }: { children: React.ReactNode }) =>
   const toggleTheme = () => setIsDark((prev) => !prev);
   const theme = useMemo(() => (isDark ? DarkAppTheme : LightAppTheme), [isDark]);
 
+  if (loading) {
+    return null; 
+  }
+
   return (
     <ThemeContext.Provider value={{ isDark, toggleTheme, theme, loading }}>
-      <StyledThemeProvider theme={{ ...theme }}>
+
+      <StyledThemeProvider theme={theme}>
         {children}
       </StyledThemeProvider>
     </ThemeContext.Provider>
   );
 };
-
 export const useAppTheme = () => {
   const context = useContext(ThemeContext);
   if (!context) throw new Error("useAppTheme must be used within AppThemeProvider");

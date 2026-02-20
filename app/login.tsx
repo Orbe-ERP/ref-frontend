@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import {
   ActivityIndicator,
-  // KeyboardAvoidingView,
   Platform,
-  // ScrollView,
 } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import { Formik } from "formik";
@@ -32,16 +30,9 @@ const Container = styled.KeyboardAvoidingView`
   background-color: ${COLORS.background};
 `;
 
-const StyledScrollView = styled.ScrollView.attrs({
-  contentContainerStyle: {
-    flexGrow: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 24,
-  },
-  keyboardShouldPersistTaps: "handled",
-  showsVerticalScrollIndicator: false,
-})``;
+const StyledScrollView = styled.ScrollView`
+  flex: 1;
+`;
 
 const Card = styled.View`
   width: 100%;
@@ -49,12 +40,18 @@ const Card = styled.View`
   background-color: ${COLORS.cardBg};
   border-radius: 24px;
   padding: 40px 32px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   border-width: 1px;
   border-color: rgba(43, 174, 102, 0.1);
   
+  shadow-color: #000;
+  shadow-offset: 0px 8px;
+  shadow-opacity: 0.3;
+  shadow-radius: 32px;
+  elevation: 5;
+
   ${Platform.select({
     web: `
+      margin: 20px auto;
       @media (min-width: 768px) {
         padding: 48px 40px;
       }
@@ -70,15 +67,7 @@ const LogoContainer = styled.View`
 const Logo = styled.Image`
   width: 120px;
   height: 120px;
-  
-  ${Platform.select({
-    web: `
-      @media (min-width: 768px) {
-        width: 140px;
-        height: 140px;
-      }
-    `,
-  })}
+  resize-mode: contain;
 `;
 
 const Title = styled.Text`
@@ -87,14 +76,6 @@ const Title = styled.Text`
   margin-bottom: 8px;
   text-align: center;
   color: ${COLORS.text};
-  
-  ${Platform.select({
-    web: `
-      @media (min-width: 768px) {
-        font-size: 36px;
-      }
-    `,
-  })}
 `;
 
 const Subtitle = styled.Text`
@@ -119,16 +100,7 @@ const Input = styled.TextInput`
   background-color: ${COLORS.inputBg};
   font-size: 16px;
   
-  ${Platform.select({
-    web: `
-      transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-      &:focus {
-        border-color: ${COLORS.primary};
-        box-shadow: 0 0 0 3px rgba(43, 174, 102, 0.1);
-        outline: none;
-      }
-    `,
-  })}
+  outline-style: none;
 `;
 
 const ErrorText = styled.Text`
@@ -149,15 +121,7 @@ const EyeButton = styled.TouchableOpacity`
   right: 16px;
   top: 16px;
   padding: 4px;
-  
-  ${Platform.select({
-    web: `
-      cursor: pointer;
-      &:hover {
-        opacity: 0.8;
-      }
-    `,
-  })}
+  z-index: 10;
 `;
 
 const Button = styled.TouchableOpacity<{ disabled?: boolean }>`
@@ -168,33 +132,14 @@ const Button = styled.TouchableOpacity<{ disabled?: boolean }>`
   align-items: center;
   width: 100%;
   margin-top: 24px;
-  border-width: 0;
-  box-shadow: 0 4px 12px rgba(43, 174, 102, 0.2);
   
-  ${Platform.select({
-    web: `
-      cursor: ${(props: { disabled: any; }) => (props.disabled ? "not-allowed" : "pointer")};
-      transition: all 0.2s ease-in-out;
-      
-      &:hover {
-        background-color: ${(props) =>
-          props.disabled ? "#4B5563" : COLORS.primaryLight};
-        transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(43, 174, 102, 0.3);
-      }
-      
-      &:active {
-        transform: translateY(0);
-      }
-    `,
-  })}
+  cursor: ${props => props.disabled ? "not-allowed" : "pointer"};
 `;
 
 const ButtonText = styled.Text`
   color: #fff;
   font-weight: 700;
   font-size: 18px;
-  letter-spacing: 0.5px;
 `;
 
 const ForgotPasswordContainer = styled.View`
@@ -203,28 +148,10 @@ const ForgotPasswordContainer = styled.View`
   margin-top: 12px;
 `;
 
-const ForgotPasswordButton = styled.TouchableOpacity`
-  ${Platform.select({
-    web: `
-      cursor: pointer;
-    `,
-  })}
-`;
-
 const ForgotPasswordText = styled.Text`
   color: ${COLORS.primary};
   font-size: 14px;
   font-weight: 600;
-  
-  ${Platform.select({
-    web: `
-      transition: color 0.2s ease-in-out;
-      &:hover {
-        color: ${COLORS.primaryLight};
-        text-decoration: underline;
-      }
-    `,
-  })}
 `;
 
 const RegisterContainer = styled.View`
@@ -238,72 +165,12 @@ const RegisterText = styled.Text`
   font-size: 16px;
 `;
 
-const RegisterButton = styled.TouchableOpacity`
-  ${Platform.select({
-    web: `
-      cursor: pointer;
-    `,
-  })}
-`;
-
 const RegisterButtonText = styled.Text`
   color: ${COLORS.primary};
   font-size: 16px;
   font-weight: 700;
   margin-left: 4px;
-  
-  ${Platform.select({
-    web: `
-      transition: color 0.2s ease-in-out;
-      &:hover {
-        color: ${COLORS.primaryLight};
-        text-decoration: underline;
-      }
-    `,
-  })}
 `;
-
-// const Divider = styled.View`
-//   width: 100%;
-//   height: 1px;
-//   background-color: ${COLORS.border};
-//   margin: 32px 0 24px;
-// `;
-
-// const SocialLoginContainer = styled.View`
-//   width: 100%;
-//   gap: 16px;
-// `;
-
-// const SocialButton = styled.TouchableOpacity`
-//   flex-direction: row;
-//   align-items: center;
-//   justify-content: center;
-//   padding: 14px;
-//   border-radius: 12px;
-//   border-width: 1.5px;
-//   border-color: ${COLORS.border};
-//   background-color: transparent;
-//   gap: 12px;
-  
-//   ${Platform.select({
-//     web: `
-//       cursor: pointer;
-//       transition: all 0.2s ease-in-out;
-      
-//       &:hover {
-//         background-color: rgba(255, 255, 255, 0.05);
-//         border-color: ${COLORS.primary};
-//       }
-//     `,
-//   })}
-// `;
-
-// const SocialButtonText = styled.Text`
-//   color: ${COLORS.text};
-//   font-size: 16px;
-//   font-weight: 500;
-// `;
 
 export default function Login() {
   const { authenticate } = useAuth();
@@ -313,28 +180,16 @@ export default function Login() {
 
   const handleLogin = async (values: { email: string; password: string }) => {
     setLoading(true);
-
     try {
       const result = await authenticate(values.email, values.password);
-
       if (!result.success) {
         Toast.show({
           type: "error",
           text1: "Erro ao entrar",
           text2: result.message ?? "E-mail ou senha inválidos",
-          position: "top",
-          visibilityTime: 4000,
         });
         return;
       }
-
-      Toast.show({
-        type: "success",
-        text1: "Sucesso",
-        text2: "Login realizado com sucesso!",
-        position: "top",
-      });
-
       router.replace("/(tabs)");
     } catch {
       Toast.show({
@@ -348,17 +203,11 @@ export default function Login() {
   };
 
   return (
-    <Container
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
-    >
-      <StyledScrollView>
-        <Stack.Screen options={{ 
-          title: "Login",
-          headerShown: false 
-        }} />
+    <Container behavior={Platform.OS === "ios" ? "padding" : "height"}>
+      <StyledScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}>
+        <Stack.Screen options={{ headerShown: false }} />
 
-        <Card style={{ backgroundColor: "transparent" }}>
+        <Card>
           <LogoContainer>
             <Logo source={require("../assets/images/logo-comandante.png")} />
           </LogoContainer>
@@ -369,23 +218,12 @@ export default function Login() {
           <Formik
             initialValues={{ email: "", password: "" }}
             validationSchema={Yup.object().shape({
-              email: Yup.string()
-                .email("E-mail inválido")
-                .required("E-mail obrigatório"),
-              password: Yup.string()
-                .min(6, "Mínimo 6 caracteres")
-                .required("Senha obrigatória"),
+              email: Yup.string().email("E-mail inválido").required("E-mail obrigatório"),
+              password: Yup.string().min(6, "Mínimo 6 caracteres").required("Senha obrigatória"),
             })}
             onSubmit={handleLogin}
           >
-            {({
-              handleChange,
-              handleBlur,
-              handleSubmit,
-              values,
-              errors,
-              touched,
-            }) => (
+            {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
               <>
                 <InputWrapper>
                   <Input
@@ -397,9 +235,7 @@ export default function Login() {
                     onBlur={handleBlur("email")}
                     value={values.email}
                   />
-                  {errors.email && touched.email && (
-                    <ErrorText>{errors.email}</ErrorText>
-                  )}
+                  {errors.email && touched.email && <ErrorText>{errors.email}</ErrorText>}
                 </InputWrapper>
 
                 <InputWrapper>
@@ -413,59 +249,29 @@ export default function Login() {
                       value={values.password}
                       style={{ paddingRight: 44 }}
                     />
-
                     <EyeButton onPress={() => setShowPassword(!showPassword)}>
-                      <Ionicons
-                        name={showPassword ? "eye-off" : "eye"}
-                        size={22}
-                        color={COLORS.placeholder}
-                      />
+                      <Ionicons name={showPassword ? "eye-off" : "eye"} size={22} color={COLORS.placeholder} />
                     </EyeButton>
                   </PasswordContainer>
-
-                  {errors.password && touched.password && (
-                    <ErrorText>{errors.password}</ErrorText>
-                  )}
+                  {errors.password && touched.password && <ErrorText>{errors.password}</ErrorText>}
                 </InputWrapper>
 
                 <ForgotPasswordContainer>
-                  <ForgotPasswordButton 
-                    onPress={() => router.push("/forgot-password")}
-                  >
-                    <ForgotPasswordText>
-                      Esqueci minha senha
-                    </ForgotPasswordText>
-                  </ForgotPasswordButton>
+                  <ForgotPasswordText onPress={() => router.push("/forgot-password")}>
+                    Esqueci minha senha
+                  </ForgotPasswordText>
                 </ForgotPasswordContainer>
 
                 <Button onPress={handleSubmit as any} disabled={loading}>
-                  {loading ? (
-                    <ActivityIndicator color="#fff" size="small" />
-                  ) : (
-                    <ButtonText>Entrar</ButtonText>
-                  )}
+                  {loading ? <ActivityIndicator color="#fff" size="small" /> : <ButtonText>Entrar</ButtonText>}
                 </Button>
 
                 <RegisterContainer>
                   <RegisterText>Não tem cadastro? </RegisterText>
-                  <RegisterButton onPress={() => router.push("/signup")}>
-                    <RegisterButtonText>Cadastre-se</RegisterButtonText>
-                  </RegisterButton>
+                  <RegisterButtonText onPress={() => router.push("/signup")}>
+                    Cadastre-se
+                  </RegisterButtonText>
                 </RegisterContainer>
-
-                {/* <Divider /> */}
-
-                {/* <SocialLoginContainer>
-                  <SocialButton>
-                    <Ionicons name="logo-google" size={22} color="#fff" />
-                    <SocialButtonText>Continuar com Google</SocialButtonText>
-                  </SocialButton>
-                  
-                  <SocialButton>
-                    <Ionicons name="logo-apple" size={22} color="#fff" />
-                    <SocialButtonText>Continuar com Apple</SocialButtonText>
-                  </SocialButton>
-                </SocialLoginContainer> */}
               </>
             )}
           </Formik>

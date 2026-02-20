@@ -42,16 +42,7 @@ export const Footer = styled.View`
   align-items: center;
 `;
 
-export const ConfigScroll = styled(ScrollView).attrs({
-  contentContainerStyle: {
-    flexDirection: "column",
-    flexGrow: 1,
-    justifyContent: "space-between",
-    paddingTop: 20,
-    paddingBottom: 40,
-    
-  },
-})``;
+export const ConfigScroll = styled(ScrollView)``;
 
 export const ContentWrapper = styled.View<{ isMobile: boolean }>`
   width: 100%;

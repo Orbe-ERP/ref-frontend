@@ -39,9 +39,7 @@ function maskCnpj(value: string) {
     .slice(0, 18);
 }
 
-const Container = styled(ScrollView).attrs({
-  contentContainerStyle: { padding: 24 },
-})``;
+const Container = styled(ScrollView)``
 
 const Card = styled.View`
   border-radius: 16px;

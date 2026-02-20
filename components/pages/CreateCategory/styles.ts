@@ -48,19 +48,4 @@ export const CardContainer = styled.View<ResponsiveProps>`
   ` : ''}
 `;
 
-export const ScrollContainer = styled(ScrollView).attrs((props: ResponsiveProps) => ({
-  contentContainerStyle: {
-    flexDirection: props.isTablet || props.isDesktop ? "column" : "row",
-    flexWrap: props.isTablet || props.isDesktop ? "nowrap" : "wrap",
-    justifyContent: props.isTablet || props.isDesktop ? "flex-start" : "space-between",
-    gap: props.isMobile ? 15 : 20,
-    ...(props.isTablet || props.isDesktop ? {
-      paddingBottom: 40,
-    } : {}),
-  },
-}))<ResponsiveProps>`
-  ${({ isTablet, isDesktop }) => 
-    (isTablet || isDesktop) ? `
-    width: 100%;
-  ` : ''}
-`;
+export const ScrollContainer = styled(ScrollView)``;

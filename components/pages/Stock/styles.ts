@@ -13,11 +13,7 @@ export const Header = styled.View`
   border-bottom-color: ${({ theme }) => theme.colors.secondary};
 `;
 
-export const MenuContainer = styled.ScrollView.attrs({
-  contentContainerStyle: {
-    padding: 16,
-  },
-})`
+export const MenuContainer = styled.ScrollView`
   flex: 1;
 `;
 
@@ -100,12 +96,7 @@ export const ItemInfo = styled.Text`
 
 
 
-export const FormContainer = styled.ScrollView.attrs({
-  contentContainerStyle: {
-    padding: 16,
-    paddingBottom: 32,
-  },
-})`
+export const FormContainer = styled.ScrollView`
   flex: 1;
 `;
 

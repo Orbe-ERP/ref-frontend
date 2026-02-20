@@ -40,23 +40,10 @@ const Container = styled.View<ResponsiveProps>`
       : ""}
 `;
 
-const ScrollContent = styled(ScrollView).attrs((props: ResponsiveProps) => ({
-  contentContainerStyle: {
-    padding: props.isMobile ? 16 : 24,
-    paddingBottom: 40,
-    minHeight: "100%",
-    ...(props.isTablet && {
-      maxWidth: 800,
-      alignSelf: "center",
-      width: "100%",
-    }),
-    ...(props.isDesktop && {
-      maxWidth: 1200,
-      alignSelf: "center",
-      width: "100%",
-    }),
-  },
-}))<ResponsiveProps>``;
+const ScrollContent = styled(ScrollView)<ResponsiveProps>`
+  padding: ${(props) => (props.isMobile ? 16 : 24)}px;
+  padding-bottom: ${(props) => (props.isMobile ? 40 : 60)}px;
+`;
 
 const LogoutContainer = styled.View<ResponsiveProps>`
   flex-direction: row;
